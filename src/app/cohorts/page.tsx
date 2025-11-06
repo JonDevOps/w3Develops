@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useCollection, useUser } from '@/firebase/provider';
+import { useCollection, useUser, useFirestore } from '@/firebase';
 import { collection, Query, orderBy, where, limit, query } from 'firebase/firestore';
-import { useFirestore } from '@/firebase/provider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';

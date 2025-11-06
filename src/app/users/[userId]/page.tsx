@@ -1,9 +1,9 @@
 'use client';
 
-import { useCollection } from '@/firebase/firestore/use-collection';
+import { useCollection } from '@/firebase';
 import { useState, useEffect, useMemo } from 'react';
-import { doc, getDoc, DocumentReference, collection, query, where, Query } from 'firebase/firestore';
-import { useFirestore } from '@/firebase/provider';
+import { doc, getDoc, DocumentReference, collection, query, where, Query, DocumentData } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
 import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

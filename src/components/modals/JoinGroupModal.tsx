@@ -1,6 +1,6 @@
 'use client';
 import { useState, useMemo } from 'react';
-import { useUser, useFirestore, useCollection } from '@/firebase/provider';
+import { useUser, useFirestore, useCollection } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,

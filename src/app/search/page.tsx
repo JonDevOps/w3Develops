@@ -2,9 +2,9 @@
 
 import { Suspense, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, where, orderBy, limit, Query } from 'firebase/firestore';
-import { useFirestore } from '@/firebase/provider';
+import { useCollection } from '@/firebase';
+import { collection, query, where, orderBy, limit, Query, DocumentData } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
 import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -102,7 +102,7 @@ function SearchResults() {
   }, [lowerQ, firestore]);
 
   const groupsByTopicQuery = useMemo(() => {
-    if (!lowerQ) return null;
+    if (!q) return null;
     return query(
         collection(firestore, 'studyGroups'), 
         where('topic', '>=', q), // Case-sensitive search on topic may be needed
@@ -124,7 +124,7 @@ function SearchResults() {
   }, [lowerQ, firestore]);
 
   const cohortsByTopicQuery = useMemo(() => {
-    if (!lowerQ) return null;
+    if (!q) return null;
     return query(
         collection(firestore, 'cohorts'), 
         where('topic', '>=', q),
