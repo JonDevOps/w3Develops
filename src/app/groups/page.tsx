@@ -2,15 +2,23 @@
 
 import { useMemo, useState } from 'react';
 import { useCollection, useMemoFirebase } from '@/firebase';
-import { collection, Query } from 'firebase/firestore';
+import { collection, Query, Timestamp } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { StudyGroup } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { Users, Clock, Search } from 'lucide-react';
+import { Users, Clock, Search, CalendarDays } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+
+const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
+
+function formatTimestamp(timestamp: Timestamp | null | undefined): string {
+    if (!timestamp) return 'N/A';
+    return new Date(timestamp.seconds * 1000).toLocaleDateString();
+}
+
 
 export default function GroupsPage() {
   const firestore = useFirestore();
@@ -22,12 +30,24 @@ export default function GroupsPage() {
 
   const { data: studyGroups, isLoading } = useCollection<StudyGroup>(groupsQuery);
   
-  const filteredGroups = useMemo(() => {
-    if (!studyGroups) return [];
-    return studyGroups.filter(group => 
+  const { newGroups, inProgressGroups } = useMemo(() => {
+    if (!studyGroups) return { newGroups: [], inProgressGroups: [] };
+    
+    const now = Date.now();
+    const allFilteredGroups = studyGroups.filter(group => 
       group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       group.topic.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const newGroups = allFilteredGroups
+      .filter(g => g.createdAt && (now - g.createdAt.toMillis()) < ONE_WEEK_IN_MS)
+      .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+      
+    const inProgressGroups = allFilteredGroups
+      .filter(g => !g.createdAt || (now - g.createdAt.toMillis()) >= ONE_WEEK_IN_MS)
+      .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+
+    return { newGroups, inProgressGroups };
   }, [studyGroups, searchTerm]);
 
 
@@ -60,38 +80,66 @@ export default function GroupsPage() {
 
       {isLoading && <p>Loading groups...</p>}
 
-      {!isLoading && filteredGroups.length === 0 && (
+      {!isLoading && studyGroups?.length === 0 && (
         <div className="text-center py-12">
-            <h3 className="text-xl font-semibold">No Matching Groups Found</h3>
-            <p className="text-muted-foreground mt-2">Try a different search or be the first to create a group!</p>
+            <h3 className="text-xl font-semibold">No Groups Found</h3>
+            <p className="text-muted-foreground mt-2">Be the first to create or join a group!</p>
         </div>
       )}
+
+      {/* New Groups Section */}
+      {newGroups.length > 0 && (
+        <section className="space-y-4">
+          <h2 className="text-2xl font-semibold">New</h2>
+           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {newGroups.map(group => (
+              <Card key={group.id}>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <CardTitle>{group.name}</CardTitle>
+                    <Badge>New</Badge>
+                  </div>
+                  <Badge variant="secondary" className="w-fit">{group.topic}</Badge>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
+                  <div className="flex flex-col text-sm text-muted-foreground gap-2">
+                    <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {group.memberIds.length} Member(s)</div>
+                    <div className="flex items-center"><Clock className="w-4 h-4 mr-2" /> {group.commitment}</div>
+                    <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(group.createdAt)}</div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
       
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredGroups?.map(group => (
-          <Card key={group.id}>
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <CardTitle>{group.name}</CardTitle>
-                <Badge variant="secondary" className="w-fit text-center">{group.topic}</Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4 h-10 overflow-hidden">{group.description}</p>
-              <div className="flex items-center text-sm text-muted-foreground gap-4">
-                <div className="flex items-center">
-                    <Users className="w-4 h-4 mr-1" />
-                    <span>{group.memberIds.length} Member(s)</span>
-                </div>
-                <div className="flex items-center">
-                    <Clock className="w-4 h-4 mr-1" />
-                    <span>{group.commitment}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {/* In Progress Groups Section */}
+      {inProgressGroups.length > 0 && (
+         <section className="space-y-4">
+          <h2 className="text-2xl font-semibold">In Progress</h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {inProgressGroups.map(group => (
+              <Card key={group.id}>
+                <CardHeader>
+                    <CardTitle>{group.name}</CardTitle>
+                    <Badge variant="secondary" className="w-fit">{group.topic}</Badge>
+                </CardHeader>
+                 <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
+                  <div className="flex flex-col text-sm text-muted-foreground gap-2">
+                    <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {group.memberIds.length} Member(s)</div>
+                    <div className="flex items-center"><Clock className="w-4 h-4 mr-2" /> {group.commitment}</div>
+                    <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(group.createdAt)}</div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+      
     </div>
   );
 }

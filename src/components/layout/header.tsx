@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Code2 } from 'lucide-react';
+import { Code2, Search } from 'lucide-react';
 import { useUser, useAuth } from '@/firebase';
 import {
   DropdownMenu,
@@ -14,15 +14,26 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import SearchBar from './search-bar';
+import { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
+
 
 export default function Header() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Close search on navigation
+  useState(() => {
+    setIsSearchOpen(false);
+  });
 
   return (
     <header className="bg-card border-b sticky top-0 z-50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 gap-4">
-        <div className="flex items-center gap-6">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 gap-2">
+        <div className={cn("flex items-center gap-6", { 'hidden md:flex': isSearchOpen })}>
             <Link href="/" className="flex items-center gap-2">
             <Code2 className="h-6 w-6 text-primary" />
             <span className="font-headline text-lg font-semibold">w3Develops</span>
@@ -37,13 +48,16 @@ export default function Header() {
             </nav>
         </div>
         
-        <div className="flex-1 flex justify-center px-4">
-           <div className="w-full max-w-md">
+        <div className={cn("w-full md:w-auto md:flex-1 md:flex md:justify-center md:px-4", { 'hidden md:flex': !isSearchOpen })}>
+           <div className="w-full md:max-w-md">
              <SearchBar />
            </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className={cn("flex items-center gap-2", { 'hidden md:flex': isSearchOpen })}>
+          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsSearchOpen(true)}>
+            <Search className="h-5 w-5" />
+          </Button>
           {isUserLoading ? (
             <div className="h-8 w-16 bg-muted rounded-md animate-pulse" />
           ) : user ? (
@@ -82,9 +96,14 @@ export default function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button asChild>
-              <Link href="/login">Sign In</Link>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button asChild size="sm">
+                <Link href="/login">Sign In</Link>
+              </Button>
+               <Button asChild size="sm" variant="secondary" className="hidden sm:flex">
+                <Link href="/signup">Sign Up</Link>
+              </Button>
+            </div>
           )}
         </div>
       </div>
