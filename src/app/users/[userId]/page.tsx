@@ -7,7 +7,7 @@ import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Github, Linkedin, Twitter, Mail, BrainCircuit, CalendarCheck } from 'lucide-react';
+import { Github, Linkedin, Twitter, BrainCircuit, CalendarCheck } from 'lucide-react';
 import Link from 'next/link';
 
 export default function UserProfilePage({ params }: { params: { userId: string } }) {
@@ -70,9 +70,6 @@ export default function UserProfilePage({ params }: { params: { userId: string }
                   <Twitter className="w-6 h-6" />
                 </a>
               )}
-               <a href={`mailto:${userProfile.email}`} className="text-muted-foreground hover:text-foreground">
-                  <Mail className="w-6 h-6" />
-                </a>
             </div>
           </div>
         </CardContent>
