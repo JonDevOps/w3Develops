@@ -10,7 +10,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { topics, commitmentLevels } from '@/lib/constants';
 import { collection, query, where, Query } from 'firebase/firestore';
@@ -18,6 +17,9 @@ import { StudyGroup } from '@/lib/types';
 import JoinGroupButton from '../JoinGroupButton';
 import Link from 'next/link';
 import { Input } from '../ui/input';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose, DrawerFooter, DrawerDescription } from '@/components/ui/drawer';
+import { ChevronDown } from 'lucide-react';
+
 
 interface JoinGroupModalProps {
   isOpen: boolean;
@@ -32,6 +34,7 @@ export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
   const [customTopic, setCustomTopic] = useState('');
   const [commitment, setCommitment] = useState('part-time');
   const [step, setStep] = useState(1);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const finalTopic = topic === 'Other' ? customTopic : topic;
   const finalCommitment = commitmentLevels[commitment as keyof typeof commitmentLevels];
@@ -84,14 +87,40 @@ export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="topic">Topic of Study</Label>
-              <Select onValueChange={setTopic} value={topic}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a topic" />
-                </SelectTrigger>
-                <SelectContent>
-                  {topics.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                </SelectContent>
-              </Select>
+               <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+                  <DrawerTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between">
+                      {topic || "Select a topic"}
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DrawerTrigger>
+                  <DrawerContent>
+                    <DrawerHeader>
+                      <DrawerTitle>Select a Topic</DrawerTitle>
+                       <DrawerDescription>Choose the primary focus for the study group.</DrawerDescription>
+                    </DrawerHeader>
+                    <div className="p-4 space-y-2 max-h-[70vh] overflow-y-auto">
+                      {topics.map(t => (
+                        <Button
+                          key={t}
+                          variant="ghost"
+                          className="w-full justify-start"
+                          onClick={() => {
+                            setTopic(t);
+                            setIsDrawerOpen(false);
+                          }}
+                        >
+                          {t}
+                        </Button>
+                      ))}
+                    </div>
+                     <DrawerFooter>
+                        <DrawerClose asChild>
+                            <Button variant="outline">Cancel</Button>
+                        </DrawerClose>
+                    </DrawerFooter>
+                  </DrawerContent>
+                </Drawer>
             </div>
             {topic === 'Other' && (
               <div className="grid gap-2">

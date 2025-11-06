@@ -9,11 +9,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useUser, useFirestore } from '@/firebase/provider';
 import { useToast } from "@/components/ui/use-toast";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { collection, serverTimestamp, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { topics, commitmentLevels } from '@/lib/constants';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose, DrawerFooter, DrawerDescription } from '@/components/ui/drawer';
+import { ChevronDown } from 'lucide-react';
 
 
 export default function CreateGroupPage() {
@@ -28,6 +29,7 @@ export default function CreateGroupPage() {
   const [customTopic, setCustomTopic] = useState('');
   const [description, setDescription] = useState('');
   const [commitment, setCommitment] = useState('part-time');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -114,14 +116,40 @@ export default function CreateGroupPage() {
             
             <div className="grid gap-2">
               <Label htmlFor="topic">Topic of Study</Label>
-               <Select onValueChange={setTopic} value={topic} required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a topic" />
-                </SelectTrigger>
-                <SelectContent>
-                  {topics.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                </SelectContent>
-              </Select>
+               <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+                  <DrawerTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between">
+                      {topic || "Select a topic"}
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DrawerTrigger>
+                  <DrawerContent>
+                    <DrawerHeader>
+                      <DrawerTitle>Select a Topic</DrawerTitle>
+                      <DrawerDescription>Choose the primary focus for your study group.</DrawerDescription>
+                    </DrawerHeader>
+                    <div className="p-4 space-y-2 max-h-[70vh] overflow-y-auto">
+                      {topics.map(t => (
+                        <Button
+                          key={t}
+                          variant="ghost"
+                          className="w-full justify-start"
+                          onClick={() => {
+                            setTopic(t);
+                            setIsDrawerOpen(false);
+                          }}
+                        >
+                          {t}
+                        </Button>
+                      ))}
+                    </div>
+                    <DrawerFooter>
+                        <DrawerClose asChild>
+                            <Button variant="outline">Cancel</Button>
+                        </DrawerClose>
+                    </DrawerFooter>
+                  </DrawerContent>
+                </Drawer>
             </div>
 
             {topic === 'Other' && (
@@ -151,7 +179,8 @@ export default function CreateGroupPage() {
             </div>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? 'Creating...' : 'Create Group'}
-            </Button>          </form>
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </div>
