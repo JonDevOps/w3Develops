@@ -42,7 +42,7 @@ export default function Header() {
   const logoHref = user ? '/account' : '/';
   const isLoading = isUserLoading || isProfileLoading;
   
-  const displayName = userProfile?.username || user?.email;
+  const username = userProfile?.username || user?.email;
   const avatarFallback = userProfile?.username?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase();
 
   return (
@@ -113,7 +113,7 @@ export default function Header() {
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                     <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{displayName}</p>
+                        <p className="text-sm font-medium leading-none">{username}</p>
                         <p className="text-xs leading-none text-muted-foreground">
                         {user.email}
                         </p>
