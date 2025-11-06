@@ -86,13 +86,11 @@ export default function NewGroupPage() {
             groupSizeLimit: 25,
             createdAt: serverTimestamp(),
         });
-
-        toast({
-            title: 'Group Created!',
-            description: `${groupName} has been successfully created.`,
-        })
       });
-      
+       toast({
+            title: 'Group Created!',
+            description: `A new group has been successfully created.`,
+        })
       router.push('/groups');
     } catch (e: any) {
         toast({
