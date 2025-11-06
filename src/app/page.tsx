@@ -1,7 +1,32 @@
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@/firebase';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function Home() {
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    // If the user state is determined and a user is logged in, redirect to the account dashboard.
+    if (!isUserLoading && user) {
+      router.push('/account');
+    }
+  }, [user, isUserLoading, router]);
+
+  // While checking auth state or if user is logged in and redirecting, show a loading state.
+  if (isUserLoading || user) {
+    return (
+        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] text-center">
+            <p>Loading...</p>
+        </div>
+    );
+  }
+  
+  // If user is not logged in, show the public homepage.
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] text-center">
       <h1 className="text-4xl md:text-6xl font-headline font-bold tracking-tighter mb-4">
@@ -21,5 +46,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
