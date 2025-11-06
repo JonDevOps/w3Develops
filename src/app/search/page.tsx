@@ -74,7 +74,7 @@ function SearchResults() {
       {noResults && (
         <div className="text-center py-12">
             <h3 className="text-xl font-semibold">No Results Found</h3>
-            <p className="text-muted-foreground mt-2">We couldn&apos;t find any users, groups, or cohorts matching your search.</p>
+            <p className="text-muted-foreground mt-2">We couldn't find any users, groups, or cohorts matching your search.</p>
         </div>
       )}
 
@@ -164,3 +164,4 @@ export default function SearchPage() {
         </Suspense>
     )
 }
+    

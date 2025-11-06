@@ -38,3 +38,4 @@ export interface Cohort {
   commitment: string;
   createdAt: Timestamp;
 }
+    

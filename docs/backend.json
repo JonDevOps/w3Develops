@@ -19,6 +19,10 @@
           "type": "string",
           "description": "User's display name."
         },
+        "name_lowercase": {
+          "type": "string",
+          "description": "Lowercase version of the user's display name for searching."
+        },
         "profilePictureUrl": {
           "type": "string",
           "description": "URL of the user's profile picture.",
@@ -60,7 +64,8 @@
       },
       "required": [
         "id",
-        "email"
+        "email",
+        "name_lowercase"
       ]
     },
     "StudyGroup": {
@@ -195,3 +200,4 @@
     }
   }
 }
+    

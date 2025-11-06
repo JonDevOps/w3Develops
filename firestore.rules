@@ -10,21 +10,38 @@ service cloud.firestore {
     }
 
     // Allow public read on study groups.
-    // Any authenticated member can update a group (for joining/leaving).
-    // Creator must be the first member on creation.
+    // Allow creation if user is authenticated and is the first member.
+    // Allow updates (joining/leaving) if user is authenticated and a member.
     match /studyGroups/{groupId} {
       allow read: if true;
-      allow create: if request.auth != null && request.resource.data.memberIds[0] == request.auth.uid;
+      allow create: if request.auth != null 
+                    && request.resource.data.memberIds[0] == request.auth.uid
+                    && request.resource.data.name is string
+                    && request.resource.data.name_lowercase is string
+                    && request.resource.data.topic is string
+                    && request.resource.data.commitment is string
+                    && request.resource.data.createdAt == request.time
+                    && request.resource.data.memberIds is list
+                    && request.resource.data.memberIds.size() == 1;
       allow update: if request.auth != null && request.auth.uid in resource.data.memberIds;
     }
 
     // Allow public read on cohorts.
-    // Any authenticated member can update a cohort (for joining/leaving).
-    // Creator must be the first member on creation.
+    // Allow creation if user is authenticated and is the first member.
+    // Allow updates (joining/leaving) if user is authenticated and a member.
     match /cohorts/{cohortId} {
       allow read: if true;
-      allow create: if request.auth != null && request.resource.data.memberIds[0] == request.auth.uid;
+      allow create: if request.auth != null 
+                    && request.resource.data.memberIds[0] == request.auth.uid
+                    && request.resource.data.name is string
+                    && request.resource.data.name_lowercase is string
+                    && request.resource.data.topic is string
+                    && request.resource.data.commitment is string
+                    && request.resource.data.createdAt == request.time
+                    && request.resource.data.memberIds is list
+                    && request.resource.data.memberIds.size() == 1;
       allow update: if request.auth != null && request.auth.uid in resource.data.memberIds;
     }
   }
 }
+    
