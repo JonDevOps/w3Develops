@@ -30,19 +30,22 @@ async function findAndJoin(collectionName: 'studyGroups' | 'cohorts', params: Ma
         const collectionRef = firestore.collection(collectionName);
 
         const result = await firestore.runTransaction(async (transaction) => {
-            // Query for a suitable group/cohort that the user is NOT already in.
+            // Query for a suitable group/cohort.
+            // The check for whether a user is already in the group is now handled in the loop below,
+            // as 'not-in' queries are limited to 10 comparison values, which is not scalable.
             const q = collectionRef
                 .where('topic', '==', topic)
                 .where('commitment', '==', commitment)
-                .where('createdAt', '>', oneWeekAgo)
-                .where('memberIds', 'not-in', [userId]);
+                .where('createdAt', '>', oneWeekAgo);
 
             const querySnapshot = await transaction.get(q);
             
             let suitableGroup = null;
-            // Find the first group with space.
+            // Find the first suitable group with space that the user is not already a member of.
             for (const doc of querySnapshot.docs) {
-                if (doc.data().memberIds.length < MAX_MEMBERS) {
+                const groupData = doc.data();
+                const isMember = groupData.memberIds.includes(userId);
+                if (!isMember && groupData.memberIds.length < MAX_MEMBERS) {
                     suitableGroup = doc;
                     break; 
                 }
