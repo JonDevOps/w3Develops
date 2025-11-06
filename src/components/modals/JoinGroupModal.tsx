@@ -136,7 +136,7 @@ export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
             )}
              {!isLoading && availableGroups.length === 0 && (
                 <div className="text-center py-4 space-y-2">
-                    <p className="text-muted-foreground">No matching open groups found.</p>
+                    <p className="text-muted-foreground">No matching open groups were found.</p>
                     <Button asChild onClick={handleClose}>
                         <Link href="/groups/create">Create a New Group</Link>
                     </Button>

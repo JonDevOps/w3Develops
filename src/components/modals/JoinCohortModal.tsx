@@ -135,7 +135,7 @@ export function JoinCohortModal({ isOpen, onClose }: JoinCohortModalProps) {
             )}
              {!isLoading && availableCohorts.length === 0 && (
                 <div className="text-center py-4 space-y-2">
-                    <p className="text-muted-foreground">No matching open cohorts found.</p>
+                    <p className="text-muted-foreground">No matching open cohorts were found.</p>
                     <Button asChild onClick={handleClose}>
                         <Link href="/cohorts/create">Create a New Cohort</Link>
                     </Button>

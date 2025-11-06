@@ -10,10 +10,10 @@ import Link from "next/link";
 import { useAuth, useUser, useFirestore } from '@/firebase/provider';
 import { initiateEmailSignUp } from '@/firebase/non-blocking-login';
 import { useToast } from "@/components/ui/use-toast";
-import { doc, collection, query, where, getDocs, runTransaction } from 'firebase/firestore';
+import { doc, collection, query, where, getDocs, setDoc } from 'firebase/firestore';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 import { UserProfile } from '@/lib/types';
-import { deleteUser } from 'firebase/auth';
+import { deleteUser, UserCredential } from 'firebase/auth';
 
 export default function SignupPage() {
   const auth = useAuth();
@@ -25,6 +25,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     // Redirect if user is already logged in
@@ -44,59 +45,59 @@ export default function SignupPage() {
       return;
     }
 
-    let newUser;
+    setIsSubmitting(true);
+    let userCredential: UserCredential | null = null;
+    
     try {
-      // 1. Create user with email and password first
-      const userCredential = await initiateEmailSignUp(auth, email, password);
-      newUser = userCredential.user;
       const usernameLower = username.toLowerCase();
       
-      // 2. Use a transaction to guarantee username uniqueness and create the profile
-      await runTransaction(firestore, async (transaction) => {
-        const userDocRef = doc(firestore, "users", newUser.uid);
-        const usersRef = collection(firestore, 'users');
-        const q = query(usersRef, where("username_lowercase", "==", usernameLower));
-        const querySnapshot = await getDocs(q);
+      // 1. Check for username uniqueness BEFORE creating the auth user
+      const usersRef = collection(firestore, 'users');
+      const q = query(usersRef, where("username_lowercase", "==", usernameLower));
+      const querySnapshot = await getDocs(q);
 
-        if (!querySnapshot.empty) {
-          // This will abort the transaction and be caught by the outer catch block
-          throw new Error("This username is already in use. Please choose another one.");
-        }
+      if (!querySnapshot.empty) {
+        throw new Error("This username is already in use. Please choose another one.");
+      }
 
-        // If username is unique, create the user profile document
-        const userData: UserProfile = {
-          id: newUser.uid,
-          email: email,
-          username: username,
-          username_lowercase: usernameLower,
-          profilePictureUrl: '',
-          bio: '',
-          socialLinks: {},
-          skills: [],
-        };
-        transaction.set(userDocRef, userData);
-      });
-        // If transaction is successful, the useEffect will handle the redirect.
+      // 2. If username is unique, create user with email and password
+      userCredential = await initiateEmailSignUp(auth, email, password);
+      const newUser = userCredential.user;
+      
+      // 3. Create the user profile document
+      const userDocRef = doc(firestore, "users", newUser.uid);
+      const userData: UserProfile = {
+        id: newUser.uid,
+        email: email,
+        username: username,
+        username_lowercase: usernameLower,
+        profilePictureUrl: '',
+        bio: '',
+        socialLinks: {},
+        skills: [],
+      };
+      await setDoc(userDocRef, userData);
+        
+      // If successful, onAuthStateChanged in the provider will handle the redirect.
     } catch (error: any) {
-      // If any part of the process fails, attempt to clean up the auth user
-      if (newUser) {
+      // If any part of the process fails AFTER user creation, attempt to clean up the auth user
+      if (userCredential) {
         try {
-          await deleteUser(newUser);
+          await deleteUser(userCredential.user);
         } catch (deleteError: any) {
-            // This is a critical state - user auth exists but profile creation failed
-            // and cleanup failed. The user needs to know.
             toast({
               variant: "destructive",
               title: "Critical Sign Up Error",
-              description: "Your account could not be fully created, and cleanup failed. Please contact support.",
+              description: "Your account could not be fully created, and automatic cleanup failed. Please contact support.",
               duration: 10000,
             });
-            return; // Stop further execution
+            setIsSubmitting(false);
+            return; 
         }
       }
 
       let description = "An unknown error occurred during sign up.";
-      // Handle both auth errors and transaction errors
+      // Handle custom error and Firebase auth errors
       if (error.message === "This username is already in use. Please choose another one.") {
         description = error.message;
       } else {
@@ -117,6 +118,8 @@ export default function SignupPage() {
         title: "Sign up failed",
         description: description,
       });
+    } finally {
+        setIsSubmitting(false);
     }
   };
   
@@ -144,6 +147,7 @@ export default function SignupPage() {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                disabled={isSubmitting}
               />
             </div>
             <div className="grid gap-2">
@@ -155,6 +159,7 @@ export default function SignupPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={isSubmitting}
               />
             </div>
             <div className="grid gap-2">
@@ -165,10 +170,11 @@ export default function SignupPage() {
                 minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={isSubmitting}
               />
             </div>
-            <Button type="submit" className="w-full">
-              Create Account
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? 'Creating Account...' : 'Create Account'}
             </Button>
           </form>
         </CardContent>
