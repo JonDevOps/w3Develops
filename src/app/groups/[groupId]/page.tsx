@@ -50,9 +50,9 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
   }, [firestore, groupId])
 
   const userProfileRef = useMemoFirebase(() => {
-      if (!user || !firestore) return null;
+      if (isUserLoading || !user || !firestore) return null;
       return doc(firestore, 'users', user.uid, 'profile', 'data')
-  }, [user, firestore])
+  }, [user, firestore, isUserLoading])
 
   const { data: group, isLoading: isGroupLoading } = useDoc(groupRef)
   const { data: userProfile, isLoading: isProfileLoading } = useDoc(userProfileRef)
@@ -63,22 +63,14 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
     const memberToRemove = group.members.find((m: GroupMember) => m.userId === user.uid)
     if (!memberToRemove) return;
 
-    try {
-        updateDocumentNonBlocking(groupRef, {
-            members: arrayRemove(memberToRemove)
-        });
-        toast({
-            title: "You have left the group.",
-            description: "You can always join another group from the study groups page.",
-        });
-        router.push('/groups');
-    } catch (e: any) {
-        toast({
-            variant: "destructive",
-            title: "Uh oh! Something went wrong.",
-            description: e.message || "Could not leave the group.",
-        })
-    }
+    updateDocumentNonBlocking(groupRef, {
+        members: arrayRemove(memberToRemove)
+    });
+    toast({
+        title: "You have left the group.",
+        description: "You can always join another group from the study groups page.",
+    });
+    router.push('/groups');
   }
   
   const handleJoinGroup = async () => {
@@ -91,21 +83,13 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
           displayName: userProfile.displayName
       };
 
-      try {
-          updateDocumentNonBlocking(groupRef, {
-              members: arrayUnion(newMember)
-          });
-          toast({
-              title: "Welcome to the group!",
-              description: "You have successfully joined.",
-          });
-      } catch(e: any) {
-          toast({
-              variant: "destructive",
-              title: "Uh oh! Something went wrong.",
-              description: e.message || "Could not join the group.",
-          })
-      }
+      updateDocumentNonBlocking(groupRef, {
+          members: arrayUnion(newMember)
+      });
+      toast({
+          title: "Welcome to the group!",
+          description: "You have successfully joined.",
+      });
   }
 
 

@@ -45,7 +45,7 @@ export default function FindGroupPage() {
   const { isSubmitting } = form.formState
 
   async function onSubmit(values: z.infer<typeof findGroupSchema>) {
-    if (!user || !firestore) {
+    if (!user || !firestore || isUserLoading) {
         toast({
             variant: "destructive",
             title: "Not signed in",
@@ -95,6 +95,7 @@ export default function FindGroupPage() {
           const newMember = {
               userId: user.uid,
               username: userProfile.username,
+              displayName: userProfile.displayName,
               profilePictureUrl: userProfile.profilePictureUrl || ''
           };
 
@@ -104,6 +105,8 @@ export default function FindGroupPage() {
           title: 'Joined Existing Group!',
           description: `You have been added to ${availableGroups[0].data().name}.`,
         });
+        router.push(`/groups/${availableGroups[0].id}`);
+
       } else {
         // No available group, create a new one within a transaction
         const counterRef = doc(firestore, 'counters', `group--${values.primarySkill}--${values.timeCommitment}`);
@@ -136,6 +139,7 @@ export default function FindGroupPage() {
                 members: [{
                     userId: user.uid,
                     username: userProfile.username,
+                    displayName: userProfile.displayName,
                     profilePictureUrl: userProfile.profilePictureUrl || ''
                 }],
                 groupSizeLimit: 25,
@@ -154,9 +158,9 @@ export default function FindGroupPage() {
             title: 'New Group Created!',
             description: `You have been placed in a new group.`,
         });
+        router.push(`/groups/${newGroupRef.id}`);
       }
 
-      router.push('/groups');
 
     } catch (e: any) {
         console.error("Group matching failed: ", e);

@@ -6,16 +6,16 @@
  *
  * Data Structure:
  * - User profiles are a single document located at /users/{userId}/profile/data, ensuring only the authenticated user can access their own profile.
- * - Learning groups are stored in a top-level /learning_groups/{learningGroupId} collection. Access is controlled by a list of member IDs stored directly in the document.
+ * - Learning groups are stored in a top-level /learning_groups/{learningGroupId} collection. Access is controlled by a list of member objects stored directly in the document.
  * - Counters for group naming are stored in a top-level /counters collection.
  *
  * Key Security Decisions:
  * - Users can only manage their own profiles.
- * - Learning groups are accessible to members listed in the 'memberIds' array.
+ * - Learning groups are accessible to members listed in the 'members' array.
  * - Data validation is limited to authorization-critical fields to enable rapid prototyping.
  *
  * Denormalization for Authorization:
- * - The 'memberIds' array in the 'LearningGroup' document is used to avoid costly 'get()' calls when checking group membership.
+ * - The 'members' array in the 'LearningGroup' document contains denormalized user data to avoid costly 'get()' calls when checking group membership.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -23,6 +23,14 @@ service cloud.firestore {
 
     function isSignedIn() {
       return request.auth != null;
+    }
+    
+    function getMember(memberList, userId) {
+      return memberList.filter(member -> member.userId == userId)[0];
+    }
+    
+    function isMember(userId) {
+      return resource.data.members.filter(member -> member.userId == userId).size() > 0;
     }
 
     match /users/{userId}/profile/data {
@@ -49,38 +57,48 @@ service cloud.firestore {
     }
 
     match /learning_groups/{learningGroupId} {
-      function isMember() {
-          return isSignedIn() && request.auth.uid in resource.data.memberIds;
+      
+      function incomingMembers() {
+        return request.resource.data.members;
       }
       
-      function isJoining() {
-        let isNotMember = isSignedIn() && !(request.auth.uid in resource.data.memberIds);
-        let groupNotFull = resource.data.memberIds.size() < resource.data.groupSizeLimit;
-        let incomingMembers = request.resource.data.memberIds;
-        // This rule ensures that a user can only add themselves to the group.
-        let onlyJoining = incomingMembers.size() == resource.data.memberIds.size() + 1 && incomingMembers.hasAll(resource.data.memberIds) && incomingMembers.hasAll([request.auth.uid]);
+      function currentMembers() {
+        return resource.data.members;
+      }
 
-        return isNotMember && groupNotFull && onlyJoining;
+      function isJoining() {
+        let isNotMember = isSignedIn() && !isMember(request.auth.uid);
+        let groupNotFull = currentMembers().size() < resource.data.groupSizeLimit;
+
+        // Ensure incoming list has exactly one new member: the current user.
+        let isAddingSelf = incomingMembers().size() == currentMembers().size() + 1
+                           && incomingMembers().hasAny([getMember(incomingMembers(), request.auth.uid)])
+                           && currentMembers().hasAll(incomingMembers().removeAll([getMember(incomingMembers(), request.auth.uid)]));
+                           
+        return isNotMember && groupNotFull && isAddingSelf;
       }
 
        function isLeaving() {
-        let wasMember = isSignedIn() && request.auth.uid in resource.data.memberIds;
-        let incomingMembers = request.resource.data.memberIds;
-        let onlyLeaving = incomingMembers.size() == resource.data.memberIds.size() - 1 && !incomingMembers.hasAny([request.auth.uid]) && resource.data.memberIds.hasAll(incomingMembers);
+        let wasMember = isSignedIn() && isMember(request.auth.uid);
         
-        return wasMember && onlyLeaving;
+        // Ensure incoming list is the current list minus the current user.
+        let isRemovingSelf = incomingMembers().size() == currentMembers().size() - 1
+                             && !incomingMembers().hasAny([getMember(currentMembers(), request.auth.uid)])
+                             && incomingMembers().hasAll(currentMembers().removeAll([getMember(currentMembers(), request.auth.uid)]));
+
+        return wasMember && isRemovingSelf;
       }
 
       function canUpdate() {
-        // Allow members to update, but not change critical fields like memberIds (except for leaving/joining)
-        let isMemberUpdate = isMember() && request.resource.data.keys().diff(['memberIds']).size() > 0 && request.resource.data.memberIds == resource.data.memberIds;
+        // Allow members to update, but not change critical fields like members (except for leaving/joining)
+        let isMemberUpdate = isMember(request.auth.uid) && request.resource.data.keys().diff(['members']).size() > 0 && incomingMembers() == currentMembers();
         return isMemberUpdate;
       }
       
       allow get, list: if true;
-      allow create: if isSignedIn() && request.auth.uid in request.resource.data.memberIds && request.resource.data.memberIds.size() == 1;
+      allow create: if isSignedIn() && getMember(incomingMembers(), request.auth.uid) != null && incomingMembers().size() == 1;
       allow update: if canUpdate() || isJoining() || isLeaving();
-      allow delete: if isMember();
+      allow delete: if isMember(request.auth.uid);
     }
   }
 }

@@ -19,7 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useFirebase } from '@/firebase'
-import { addDoc, collection, serverTimestamp, runTransaction, doc, increment } from 'firebase/firestore'
+import { collection, serverTimestamp, runTransaction, doc } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 
 const technologies = ["html/css", "javascript", "python", "react", "django", "nodejs", "rust", "digital marketing", "web3", "cryptocurrency", "cybersecurity", "nfts", "sql", "artifical intelligence", "web design", "programming fundementals"] as const;
@@ -81,7 +81,7 @@ export default function NewGroupPage() {
             groupName = `${skillLabel} ${commitmentLabel} #${newCount}`;
 
             if (counterDoc.exists()) {
-                transaction.update(counterRef, { count: increment(1) });
+                transaction.update(counterRef, { count: counterDoc.data().count + 1 });
             } else {
                 transaction.set(counterRef, { count: 1 });
             }
@@ -93,6 +93,7 @@ export default function NewGroupPage() {
             members: [{
               userId: user.uid,
               username: userProfile.username,
+              displayName: userProfile.displayName,
               profilePictureUrl: userProfile.profilePictureUrl || '',
             }],
             groupSizeLimit: 25,
@@ -104,7 +105,7 @@ export default function NewGroupPage() {
             title: 'Group Created!',
             description: `A new group has been successfully created.`,
         })
-      router.push('/groups');
+      router.push(`/groups/${newGroupRef.id}`);
     } catch (e: any) {
         toast({
             variant: "destructive",
