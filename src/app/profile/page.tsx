@@ -22,9 +22,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { PlaceHolderImages } from '@/lib/placeholder-images'
+import { useDoc, useFirebase, useMemoFirebase } from '@/firebase'
+import { doc } from 'firebase/firestore'
+import { useEffect } from 'react'
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates'
 
 const profileSchema = z.object({
-  fullName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  displayName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   bio: z.string().max(160, { message: 'Bio must not be longer than 160 characters.' }).optional(),
   github: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   linkedin: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
@@ -34,26 +38,66 @@ const profileSchema = z.object({
 
 export default function ProfilePage() {
   const { toast } = useToast()
+  const { user, firestore } = useFirebase()
   const userAvatar = PlaceHolderImages.find((p) => p.id === 'avatar-1')
+
+  const userProfileRef = useMemoFirebase(() => {
+    if (!user || !firestore) return null
+    return doc(firestore, 'users', user.uid, 'profile', user.uid)
+  }, [user, firestore])
+
+  const { data: userProfile, isLoading } = useDoc(userProfileRef)
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      fullName: 'Alice',
-      bio: 'Frontend developer passionate about React and building beautiful UIs.',
-      github: 'https://github.com/alice',
-      linkedin: 'https://linkedin.com/in/alice',
+      displayName: '',
+      bio: '',
+      github: '',
+      linkedin: '',
       primarySkill: 'Frontend',
       learningPace: 'Moderate',
     },
   })
 
+  useEffect(() => {
+    if (userProfile) {
+      form.reset({
+        displayName: userProfile.displayName || '',
+        bio: userProfile.bio || '',
+        github: userProfile.socialLinks?.find((l: string) => l.includes('github')) || '',
+        linkedin: userProfile.socialLinks?.find((l: string) => l.includes('linkedin')) || '',
+        primarySkill: userProfile.primarySkill || 'Frontend',
+        learningPace: userProfile.learningPace || 'Moderate'
+      })
+    }
+  }, [userProfile, form])
+
   function onSubmit(values: z.infer<typeof profileSchema>) {
-    console.log(values)
+    if (!userProfileRef) return
+    const socialLinks = [];
+    if (values.github) socialLinks.push(values.github);
+    if (values.linkedin) socialLinks.push(values.linkedin);
+
+    const updatedProfile = {
+        ...userProfile,
+        displayName: values.displayName,
+        bio: values.bio,
+        primarySkill: values.primarySkill,
+        learningPace: values.learningPace,
+        socialLinks,
+    }
+    
+    setDocumentNonBlocking(userProfileRef, updatedProfile, { merge: true })
+
     toast({
       title: 'Profile Updated',
       description: 'Your changes have been saved successfully.',
     })
+  }
+  
+  if (isLoading) {
+    return <p>Loading profile...</p>
   }
 
   return (
@@ -73,15 +117,15 @@ export default function ProfilePage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage src={userAvatar?.imageUrl} />
-                  <AvatarFallback>A</AvatarFallback>
+                  <AvatarImage src={userProfile?.profilePictureUrl || userAvatar?.imageUrl} />
+                  <AvatarFallback>{userProfile?.displayName?.charAt(0) || 'U'}</AvatarFallback>
                 </Avatar>
                 <Button type="button" variant="outline">Change Photo</Button>
               </div>
 
               <FormField
                 control={form.control}
-                name="fullName"
+                name="displayName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>

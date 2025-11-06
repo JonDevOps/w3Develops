@@ -23,6 +23,12 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
+import { useAuth, useFirestore } from '@/firebase'
+import {
+  createUserWithEmailAndPassword,
+} from 'firebase/auth'
+import { doc, setDoc } from 'firebase/firestore'
+import { useRouter } from 'next/navigation'
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -31,7 +37,10 @@ const formSchema = z.object({
 })
 
 export default function SignupPage() {
-    const { toast } = useToast()
+  const { toast } = useToast()
+  const auth = useAuth()
+  const firestore = useFirestore()
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,12 +51,35 @@ export default function SignupPage() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-    toast({
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const user = userCredential.user;
+
+      const userProfileRef = doc(firestore, 'users', user.uid, 'profile', user.uid)
+      
+      await setDoc(userProfileRef, {
+        id: user.uid,
+        userId: user.uid,
+        displayName: values.fullName,
+        profilePictureUrl: '',
+        socialLinks: [],
+        primarySkill: 'Frontend',
+        learningPace: 'Moderate',
+      });
+
+      toast({
         title: "Account Created!",
-        description: "In a real app, you would be redirected to your profile.",
+        description: "You have been successfully signed up.",
       })
+      router.push('/profile');
+    } catch(e: any) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: e.message || "Could not create account.",
+      });
+    }
   }
 
   return (

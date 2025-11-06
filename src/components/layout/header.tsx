@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 import { Menu, User } from 'lucide-react'
+import { useAuth, useUser } from '@/firebase'
+import { signOut } from 'firebase/auth'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -22,7 +24,12 @@ const navLinks = [
 ]
 
 export function Header() {
-  const isUserLoggedIn = false // Mocked for now
+  const { user, isUserLoading } = useUser()
+  const auth = useAuth()
+
+  const handleLogout = async () => {
+    await signOut(auth)
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -69,7 +76,7 @@ export function Header() {
             ))}
           </nav>
           <div className="flex items-center gap-2">
-            {isUserLoggedIn ? (
+            {isUserLoading ? null : user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="secondary" size="icon" className="rounded-full">
@@ -85,7 +92,7 @@ export function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuItem>Settings</DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>Logout</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
