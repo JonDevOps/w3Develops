@@ -7,9 +7,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useAuth, useUser, useFirestore, initiateEmailSignUp, setDocumentNonBlocking } from '@/firebase';
+import { useAuth, useUser, useFirestore, setDocumentNonBlocking, initiateEmailSignUp } from '@/firebase';
 import { useToast } from "@/components/ui/use-toast";
 import { doc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export default function SignupPage() {
   const auth = useAuth();
@@ -28,14 +29,12 @@ export default function SignupPage() {
     }
   }, [user, isUserLoading, router]);
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-      if (userCredential.user) {
-        const userRef = doc(firestore, "users", userCredential.user.uid);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (newUser) => {
+      if (newUser && !isUserLoading) {
+        const userRef = doc(firestore, "users", newUser.uid);
         const userData = {
-          id: userCredential.user.uid,
+          id: newUser.uid,
           email: email,
           displayName: displayName,
           profilePictureUrl: '',
@@ -44,20 +43,32 @@ export default function SignupPage() {
           skills: [],
           learningPace: 'Intermediate',
         };
+        // This is a non-blocking write. It will optimistically update local state.
         setDocumentNonBlocking(userRef, userData, { merge: true });
         router.push('/account');
       }
-    } catch (error: any) {
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [auth, firestore, email, displayName, isUserLoading, router]);
+
+  const handleSignUp = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!displayName || !email || !password) {
       toast({
         variant: "destructive",
-        title: "Sign up failed.",
-        description: error.message,
+        title: "Missing fields",
+        description: "Please fill out all fields.",
       });
+      return;
     }
+    // This is a non-blocking call to initiate the signup process.
+    initiateEmailSignUp(auth, email, password);
   };
   
-  if (isUserLoading) {
-    return <div>Loading...</div>; // Or a loading spinner
+  if (isUserLoading || user) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -119,5 +130,3 @@ export default function SignupPage() {
     </div>
   );
 }
-
-    

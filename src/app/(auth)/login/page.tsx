@@ -24,17 +24,9 @@ export default function LoginPage() {
     }
   }, [user, isUserLoading, router]);
 
-  const handleSignIn = async (e: React.FormEvent) => {
+  const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      initiateEmailSignIn(auth, email, password);
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Sign in failed.",
-        description: error.message,
-      });
-    }
+    initiateEmailSignIn(auth, email, password);
   };
 
   if (isUserLoading || user) {
@@ -86,5 +78,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    
