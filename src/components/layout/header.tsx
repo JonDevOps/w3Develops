@@ -37,11 +37,13 @@ export default function Header() {
     });
   };
 
+  const logoHref = user ? '/account' : '/';
+
   return (
     <header className="bg-card border-b sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 gap-2">
         <div className={cn("flex items-center gap-6", { 'hidden md:flex': isSearchOpen })}>
-            <Link href="/" className="flex items-center gap-2">
+            <Link href={logoHref} className="flex items-center gap-2">
             <Code2 className="h-6 w-6 text-primary" />
             <span className="font-headline text-lg font-semibold">w3Develops</span>
             </Link>
