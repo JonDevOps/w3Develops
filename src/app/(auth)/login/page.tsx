@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useAuth, useUser, initiateEmailSignIn } from '@/firebase';
 import { useToast } from '@/components/ui/use-toast';
+import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 
 export default function LoginPage() {
   const auth = useAuth();
@@ -47,7 +48,7 @@ export default function LoginPage() {
   };
 
   if (isUserLoading || user) {
-    return <div>Loading...</div>; // Or a loading spinner
+    return <LoadingSkeleton />;
   }
 
   return (

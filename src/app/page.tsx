@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useUser } from '@/firebase';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 
 export default function Home() {
   const { user, isUserLoading } = useUser();
@@ -19,11 +20,7 @@ export default function Home() {
 
   // While checking auth state or if user is logged in and redirecting, show a loading state.
   if (isUserLoading || user) {
-    return (
-        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] text-center">
-            <p>Loading...</p>
-        </div>
-    );
+    return <LoadingSkeleton />;
   }
   
   // If user is not logged in, show the public homepage.

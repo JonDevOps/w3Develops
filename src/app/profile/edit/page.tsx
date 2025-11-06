@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
+import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 
 export default function EditProfilePage() {
   const { user, isUserLoading } = useUser();
@@ -89,7 +90,7 @@ export default function EditProfilePage() {
   };
 
   if (isUserLoading || isProfileLoading) {
-    return <div>Loading...</div>;
+    return <LoadingSkeleton />;
   }
   
   if (!user) {

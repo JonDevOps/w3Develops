@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { collection, serverTimestamp, query, where, getDocs, addDoc } from 'firebase/firestore';
 import { topics, commitmentLevels } from '@/lib/constants';
+import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 
 
 export default function CreateCohortPage() {
@@ -96,7 +97,7 @@ export default function CreateCohortPage() {
   };
 
   if (isUserLoading || !user) {
-    return <div>Loading...</div>;
+    return <LoadingSkeleton />;
   }
 
   return (

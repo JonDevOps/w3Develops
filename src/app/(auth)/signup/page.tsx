@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useAuth, useUser, useFirestore, initiateEmailSignUp, setDocumentNonBlocking } from '@/firebase';
 import { useToast } from "@/components/ui/use-toast";
 import { doc } from 'firebase/firestore';
+import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 
 export default function SignupPage() {
   const auth = useAuth();
@@ -82,7 +83,7 @@ export default function SignupPage() {
   };
   
   if (isUserLoading || user) {
-    return <div>Loading...</div>;
+    return <LoadingSkeleton />;
   }
 
   return (
