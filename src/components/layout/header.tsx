@@ -5,8 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Search, Menu, ArrowLeft } from 'lucide-react';
-import { useUser, useAuth, useFirestore } from '@/firebase/provider';
-import { useDoc } from '@/firebase/firestore/use-doc';
+import { useUser, useAuth, useFirestore, useDoc } from '@/firebase';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -102,7 +101,7 @@ export default function Header() {
         <div className={`flex items-center gap-4 ${isMobileSearchVisible ? 'hidden' : 'flex'} w-full`}>
           <div className="flex items-center gap-4 flex-1">
             <Link href={logoHref} className="flex items-center gap-2 flex-shrink-0">
-              <Image src="/logo.jpg" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
+              <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
             </Link>
             <div className="md:hidden">
               <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchVisible(true)}>
