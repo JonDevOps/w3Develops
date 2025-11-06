@@ -14,6 +14,7 @@ import { formatTimestamp } from '@/lib/utils';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { ONE_WEEK_IN_MS } from '@/lib/constants';
 
 function MemberList({ memberIds }: { memberIds: string[] }) {
     const firestore = useFirestore();
@@ -76,15 +77,14 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
     if (!confirm('Are you sure you want to leave this group?')) return;
     
     setIsLeaving(true);
-    try {
-        updateDocumentNonBlocking(groupDocRef, {
-            memberIds: arrayRemove(user.uid)
-        });
-        toast({ title: 'Success', description: 'You have left the group.' });
-        router.push('/account');
-    } catch (error: any) {
-        toast({ variant: 'destructive', title: 'Error', description: error.message || "Could not leave the group." });
-    }
+    
+    const groupRef = doc(firestore, 'studyGroups', group.id);
+    updateDocumentNonBlocking(groupRef, {
+        memberIds: arrayRemove(user.uid)
+    });
+    toast({ title: 'Success', description: 'You have left the group.' });
+    router.push('/account');
+
     setIsLeaving(false);
   }
 
@@ -96,6 +96,8 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
     return <div className="text-center py-10">Group not found.</div>;
   }
 
+  const isNew = group.createdAt && (Date.now() - group.createdAt.toMillis()) < ONE_WEEK_IN_MS;
+
   return (
     <div className="space-y-8">
         <Link href="/groups" className="flex items-center text-sm text-muted-foreground hover:text-foreground">
@@ -104,13 +106,20 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
         </Link>
       
       <Card>
-        <CardHeader className="flex flex-row justify-between items-start">
-            <div>
-                <CardTitle className="font-headline text-3xl">{group.name}</CardTitle>
-                <CardDescription className="mt-2">{group.description}</CardDescription>
+        <CardHeader className="flex flex-col sm:flex-row justify-between sm:items-start gap-4">
+            <div className='space-y-2'>
+                <div className="flex flex-wrap items-center gap-4">
+                    <CardTitle className="font-headline text-3xl">{group.name}</CardTitle>
+                    {isNew ? (
+                        <Badge>New</Badge>
+                    ) : (
+                        <Badge variant="destructive">In Progress</Badge>
+                    )}
+                </div>
+                <CardDescription>{group.description}</CardDescription>
             </div>
              {isMember && (
-                <Button variant="outline" size="sm" onClick={handleLeave} disabled={isLeaving}>
+                <Button variant="outline" size="sm" onClick={handleLeave} disabled={isLeaving} className="flex-shrink-0">
                     <LogOut className="w-4 h-4 mr-2" />
                     {isLeaving ? 'Leaving...' : 'Leave Group'}
                 </Button>

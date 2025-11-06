@@ -14,6 +14,7 @@ import { formatTimestamp } from '@/lib/utils';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { ONE_WEEK_IN_MS } from '@/lib/constants';
 
 function MemberList({ memberIds }: { memberIds: string[] }) {
     const firestore = useFirestore();
@@ -77,15 +78,14 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
     if (!confirm('Are you sure you want to leave this cohort?')) return;
 
     setIsLeaving(true);
-    try {
-        updateDocumentNonBlocking(cohortDocRef, {
-            memberIds: arrayRemove(user.uid)
-        });
-        toast({ title: 'Success', description: 'You have left the cohort.' });
-        router.push('/account');
-    } catch(error: any) {
-        toast({ variant: 'destructive', title: 'Error', description: error.message || "Could not leave cohort." });
-    }
+    
+    const cohortRef = doc(firestore, 'cohorts', cohort.id);
+    updateDocumentNonBlocking(cohortRef, {
+        memberIds: arrayRemove(user.uid)
+    });
+    toast({ title: 'Success', description: 'You have left the cohort.' });
+    router.push('/account');
+    
     setIsLeaving(false);
   }
 
@@ -97,6 +97,8 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
     return <div className="text-center py-10">Cohort not found.</div>;
   }
 
+  const isNew = cohort.createdAt && (Date.now() - cohort.createdAt.toMillis()) < ONE_WEEK_IN_MS;
+
   return (
     <div className="space-y-8">
         <Link href="/cohorts" className="flex items-center text-sm text-muted-foreground hover:text-foreground">
@@ -105,13 +107,20 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
         </Link>
       
       <Card>
-        <CardHeader className="flex flex-row justify-between items-start">
-            <div>
-                <CardTitle className="font-headline text-3xl">{cohort.name}</CardTitle>
-                <CardDescription className="mt-2">{cohort.description}</CardDescription>
+        <CardHeader className="flex flex-col sm:flex-row justify-between sm:items-start gap-4">
+            <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-4">
+                    <CardTitle className="font-headline text-3xl">{cohort.name}</CardTitle>
+                    {isNew ? (
+                        <Badge>New</Badge>
+                    ) : (
+                        <Badge variant="destructive">In Progress</Badge>
+                    )}
+                </div>
+                <CardDescription>{cohort.description}</CardDescription>
             </div>
             {isMember && (
-                <Button variant="outline" size="sm" onClick={handleLeave} disabled={isLeaving}>
+                <Button variant="outline" size="sm" onClick={handleLeave} disabled={isLeaving} className="flex-shrink-0">
                     <LogOut className="w-4 h-4 mr-2" />
                     {isLeaving ? 'Leaving...' : 'Leave Cohort'}
                 </Button>
