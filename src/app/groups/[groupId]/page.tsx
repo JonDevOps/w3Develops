@@ -1,7 +1,7 @@
 'use client';
 
 import { useDoc, useMemoFirebase, useCollection, useUser } from '@/firebase';
-import { doc, DocumentReference, collection, query, where, Query, arrayRemove, updateDoc } from 'firebase/firestore';
+import { doc, DocumentReference, collection, query, where, Query, runTransaction } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { StudyGroup, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -72,17 +72,27 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
   const isMember = group?.memberIds.includes(user?.uid || '');
 
   const handleLeave = async () => {
-    if (!user || !group) return;
+    if (!user || !firestore) return;
 
     if (!confirm('Are you sure you want to leave this group?')) return;
     
     setIsLeaving(true);
     
     try {
-        const groupRef = doc(firestore, 'studyGroups', group.id);
-        await updateDoc(groupRef, {
-            memberIds: arrayRemove(user.uid)
+        const groupRef = doc(firestore, 'studyGroups', groupId);
+        
+        await runTransaction(firestore, async (transaction) => {
+            const groupDoc = await transaction.get(groupRef);
+            if (!groupDoc.exists()) {
+                throw new Error("Group does not exist!");
+            }
+            
+            const currentMemberIds = groupDoc.data().memberIds || [];
+            const newMemberIds = currentMemberIds.filter((id: string) => id !== user.uid);
+            
+            transaction.update(groupRef, { memberIds: newMemberIds });
         });
+
         toast({ title: 'Success', description: 'You have left the group.' });
         router.push('/account');
     } catch (error) {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useDoc, useMemoFirebase, useCollection, useUser } from '@/firebase';
-import { doc, DocumentReference, collection, query, where, Query, arrayRemove, updateDoc } from 'firebase/firestore';
+import { doc, DocumentReference, collection, query, where, Query, runTransaction } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Cohort, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -73,17 +73,27 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
   const isMember = cohort?.memberIds.includes(user?.uid || '');
 
   const handleLeave = async () => {
-    if (!user || !cohort) return;
+    if (!user || !firestore) return;
     
     if (!confirm('Are you sure you want to leave this cohort?')) return;
 
     setIsLeaving(true);
     
     try {
-        const cohortRef = doc(firestore, 'cohorts', cohort.id);
-        await updateDoc(cohortRef, {
-            memberIds: arrayRemove(user.uid)
+        const cohortRef = doc(firestore, 'cohorts', cohortId);
+        
+        await runTransaction(firestore, async (transaction) => {
+            const cohortDoc = await transaction.get(cohortRef);
+            if (!cohortDoc.exists()) {
+                throw new Error("Cohort does not exist!");
+            }
+            
+            const currentMemberIds = cohortDoc.data().memberIds || [];
+            const newMemberIds = currentMemberIds.filter((id: string) => id !== user.uid);
+            
+            transaction.update(cohortRef, { memberIds: newMemberIds });
         });
+
         toast({ title: 'Success', description: 'You have left the cohort.' });
         router.push('/account');
     } catch (error) {
