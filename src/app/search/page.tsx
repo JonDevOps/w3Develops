@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Users } from 'lucide-react';
+import { topics } from '@/lib/constants';
 
 function SearchResultsSkeleton() {
   return (
@@ -102,15 +103,13 @@ function SearchResults() {
 
   const groupsByTopicQuery = useMemo(() => {
     if (!q) return null;
-    // Note: Firestore string queries are case-sensitive. For a true case-insensitive search
-    // on topics, you'd need to store a lowercase version of the topic in the document.
-    // For now, we'll capitalize the first letter as a simple workaround.
-    const capitalizedQ = q.charAt(0).toUpperCase() + q.slice(1);
+    // Find a matching topic from our constants list, ignoring case.
+    const matchingTopic = topics.find(topic => topic.toLowerCase() === q.toLowerCase());
+    if (!matchingTopic) return null;
+
     return query(
         collection(firestore, 'studyGroups'), 
-        orderBy('topic'),
-        where('topic', '>=', q),
-        where('topic', '<=', q + '\uf8ff'),
+        where('topic', '==', matchingTopic),
         limit(10)
     ) as Query<StudyGroup>;
   }, [q, firestore]);
@@ -129,12 +128,13 @@ function SearchResults() {
 
   const cohortsByTopicQuery = useMemo(() => {
     if (!q) return null;
-    const capitalizedQ = q.charAt(0).toUpperCase() + q.slice(1);
+    // Find a matching topic from our constants list, ignoring case.
+    const matchingTopic = topics.find(topic => topic.toLowerCase() === q.toLowerCase());
+    if (!matchingTopic) return null;
+    
     return query(
         collection(firestore, 'cohorts'),
-        orderBy('topic'),
-        where('topic', '>=', q),
-        where('topic', '<=', q + '\uf8ff'),
+        where('topic', '==', matchingTopic),
         limit(10)
     ) as Query<Cohort>;
   }, [q, firestore]);
