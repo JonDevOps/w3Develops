@@ -11,8 +11,8 @@ import { useUser, useFirestore } from '@/firebase';
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { collection, serverTimestamp, query, where, getDocs, addDoc, limit } from 'firebase/firestore';
-import { topics, commitmentLevels, ONE_WEEK_IN_MS } from '@/lib/constants';
+import { collection, serverTimestamp, query, where, getDocs, addDoc } from 'firebase/firestore';
+import { topics, commitmentLevels } from '@/lib/constants';
 
 
 export default function CreateCohortPage() {
@@ -54,30 +54,21 @@ export default function CreateCohortPage() {
     setIsSubmitting(true);
     
     try {
-      const oneWeekAgo = new Date(Date.now() - ONE_WEEK_IN_MS);
       // Check for existing, non-full, recent cohorts
-      const existingQuery = query(
+      const q = query(
         collection(firestore, 'cohorts'),
         where('topic', '==', finalTopic),
-        where('commitment', '==', finalCommitment),
-        where('createdAt', '>', serverTimestamp.fromMillis(oneWeekAgo.getTime())),
-        limit(1)
+        where('commitment', '==', finalCommitment)
       );
 
-      const existingSnapshot = await getDocs(existingQuery);
-      let foundSuitable = false;
-      existingSnapshot.forEach(doc => {
-          const cohort = doc.data();
-          if (cohort.memberIds.length < 25) {
-              foundSuitable = true;
-          }
-      });
+      const existingSnapshot = await getDocs(q);
+      const suitableCohorts = existingSnapshot.docs.filter(doc => doc.data().memberIds.length < 25);
 
-      if (foundSuitable) {
+      if (suitableCohorts.length > 0) {
           toast({
               variant: "destructive",
               title: "Similar Cohort Exists",
-              description: "A similar cohort that is not full was recently created. Please join that one instead!",
+              description: "A similar cohort that is not full was found. Please join that one instead from the explore page!",
           });
           router.push('/cohorts');
           return;

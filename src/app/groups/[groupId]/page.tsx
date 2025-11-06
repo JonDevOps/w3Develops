@@ -67,7 +67,7 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
     return doc(firestore, 'studyGroups', groupId) as DocumentReference<StudyGroup>;
   }, [groupId, firestore]);
 
-  const { data: group, isLoading: isGroupLoading } = useDoc<StudyGroup>(groupDocRef);
+  const { data: group, isLoading: isGroupLoading, error: groupError } = useDoc<StudyGroup>(groupDocRef);
 
   const isMember = group?.memberIds.includes(user?.uid || '');
 
@@ -101,6 +101,10 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
 
   if (isGroupLoading) {
     return <div className="text-center py-10">Loading group dashboard...</div>;
+  }
+  
+  if (groupError) {
+      return <div className="text-center py-10 text-destructive">Error: {groupError.message}</div>
   }
 
   if (!group) {
@@ -152,7 +156,7 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
         <CardHeader>
             <CardTitle className="flex items-center gap-2">
                 <Users className="w-5 h-5" />
-                Members ({group.memberIds.length} / 25)
+                Members ({group.memberIds.length})
             </CardTitle>
         </CardHeader>
         <CardContent>

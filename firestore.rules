@@ -3,15 +3,15 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Users can only write to their own profile.
+    // Users can read all profiles, but only write to their own.
     match /users/{userId} {
       allow read: if true;
       allow write: if request.auth != null && request.auth.uid == userId;
     }
 
     // Allow public read on study groups.
-    // Any member can update a group (for joining/leaving).
-    // Creator must be the first member.
+    // Any authenticated member can update a group (for joining/leaving).
+    // Creator must be the first member on creation.
     match /studyGroups/{groupId} {
       allow read: if true;
       allow create: if request.auth != null && request.resource.data.memberIds[0] == request.auth.uid;
@@ -19,11 +19,10 @@ service cloud.firestore {
     }
 
     // Allow public read on cohorts.
-    // Any member can update a cohort (for joining/leaving).
-    // Creator must be the first member.
+    // Any authenticated member can update a cohort (for joining/leaving).
+    // Creator must be the first member on creation.
     match /cohorts/{cohortId} {
       allow read: if true;
-       // Allow create if user is the first member.
       allow create: if request.auth != null && request.resource.data.memberIds[0] == request.auth.uid;
       allow update: if request.auth != null && request.auth.uid in resource.data.memberIds;
     }

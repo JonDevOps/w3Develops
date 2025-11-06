@@ -1,8 +1,6 @@
 'use client';
 import { useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -19,6 +17,7 @@ import { collection, query, where } from 'firebase/firestore';
 import { StudyGroup } from '@/lib/types';
 import JoinGroupButton from '../JoinGroupButton';
 import Link from 'next/link';
+import { Input } from '../ui/input';
 
 interface JoinGroupModalProps {
   isOpen: boolean;
@@ -28,7 +27,6 @@ interface JoinGroupModalProps {
 export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
   const { user } = useUser();
   const firestore = useFirestore();
-  const router = useRouter();
 
   const [topic, setTopic] = useState('');
   const [customTopic, setCustomTopic] = useState('');
@@ -63,7 +61,7 @@ export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
     onClose();
   }
 
-  const userGroups = useMemo(() => {
+  const availableGroups = useMemo(() => {
     return matchingGroups?.filter(g => g.memberIds.length < 25 && !g.memberIds.includes(user?.uid || '')) || [];
   }, [matchingGroups, user]);
 
@@ -97,7 +95,7 @@ export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
             {topic === 'Other' && (
               <div className="grid gap-2">
                 <Label htmlFor="customTopic">Custom Topic</Label>
-                <input id="customTopic" placeholder="e.g., Svelte" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+                <Input id="customTopic" placeholder="e.g., Svelte" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} />
               </div>
             )}
             <div className="grid gap-2">
@@ -122,9 +120,10 @@ export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
         {step === 2 && (
           <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto">
             {isLoading && <p>Searching for groups...</p>}
-            {!isLoading && userGroups.length > 0 && (
+            {!isLoading && availableGroups.length > 0 && (
               <div className="space-y-2">
-                {userGroups.map(group => (
+                <h4 className="font-semibold">Matching Groups</h4>
+                {availableGroups.map(group => (
                   <div key={group.id} className="flex items-center justify-between p-2 border rounded-md">
                     <div>
                       <p className="font-semibold">{group.name}</p>
@@ -135,7 +134,7 @@ export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
                 ))}
               </div>
             )}
-             {!isLoading && userGroups.length === 0 && (
+             {!isLoading && availableGroups.length === 0 && (
                 <div className="text-center py-4 space-y-2">
                     <p className="text-muted-foreground">No matching open groups found.</p>
                     <Button asChild onClick={handleClose}>

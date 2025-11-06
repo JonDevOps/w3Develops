@@ -2,7 +2,6 @@
 import { useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -28,7 +27,6 @@ interface JoinCohortModalProps {
 export function JoinCohortModal({ isOpen, onClose }: JoinCohortModalProps) {
   const { user } = useUser();
   const firestore = useFirestore();
-  const router = useRouter();
 
   const [topic, setTopic] = useState('');
   const [customTopic, setCustomTopic] = useState('');
@@ -63,7 +61,7 @@ export function JoinCohortModal({ isOpen, onClose }: JoinCohortModalProps) {
     onClose();
   }
 
-  const userCohorts = useMemo(() => {
+  const availableCohorts = useMemo(() => {
     return matchingCohorts?.filter(c => c.memberIds.length < 25 && !c.memberIds.includes(user?.uid || '')) || [];
   }, [matchingCohorts, user]);
 
@@ -96,7 +94,7 @@ export function JoinCohortModal({ isOpen, onClose }: JoinCohortModalProps) {
             {topic === 'Other' && (
               <div className="grid gap-2">
                 <Label htmlFor="customTopic">Custom Topic</Label>
-                <input id="customTopic" placeholder="e.g., Svelte" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+                <Input id="customTopic" placeholder="e.g., Svelte" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
               </div>
             )}
             <div className="grid gap-2">
@@ -121,9 +119,10 @@ export function JoinCohortModal({ isOpen, onClose }: JoinCohortModalProps) {
         {step === 2 && (
           <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto">
             {isLoading && <p>Searching for cohorts...</p>}
-            {!isLoading && userCohorts.length > 0 && (
+            {!isLoading && availableCohorts.length > 0 && (
               <div className="space-y-2">
-                {userCohorts.map(cohort => (
+                <h4 className="font-semibold">Matching Cohorts</h4>
+                {availableCohorts.map(cohort => (
                   <div key={cohort.id} className="flex items-center justify-between p-2 border rounded-md">
                     <div>
                       <p className="font-semibold">{cohort.name}</p>
@@ -134,7 +133,7 @@ export function JoinCohortModal({ isOpen, onClose }: JoinCohortModalProps) {
                 ))}
               </div>
             )}
-             {!isLoading && userCohorts.length === 0 && (
+             {!isLoading && availableCohorts.length === 0 && (
                 <div className="text-center py-4 space-y-2">
                     <p className="text-muted-foreground">No matching open cohorts found.</p>
                     <Button asChild onClick={handleClose}>

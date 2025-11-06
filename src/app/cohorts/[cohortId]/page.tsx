@@ -68,7 +68,7 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
     return doc(firestore, 'cohorts', cohortId) as DocumentReference<Cohort>;
   }, [cohortId, firestore]);
 
-  const { data: cohort, isLoading: isCohortLoading } = useDoc<Cohort>(cohortDocRef);
+  const { data: cohort, isLoading: isCohortLoading, error: cohortError } = useDoc<Cohort>(cohortDocRef);
 
   const isMember = cohort?.memberIds.includes(user?.uid || '');
 
@@ -103,6 +103,10 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
 
   if (isCohortLoading) {
     return <div className="text-center py-10">Loading cohort dashboard...</div>;
+  }
+  
+  if (cohortError) {
+      return <div className="text-center py-10 text-destructive">Error: {cohortError.message}</div>
   }
 
   if (!cohort) {
@@ -159,7 +163,7 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
         <CardHeader>
             <CardTitle className="flex items-center gap-2">
                 <Users className="w-5 h-5" />
-                Members ({cohort.memberIds.length} / 25)
+                Members ({cohort.memberIds.length})
             </CardTitle>
         </CardHeader>
         <CardContent>
