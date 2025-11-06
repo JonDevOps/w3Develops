@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import SearchBar from './search-bar';
 
 export default function Header() {
   const { user, isUserLoading } = useUser();
@@ -20,19 +21,28 @@ export default function Header() {
 
   return (
     <header className="bg-card border-b sticky top-0 z-50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-        <Link href="/" className="flex items-center gap-2">
-          <Code2 className="h-6 w-6 text-primary" />
-          <span className="font-headline text-lg font-semibold">w3Develops</span>
-        </Link>
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-          <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground">
-            Study Groups
-          </Link>
-          <Link href="/cohorts" className="text-muted-foreground transition-colors hover:text-foreground">
-            Build Cohorts
-          </Link>
-        </nav>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 gap-4">
+        <div className="flex items-center gap-6">
+            <Link href="/" className="flex items-center gap-2">
+            <Code2 className="h-6 w-6 text-primary" />
+            <span className="font-headline text-lg font-semibold">w3Develops</span>
+            </Link>
+            <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+            <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground">
+                Study Groups
+            </Link>
+            <Link href="/cohorts" className="text-muted-foreground transition-colors hover:text-foreground">
+                Build Cohorts
+            </Link>
+            </nav>
+        </div>
+        
+        <div className="flex-1 flex justify-center px-4">
+           <div className="w-full max-w-md">
+             <SearchBar />
+           </div>
+        </div>
+
         <div className="flex items-center gap-4">
           {isUserLoading ? (
             <div className="h-8 w-16 bg-muted rounded-md animate-pulse" />
@@ -61,6 +71,9 @@ export default function Header() {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/profile/edit">Edit Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={`/users/${user.uid}`}>View Profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => auth.signOut()}>

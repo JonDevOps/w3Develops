@@ -1,0 +1,163 @@
+'use client';
+
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query, where, orderBy, limit } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
+import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
+import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Users, Clock, Code } from 'lucide-react';
+
+
+function SearchResults() {
+  const searchParams = useSearchParams();
+  const q = searchParams.get('q');
+  const firestore = useFirestore();
+
+  const usersQuery = useMemoFirebase(() => {
+    if (!q) return null;
+    const end = q.replace(/.$/, c => String.fromCharCode(c.charCodeAt(0) + 1));
+    return query(
+        collection(firestore, 'users'), 
+        where('displayName', '>=', q),
+        where('displayName', '<', end),
+        limit(10)
+    );
+  }, [q, firestore]);
+
+  const groupsQuery = useMemoFirebase(() => {
+    if (!q) return null;
+     const end = q.replace(/.$/, c => String.fromCharCode(c.charCodeAt(0) + 1));
+    return query(
+        collection(firestore, 'studyGroups'), 
+        where('name', '>=', q),
+        where('name', '<', end),
+        limit(10)
+    );
+  }, [q, firestore]);
+
+  const cohortsQuery = useMemoFirebase(() => {
+    if (!q) return null;
+     const end = q.replace(/.$/, c => String.fromCharCode(c.charCodeAt(0) + 1));
+    return query(
+        collection(firestore, 'cohorts'), 
+        where('name', '>=', q),
+        where('name', '<', end),
+        limit(10)
+    );
+  }, [q, firestore]);
+
+  const { data: users, isLoading: usersLoading } = useCollection<UserProfile>(usersQuery);
+  const { data: groups, isLoading: groupsLoading } = useCollection<StudyGroup>(groupsQuery);
+  const { data: cohorts, isLoading: cohortsLoading } = useCollection<Cohort>(cohortsQuery);
+
+  const isLoading = usersLoading || groupsLoading || cohortsLoading;
+  const noResults = !isLoading && !users?.length && !groups?.length && !cohorts?.length;
+
+  if (!q) {
+    return <div className="text-center text-muted-foreground">Please enter a search term to begin.</div>;
+  }
+
+  return (
+    <div className="space-y-8">
+      <h1 className="text-3xl font-headline">Search Results for &quot;{q}&quot;</h1>
+      
+      {isLoading && <p>Searching...</p>}
+      
+      {noResults && (
+        <div className="text-center py-12">
+            <h3 className="text-xl font-semibold">No Results Found</h3>
+            <p className="text-muted-foreground mt-2">We couldn&apos;t find any users, groups, or cohorts matching your search.</p>
+        </div>
+      )}
+
+      {users && users.length > 0 && (
+        <section>
+          <h2 className="text-2xl font-semibold mb-4">Users</h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {users.map(user => (
+              <Link key={user.id} href={`/users/${user.id}`} className="block">
+                <Card className="h-full hover:bg-accent transition-colors">
+                  <CardContent className="p-4 flex items-center gap-4">
+                    <Avatar>
+                      <AvatarImage src={user.profilePictureUrl} />
+                      <AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-semibold">{user.displayName}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-2">{user.bio}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {groups && groups.length > 0 && (
+         <section>
+          <h2 className="text-2xl font-semibold mb-4">Study Groups</h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            {groups.map(group => (
+              <Card key={group.id}>
+                <CardHeader>
+                    <div className="flex justify-between items-start">
+                        <CardTitle>{group.name}</CardTitle>
+                        <Badge variant="secondary">{group.topic}</Badge>
+                    </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
+                    <div className="flex items-center text-sm text-muted-foreground gap-4">
+                        <div className="flex items-center"><Users className="w-4 h-4 mr-1" />{group.memberIds.length} Member(s)</div>
+                        <div className="flex items-center"><Clock className="w-4 h-4 mr-1" />{group.commitment}</div>
+                    </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
+       {cohorts && cohorts.length > 0 && (
+         <section>
+          <h2 className="text-2xl font-semibold mb-4">Build Cohorts</h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            {cohorts.map(cohort => (
+               <Card key={cohort.id}>
+                <CardHeader>
+                    <div className="flex justify-between items-start">
+                        <CardTitle>{cohort.name}</CardTitle>
+                        <Badge variant="secondary">{cohort.topic}</Badge>
+                    </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground h-10 overflow-hidden">{cohort.description}</p>
+                    <div className="flex items-center text-sm text-muted-foreground gap-4">
+                        <div className="flex items-center"><Users className="w-4 h-4 mr-1" />{cohort.memberIds.length} Member(s)</div>
+                        <div className="flex items-center"><Clock className="w-4 h-4 mr-1" />{cohort.commitment}</div>
+                    </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
+    </div>
+  );
+}
+
+
+export default function SearchPage() {
+    return (
+        <Suspense fallback={<div>Loading search...</div>}>
+            <SearchResults />
+        </Suspense>
+    )
+}

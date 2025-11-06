@@ -10,6 +10,8 @@ import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Github, Linkedin, Twitter } from 'lucide-react';
 
 export default function AccountPage() {
   const { user, isUserLoading } = useUser();
@@ -48,34 +50,82 @@ export default function AccountPage() {
     return <div>Loading...</div>;
   }
 
-  if (!user || !userProfile) {
-    return <div>Loading...</div>;
+  if (!user) {
+    return <div>Redirecting to login...</div>;
+  }
+  
+  if (!userProfile) {
+    // This case can happen briefly if the user doc hasn't been created yet after signup
+    return <div>Loading profile...</div>;
   }
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-headline mb-6">Hello, {userProfile?.displayName || user.email}!</h1>
+      <div className="flex items-center gap-6">
+        <Avatar className="h-24 w-24">
+          <AvatarImage src={userProfile.profilePictureUrl || user.photoURL || ''} alt={userProfile.displayName || ''} />
+          <AvatarFallback className="text-3xl">{userProfile.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
+        </Avatar>
+        <div>
+          <h1 className="text-3xl font-headline">Hello, {userProfile.displayName || user.email}!</h1>
+          <p className="text-muted-foreground max-w-xl mt-2">{userProfile.bio || "You haven't added a bio yet. Edit your profile to tell the community about yourself."}</p>
+          <div className="flex gap-2 mt-4">
+              <Button asChild>
+                <Link href="/profile/edit">Edit Your Profile</Link>
+              </Button>
+              <Button asChild variant="secondary">
+                <Link href={`/users/${user.uid}`}>View Public Profile</Link>
+              </Button>
+          </div>
+        </div>
+      </div>
       
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
+      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
+        <Card className="lg:col-span-1">
           <CardHeader>
-            <CardTitle>Your Profile</CardTitle>
-            <CardDescription>A summary of your information.</CardDescription>
+            <CardTitle>Your Skills</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-             <p className="text-sm text-muted-foreground">
-                {userProfile?.bio || "You haven't added a bio yet."}
-             </p>
-            <Button asChild size="sm">
-              <Link href="/profile/edit">Edit Your Profile</Link>
-            </Button>
+          <CardContent>
+            {userProfile.skills && userProfile.skills.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                    {userProfile.skills.map(skill => <Badge key={skill} variant="secondary">{skill}</Badge>)}
+                </div>
+            ) : (
+                <p className="text-sm text-muted-foreground">Add skills to your profile to let others know what you're learning.</p>
+            )}
           </CardContent>
         </Card>
         
+        <Card className="lg:col-span-2">
+            <CardHeader>
+                <CardTitle>Social Links</CardTitle>
+            </CardHeader>
+            <CardContent className="flex items-center gap-6">
+                {userProfile.socialLinks?.github ? (
+                    <a href={userProfile.socialLinks.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+                        <Github className="w-5 h-5" /> GitHub
+                    </a>
+                ) : <p className="text-sm text-muted-foreground">No GitHub link added.</p>}
+                 {userProfile.socialLinks?.linkedin ? (
+                    <a href={userProfile.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+                        <Linkedin className="w-5 h-5" /> LinkedIn
+                    </a>
+                ) : null}
+                 {userProfile.socialLinks?.twitter ? (
+                    <a href={userProfile.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+                        <Twitter className="w-5 h-5" /> Twitter
+                    </a>
+                ) : null}
+            </CardContent>
+        </Card>
+
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Your Cohorts</CardTitle>
-            <CardDescription>Cohorts you have created or joined.</CardDescription>
+            <CardTitle>Your Build Cohorts</CardTitle>
+            <CardDescription>Cohorts you have created or joined to build projects.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {isCohortsLoading ? <p>Loading cohorts...</p> : 
@@ -87,30 +137,40 @@ export default function AccountPage() {
                 <p className="text-sm text-muted-foreground">You haven't joined any cohorts yet.</p>
               )
             }
-             <Button asChild size="sm" variant="secondary">
-              <Link href="/cohorts/create">Create a Cohort</Link>
-            </Button>
+             <div className="flex gap-2">
+                <Button asChild size="sm" variant="secondary">
+                  <Link href="/cohorts">Explore Cohorts</Link>
+                </Button>
+                 <Button asChild size="sm">
+                  <Link href="/cohorts/join">Join a Cohort</Link>
+                </Button>
+            </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
             <CardTitle>Your Study Groups</CardTitle>
-            <CardDescription>Groups you are a member of.</CardDescription>
+            <CardDescription>Groups you are a member of to learn and collaborate.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {isGroupsLoading ? <p>Loading groups...</p> : 
               (studyGroups && studyGroups.length > 0) ? (
-                 <div className="flex flex-wrap gap-2">
-                  {studyGroups.map(g => <Badge key={g.id} variant="secondary">{g.name}</Badge>)}
-                </div>
+                 <ul className="space-y-2">
+                  {studyGroups.map(g => <li key={g.id} className="text-sm font-medium">{g.name}</li>)}
+                </ul>
               ) : (
                 <p className="text-sm text-muted-foreground">You haven't joined any groups yet.</p>
               )
             }
-             <Button asChild size="sm" variant="secondary">
-              <Link href="/groups">Find a Group</Link>
-            </Button>
+            <div className="flex gap-2">
+                <Button asChild size="sm" variant="secondary">
+                <Link href="/groups">Explore Groups</Link>
+                </Button>
+                 <Button asChild size="sm">
+                  <Link href="/groups/join">Join a Group</Link>
+                </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
