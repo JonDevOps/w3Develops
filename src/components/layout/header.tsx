@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Search, Menu, Code2 } from 'lucide-react';
+import { Search, Menu } from 'lucide-react';
 import { useUser, useAuth } from '@/firebase';
 import {
   DropdownMenu,
@@ -35,8 +36,7 @@ export default function Header() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <div className="flex items-center gap-4">
           <Link href={logoHref} className="flex items-center gap-2 flex-shrink-0">
-            <Code2 className="h-8 w-8 text-primary" />
-            <span className="font-headline text-lg font-semibold">w3Develops</span>
+            <Image src="/logo.jpg" alt="w3Develops Logo" width={32} height={32} />
           </Link>
         </div>
         
