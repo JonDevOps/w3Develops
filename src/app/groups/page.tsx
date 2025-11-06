@@ -19,10 +19,8 @@ import {
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { ArrowRight, PlusCircle, Users, Group } from 'lucide-react'
-import { useCollection, useDoc, useFirebase, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase'
-import { arrayUnion, collection, doc } from 'firebase/firestore'
-import { useToast } from '@/hooks/use-toast'
-import { differenceInDays, fromUnixTime } from 'date-fns'
+import { useCollection, useDoc, useFirebase, useMemoFirebase } from '@/firebase'
+import { collection, doc } from 'firebase/firestore'
 
 function MemberAvatar({ memberId }: { memberId: string }) {
   const { firestore } = useFirebase()
@@ -60,12 +58,11 @@ function MemberAvatar({ memberId }: { memberId: string }) {
 }
 
 export default function GroupsPage() {
-  const { firestore, user } = useFirebase()
-  const { toast } = useToast()
+  const { firestore } = useFirebase()
   
   const groupsCollectionRef = useMemoFirebase(
     () => (firestore ? collection(firestore, 'learning_groups') : null),
-    [firestore]
+    []
   )
   const { data: groups, isLoading } = useCollection(groupsCollectionRef)
 
