@@ -1,9 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Search, Menu } from 'lucide-react';
+import { Search, Menu, ArrowLeft } from 'lucide-react';
 import { useUser, useAuth, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import {
   DropdownMenu,
@@ -25,6 +26,7 @@ export default function Header() {
   const auth = useAuth();
   const firestore = useFirestore();
   const router = useRouter();
+  const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
 
   const handleLogout = () => {
     auth.signOut().then(() => {
@@ -48,92 +50,102 @@ export default function Header() {
   return (
     <header className="bg-card border-b sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-        <div className="flex items-center gap-4">
-          <Link href={logoHref} className="flex items-center gap-2 flex-shrink-0">
-            <Image src="/logo.jpg" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
-          </Link>
-          <div className="hidden md:block">
-             <SearchBar />
-          </div>
-          <div className="md:hidden">
-              <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                  <Search className="h-6 w-6" />
-                  <span className="sr-only">Toggle Search</span>
-                  </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                  <div className="p-2">
-                    <SearchBar />
-                  </div>
-              </DropdownMenuContent>
-              </DropdownMenu>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-4">
-            <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-                <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground">
-                    Study Groups
-                </Link>
-                <Link href="/cohorts" className="text-muted-foreground transition-colors hover:text-foreground">
-                    Build Cohorts
-                </Link>
-            </nav>
-            
-            <div className="md:hidden">
-                <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                    <Menu className="h-6 w-6" />
-                    <span className="sr-only">Toggle Menu</span>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild><Link href="/groups">Study Groups</Link></DropdownMenuItem>
-                    <DropdownMenuItem asChild><Link href="/cohorts">Build Cohorts</Link></DropdownMenuItem>
-                </DropdownMenuContent>
-                </DropdownMenu>
+        {/* Mobile Search View */}
+        <div className={`flex items-center gap-2 md:hidden ${isMobileSearchVisible ? 'w-full' : 'hidden'}`}>
+            <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchVisible(false)}>
+                <ArrowLeft className="h-6 w-6" />
+                <span className="sr-only">Back</span>
+            </Button>
+            <div className="w-full">
+                <SearchBar />
             </div>
+        </div>
 
-            {isLoading ? (
-                <div className="h-8 w-8 bg-muted rounded-full animate-pulse" />
-            ) : user ? (
-                <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
-                        <AvatarImage src={userProfile?.profilePictureUrl || user.photoURL || ''} alt={userProfile?.username || ''} />
-                        <AvatarFallback>{avatarFallback}</AvatarFallback>
+        {/* Default Header View */}
+        <div className={`flex items-center gap-4 ${isMobileSearchVisible ? 'hidden' : 'flex'} w-full`}>
+          <div className="flex items-center gap-4 flex-1">
+            <Link href={logoHref} className="flex items-center gap-2 flex-shrink-0">
+              <Image src="/logo.jpg" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
+            </Link>
+            <div className="hidden md:block w-full max-w-sm">
+              <SearchBar />
+            </div>
+          </div>
+        
+          <div className="flex items-center gap-4">
+              <div className="md:hidden">
+                <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchVisible(true)}>
+                    <Search className="h-6 w-6" />
+                    <span className="sr-only">Open Search</span>
+                </Button>
+              </div>
+              <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+                  <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground">
+                      Study Groups
+                  </Link>
+                  <Link href="/cohorts" className="text-muted-foreground transition-colors hover:text-foreground">
+                      Build Cohorts
+                  </Link>
+              </nav>
+              
+              <div className="md:hidden">
+                  <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                      <Menu className="h-6 w-6" />
+                      <span className="sr-only">Toggle Menu</span>
+                      </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                      <DropdownMenuItem asChild><Link href="/groups">Study Groups</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/cohorts">Build Cohorts</Link></DropdownMenuItem>
+                  </DropdownMenuContent>
+                  </DropdownMenu>
+              </div>
 
-                    </Avatar>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                    <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{username}</p>
-                    </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild><Link href="/account">Dashboard</Link></DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout}>
-                    Log out
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-                </DropdownMenu>
-            ) : (
-                <div className="flex items-center gap-2">
-                <Button asChild size="sm">
-                    <Link href="/login">Sign In</Link>
-                </Button>
-                <Button asChild size="sm" variant="secondary" className="hidden sm:flex">
-                    <Link href="/signup">Sign Up</Link>
-                </Button>
-                </div>
-            )}
+              {isLoading ? (
+                  <div className="h-8 w-8 bg-muted rounded-full animate-pulse" />
+              ) : user ? (
+                  <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                      <Avatar className="h-8 w-8">
+                          <AvatarImage src={userProfile?.profilePictureUrl || user.photoURL || ''} alt={userProfile?.username || ''} />
+                          <AvatarFallback>{avatarFallback}</AvatarFallback>
+
+                      </Avatar>
+                      </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                      <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                          <p className="text-sm font-medium leading-none">{username}</p>
+                          <p className="text-xs leading-none text-muted-foreground">
+                            {user.email}
+                          </p>
+                      </div>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild><Link href="/account">Dashboard</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/profile/edit">Edit Profile</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href={`/users/${user.uid}`}>View Profile</Link></DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleLogout}>
+                      Log out
+                      </DropdownMenuItem>
+                  </DropdownMenuContent>
+                  </DropdownMenu>
+              ) : (
+                  <div className="flex items-center gap-2">
+                  <Button asChild size="sm">
+                      <Link href="/login">Sign In</Link>
+                  </Button>
+                  <Button asChild size="sm" variant="secondary" className="hidden sm:flex">
+                      <Link href="/signup">Sign Up</Link>
+                  </Button>
+                  </div>
+              )}
+          </div>
         </div>
       </div>
     </header>
