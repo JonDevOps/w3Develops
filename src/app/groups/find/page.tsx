@@ -54,12 +54,11 @@ export default function FindGroupPage() {
 
     const groupsRef = collection(firestore, 'learning_groups');
     
-    // Query for an existing group that matches the criteria and has space
+    // Query for an existing group that matches the criteria
     const q = query(
       groupsRef,
       where('primarySkill', '==', values.primarySkill),
       where('timeCommitment', '==', values.timeCommitment),
-      where(new FieldPath('memberIds', 'length'), '<', 25),
       limit(1)
     );
 
@@ -69,32 +68,35 @@ export default function FindGroupPage() {
         let groupJoined = false;
 
         if (!querySnapshot.empty) {
-            // Found a group, attempt to join
             const groupDoc = querySnapshot.docs[0];
-            
-            // Check if user is already a member
-            const memberIds = groupDoc.data().memberIds as string[];
-            if (memberIds.includes(user.uid)) {
-                toast({
-                    title: 'Already in Group',
-                    description: `You are already a member of ${groupDoc.data().name}.`,
-                });
-                router.push('/groups');
-                return;
+            const groupData = groupDoc.data();
+            const memberIds = groupData.memberIds as string[];
+
+            if (memberIds.length < groupData.groupSizeLimit) {
+              // Found a group with space, attempt to join
+              if (memberIds.includes(user.uid)) {
+                  toast({
+                      title: 'Already in Group',
+                      description: `You are already a member of ${groupData.name}.`,
+                  });
+                  router.push('/groups');
+                  return;
+              }
+
+              const groupRef = doc(firestore, 'learning_groups', groupDoc.id);
+              await updateDoc(groupRef, {
+                  memberIds: arrayUnion(user.uid)
+              });
+              toast({
+                  title: 'Joined Existing Group!',
+                  description: `You have been added to ${groupData.name}.`,
+              });
+              groupJoined = true;
             }
-
-            const groupRef = doc(firestore, 'learning_groups', groupDoc.id);
-            await updateDoc(groupRef, {
-                memberIds: arrayUnion(user.uid)
-            });
-            toast({
-                title: 'Joined Existing Group!',
-                description: `You have been added to ${groupDoc.data().name}.`,
-            });
-            groupJoined = true;
-
-        } else {
-            // No group found, create a new one
+        }
+        
+        if (!groupJoined) {
+            // No group found or existing ones are full, create a new one
             const groupName = `${values.primarySkill.charAt(0).toUpperCase() + values.primarySkill.slice(1)} ${values.timeCommitment === 'full-time' ? 'Coders' : 'Learners'}`;
             const newGroup = {
                 name: groupName,
