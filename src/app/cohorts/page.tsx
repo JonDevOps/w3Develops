@@ -222,10 +222,13 @@ export default function CohortsPage() {
             {filteredCohorts.inProgressCohorts.map(cohort => (
               <Card key={cohort.id} className="flex flex-col">
                 <CardHeader>
+                  <div className="flex justify-between items-start">
                     <Link href={`/cohorts/${cohort.id}`} className="hover:underline">
                       <CardTitle>{cohort.name}</CardTitle>
                     </Link>
-                    <Badge variant="secondary" className="w-fit text-center">{cohort.topic}</Badge>
+                    <Badge variant="destructive">In Progress</Badge>
+                  </div>
+                  <Badge variant="secondary" className="w-fit text-center">{cohort.topic}</Badge>
                 </CardHeader>
                 <CardContent className="space-y-4 flex-grow flex flex-col justify-between">
                     <div>
@@ -245,6 +248,7 @@ export default function CohortsPage() {
                             </a>
                         </Button>
                     )}
+                    <JoinCohortButton cohort={cohort} />
                     </div>
                 </CardContent>
               </Card>

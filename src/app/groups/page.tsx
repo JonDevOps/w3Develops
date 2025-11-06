@@ -219,10 +219,13 @@ export default function GroupsPage() {
             {filteredGroups.inProgressGroups.map(group => (
               <Card key={group.id} className="flex flex-col">
                 <CardHeader>
+                  <div className="flex justify-between items-start">
                     <Link href={`/groups/${group.id}`} className="hover:underline">
                         <CardTitle>{group.name}</CardTitle>
                     </Link>
-                    <Badge variant="secondary" className="w-fit">{group.topic}</Badge>
+                    <Badge variant="destructive">In Progress</Badge>
+                  </div>
+                  <Badge variant="secondary" className="w-fit">{group.topic}</Badge>
                 </CardHeader>
                  <CardContent className="space-y-4 flex-grow flex flex-col">
                   <p className="text-sm text-muted-foreground h-10 overflow-hidden flex-grow">{group.description}</p>
@@ -231,6 +234,7 @@ export default function GroupsPage() {
                     <Badge variant="outline" className="w-fit">{group.commitment}</Badge>
                     <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(group.createdAt)}</div>
                   </div>
+                  <JoinGroupButton group={group} />
                 </CardContent>
               </Card>
             ))}
