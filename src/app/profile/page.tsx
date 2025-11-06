@@ -22,7 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { PlaceHolderImages } from '@/lib/placeholder-images'
-import { useDoc, useFirebase, useMemoFirebase } from '@/firebase'
+import { useDoc, useFirebase, useMemoFirebase, useUser } from '@/firebase'
 import { doc } from 'firebase/firestore'
 import { useEffect } from 'react'
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates'
@@ -74,15 +74,15 @@ export default function ProfilePage() {
   }, [userProfile, form])
 
   function onSubmit(values: z.infer<typeof profileSchema>) {
-    if (!userProfileRef) return
+    if (!userProfileRef || !user) return
     const socialLinks = [];
     if (values.github) socialLinks.push(values.github);
     if (values.linkedin) socialLinks.push(values.linkedin);
 
     const updatedProfile = {
-        ...userProfile,
+        userId: user.uid, // CRITICAL: Ensure userId is included for security rules
         displayName: values.displayName,
-        bio: values.bio,
+        bio: values.bio || '',
         primarySkill: values.primarySkill,
         learningPace: values.learningPace,
         socialLinks,
@@ -190,7 +190,7 @@ export default function ProfilePage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Primary Skill</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select your main area of focus" />
