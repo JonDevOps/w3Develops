@@ -167,18 +167,18 @@ export default function GroupsPage() {
 
       {isLoading && <p>Loading groups...</p>}
 
-      {!isLoading && !filteredGroups.newGroups?.length && !filteredGroups.inProgressGroups?.length && (
+      {!isLoading && !filteredGroups.newGroups?.length && !filteredGroups.inProgressGroups?.length && searchTerm && (
         <div className="text-center py-12">
             <h3 className="text-xl font-semibold">No Groups Found</h3>
-            <p className="text-muted-foreground mt-2">{searchTerm ? 'Try a different search term.' : 'Be the first to create or join a group!'}</p>
+            <p className="text-muted-foreground mt-2">Try a different search term.</p>
         </div>
       )}
 
       {/* New Groups Section */}
-      {filteredGroups.newGroups && filteredGroups.newGroups.length > 0 && (
-        <section className="space-y-4">
-          <h2 className="text-2xl font-semibold">New</h2>
-           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold">New</h2>
+        {!isLoading && filteredGroups.newGroups && filteredGroups.newGroups.length > 0 ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredGroups.newGroups.map(group => (
               <Card key={group.id} className="flex flex-col">
                 <CardHeader>
@@ -206,13 +206,15 @@ export default function GroupsPage() {
               </Card>
             ))}
           </div>
-        </section>
-      )}
+        ) : (
+          !isLoading && <p className="text-muted-foreground">No new groups at this time.</p>
+        )}
+      </section>
       
       {/* In Progress Groups Section */}
-      {filteredGroups.inProgressGroups && filteredGroups.inProgressGroups.length > 0 && (
-         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold">In Progress</h2>
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold">In Progress</h2>
+        {!isLoading && filteredGroups.inProgressGroups && filteredGroups.inProgressGroups.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredGroups.inProgressGroups.map(group => (
               <Card key={group.id} className="flex flex-col">
@@ -233,8 +235,10 @@ export default function GroupsPage() {
               </Card>
             ))}
           </div>
-        </section>
-      )}
+        ) : (
+          !isLoading && <p className="text-muted-foreground">No in-progress groups at this time.</p>
+        )}
+      </section>
       
     </div>
   );

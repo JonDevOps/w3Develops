@@ -162,17 +162,17 @@ export default function CohortsPage() {
 
       {isLoading && <p>Loading cohorts...</p>}
       
-      {!isLoading && !filteredCohorts.newCohorts?.length && !filteredCohorts.inProgressCohorts?.length && (
+      {!isLoading && !filteredCohorts.newCohorts?.length && !filteredCohorts.inProgressCohorts?.length && searchTerm && (
         <div className="text-center py-12">
             <h3 className="text-xl font-semibold">No Cohorts Found</h3>
-            <p className="text-muted-foreground mt-2">{searchTerm ? 'Try a different search term.' : 'Be the first to create or join a cohort!'}</p>
+            <p className="text-muted-foreground mt-2">Try a different search term.</p>
         </div>
       )}
 
       {/* New Cohorts Section */}
-      {filteredCohorts.newCohorts && filteredCohorts.newCohorts.length > 0 && (
-        <section className="space-y-4">
-          <h2 className="text-2xl font-semibold">New</h2>
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold">New</h2>
+        {!isLoading && filteredCohorts.newCohorts && filteredCohorts.newCohorts.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredCohorts.newCohorts.map(cohort => (
               <Card key={cohort.id} className="flex flex-col">
@@ -209,13 +209,15 @@ export default function CohortsPage() {
               </Card>
             ))}
           </div>
-        </section>
-      )}
+        ) : (
+          !isLoading && <p className="text-muted-foreground">No new cohorts at this time.</p>
+        )}
+      </section>
 
       {/* In Progress Cohorts Section */}
-      {filteredCohorts.inProgressCohorts && filteredCohorts.inProgressCohorts.length > 0 && (
-         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold">In Progress</h2>
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold">In Progress</h2>
+        {!isLoading && filteredCohorts.inProgressCohorts && filteredCohorts.inProgressCohorts.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredCohorts.inProgressCohorts.map(cohort => (
               <Card key={cohort.id} className="flex flex-col">
@@ -248,8 +250,10 @@ export default function CohortsPage() {
               </Card>
             ))}
           </div>
-        </section>
-      )}
+        ) : (
+          !isLoading && <p className="text-muted-foreground">No in-progress cohorts at this time.</p>
+        )}
+      </section>
     </div>
   );
 }
