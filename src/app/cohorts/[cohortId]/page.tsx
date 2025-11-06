@@ -1,7 +1,7 @@
 'use client';
 
-import { useDoc, useMemoFirebase, useCollection, useUser, updateDocumentNonBlocking } from '@/firebase';
-import { doc, DocumentReference, collection, query, where, Query, arrayRemove } from 'firebase/firestore';
+import { useDoc, useMemoFirebase, useCollection, useUser } from '@/firebase';
+import { doc, DocumentReference, collection, query, where, Query, arrayRemove, updateDoc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Cohort, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -73,20 +73,25 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
   const isMember = cohort?.memberIds.includes(user?.uid || '');
 
   const handleLeave = async () => {
-    if (!user || !cohort || !cohortDocRef) return;
+    if (!user || !cohort) return;
     
     if (!confirm('Are you sure you want to leave this cohort?')) return;
 
     setIsLeaving(true);
     
-    const cohortRef = doc(firestore, 'cohorts', cohort.id);
-    updateDocumentNonBlocking(cohortRef, {
-        memberIds: arrayRemove(user.uid)
-    });
-    toast({ title: 'Success', description: 'You have left the cohort.' });
-    router.push('/account');
-    
-    setIsLeaving(false);
+    try {
+        const cohortRef = doc(firestore, 'cohorts', cohort.id);
+        await updateDoc(cohortRef, {
+            memberIds: arrayRemove(user.uid)
+        });
+        toast({ title: 'Success', description: 'You have left the cohort.' });
+        router.push('/account');
+    } catch (error) {
+        console.error("Failed to leave cohort:", error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not leave the cohort. Please try again.' });
+    } finally {
+        setIsLeaving(false);
+    }
   }
 
   if (isCohortLoading) {
