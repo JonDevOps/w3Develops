@@ -41,6 +41,21 @@ export default function Header() {
           <div className="hidden md:block">
              <SearchBar />
           </div>
+          <div className="md:hidden">
+              <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                  <Search className="h-6 w-6" />
+                  <span className="sr-only">Toggle Search</span>
+                  </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                  <div className="p-2">
+                    <SearchBar />
+                  </div>
+              </DropdownMenuContent>
+              </DropdownMenu>
+          </div>
         </div>
         
         <div className="flex items-center gap-4">
@@ -52,22 +67,6 @@ export default function Header() {
                     Build Cohorts
                 </Link>
             </nav>
-
-            <div className="md:hidden">
-                <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                    <Search className="h-6 w-6" />
-                    <span className="sr-only">Toggle Search</span>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <div className="p-2">
-                      <SearchBar />
-                    </div>
-                </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
             
             <div className="md:hidden">
                 <DropdownMenu>
