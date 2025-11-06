@@ -1,38 +1,9 @@
-'use client'
+import { getUser } from '@/firebase/get-user-server'
+import { getProfile } from '@/firebase/get-profile-server'
 
-import {
-  useDoc,
-  useFirebase,
-  useMemoFirebase,
-} from '@/firebase'
-import { doc } from 'firebase/firestore'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-
-export default function DashboardPage() {
-  const { user, isUserLoading, firestore } = useFirebase()
-  const router = useRouter()
-
-  const userProfileRef = useMemoFirebase(() => {
-    if (isUserLoading || !user || !firestore) return null
-    return doc(firestore, 'users', user.uid, 'profile', 'data')
-  }, [user, firestore, isUserLoading])
-
-  const { data: userProfile, isLoading: isProfileLoading } = useDoc(userProfileRef)
-
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login')
-    }
-  }, [user, isUserLoading, router])
-
-  if (isUserLoading || isProfileLoading) {
-    return (
-      <div className="container mx-auto px-4 py-12">
-        <p>Loading...</p>
-      </div>
-    )
-  }
+export default async function DashboardPage() {
+  const user = await getUser()
+  const userProfile = user ? await getProfile(user.uid) : null
 
   return (
     <div className="container mx-auto px-4 py-12">
