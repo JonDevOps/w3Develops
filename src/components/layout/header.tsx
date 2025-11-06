@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,16 @@ export default function Header() {
   const firestore = useFirestore();
   const router = useRouter();
   const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isMobileSearchVisible) {
+      // Use a short timeout to ensure the input is rendered and visible before focusing
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 50);
+    }
+  }, [isMobileSearchVisible]);
 
   const handleLogout = () => {
     auth.signOut().then(() => {
@@ -57,7 +67,7 @@ export default function Header() {
                 <span className="sr-only">Back</span>
             </Button>
             <div className="w-full">
-                <SearchBar />
+                <SearchBar ref={searchInputRef} />
             </div>
         </div>
 
