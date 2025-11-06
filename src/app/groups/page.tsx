@@ -69,57 +69,6 @@ export default function GroupsPage() {
   )
   const { data: groups, isLoading } = useCollection(groupsCollectionRef)
 
-  const handleJoinGroup = (groupId: string, memberIds: string[], createdAt: any) => {
-    if (!user || !firestore) {
-      toast({
-        variant: "destructive",
-        title: "Not signed in",
-        description: "You must be signed in to join a group.",
-      });
-      return;
-    }
-
-    if (memberIds.includes(user.uid)) {
-      toast({
-        variant: "destructive",
-        title: "Already a member",
-        description: "You are already in this group.",
-      });
-      return;
-    }
-
-    if (memberIds.length >= 25) {
-      toast({
-        variant: "destructive",
-        title: "Group is full",
-        description: "This group has reached its member limit.",
-      });
-      return;
-    }
-    
-    if (createdAt) {
-      const groupCreationDate = fromUnixTime(createdAt.seconds);
-      if (differenceInDays(new Date(), groupCreationDate) > 7) {
-        toast({
-          variant: "destructive",
-          title: "Group is too old",
-          description: "This group is more than a week old and no longer accepting new members.",
-        });
-        return;
-      }
-    }
-
-
-    const groupRef = doc(firestore, 'learning_groups', groupId);
-    updateDocumentNonBlocking(groupRef, {
-      memberIds: arrayUnion(user.uid)
-    });
-    toast({
-      title: "Successfully joined!",
-      description: "You have been added to the group.",
-    });
-  }
-
   const renderEmptyState = () => (
     <div className="text-center py-16 px-4 border-2 border-dashed rounded-lg">
       <Group className="mx-auto h-16 w-16 text-muted-foreground" />
@@ -195,9 +144,11 @@ export default function GroupsPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full" onClick={() => handleJoinGroup(group.id, group.memberIds, group.createdAt)}>
-                Join This Group <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+              <Button asChild className="w-full">
+                  <Link href={`/groups/${group.id}`}>
+                    View Dashboard <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
             </CardFooter>
           </Card>
         ))}

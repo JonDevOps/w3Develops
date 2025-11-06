@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useForm, useFieldArray } from 'react-hook-form'
 import * as z from 'zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -22,13 +22,16 @@ import { PlaceHolderImages } from '@/lib/placeholder-images'
 import { useDoc, useFirebase, useMemoFirebase, setDocumentNonBlocking } from '@/firebase'
 import { doc } from 'firebase/firestore'
 import { useEffect } from 'react'
+import { Trash } from 'lucide-react'
 
 const profileSchema = z.object({
   displayName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   username: z.string().min(3, { message: 'Username must be at least 3 characters.'}),
-  bio: z.string().max(160, { message: 'Bio must not be longer than 160 characters.' }).optional(),
+  bio: z.string().max(500, { message: 'Bio must not be longer than 500 characters.' }).optional(),
   github: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   linkedin: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
+  portfolioUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
+  projects: z.array(z.object({ value: z.string().min(1, { message: 'Project name cannot be empty.' }) })).optional(),
 })
 
 export default function ProfilePage() {
@@ -51,8 +54,15 @@ export default function ProfilePage() {
       bio: '',
       github: '',
       linkedin: '',
+      portfolioUrl: '',
+      projects: [],
     },
   })
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: 'projects'
+  });
   
   const { isSubmitting } = form.formState;
 
@@ -64,6 +74,8 @@ export default function ProfilePage() {
         bio: userProfile.bio || '',
         github: userProfile.socialLinks?.find((l: string) => l.includes('github')) || '',
         linkedin: userProfile.socialLinks?.find((l: string) => l.includes('linkedin')) || '',
+        portfolioUrl: userProfile.portfolioUrl || '',
+        projects: userProfile.projects?.map((p: string) => ({ value: p })) || [],
       })
     }
   }, [userProfile, form])
@@ -80,6 +92,8 @@ export default function ProfilePage() {
         displayName: values.displayName,
         bio: values.bio || '',
         socialLinks,
+        portfolioUrl: values.portfolioUrl || '',
+        projects: values.projects?.map(p => p.value) || [],
     }
     
     setDocumentNonBlocking(userProfileRef, updatedProfile, { merge: true })
@@ -103,7 +117,7 @@ export default function ProfilePage() {
         <CardHeader>
           <CardTitle>Profile Information</CardTitle>
           <CardDescription>
-            This information will be used to match you with a learning group.
+            This information will be displayed to other users to help them get to know you.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -117,47 +131,50 @@ export default function ProfilePage() {
                 <Button type="button" variant="outline">Change Photo</Button>
               </div>
 
-              <FormField
-                control={form.control}
-                name="displayName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="John Doe" {...field} disabled={isSubmitting}/>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder="john_doe" {...field} disabled />
-                    </FormControl>
-                     <FormDescription>
-                      Username cannot be changed.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid md:grid-cols-2 gap-8">
+                 <FormField
+                  control={form.control}
+                  name="displayName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="John Doe" {...field} disabled={isSubmitting}/>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input placeholder="john_doe" {...field} disabled />
+                      </FormControl>
+                      <FormDescription>
+                        Username cannot be changed.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={form.control}
                 name="bio"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Bio</FormLabel>
+                    <FormLabel>About Me</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Tell us a little bit about yourself"
+                        placeholder="Tell us about your background, skills, and learning goals."
                         className="resize-none"
+                        rows={5}
                         {...field}
                         disabled={isSubmitting}
                       />
@@ -167,7 +184,21 @@ export default function ProfilePage() {
                 )}
               />
 
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Links</h3>
+                <FormField
+                    control={form.control}
+                    name="portfolioUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Portfolio / Personal Website</FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://your-portfolio.com" {...field} disabled={isSubmitting} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 <FormField
                   control={form.control}
                   name="github"
@@ -194,6 +225,38 @@ export default function ProfilePage() {
                     </FormItem>
                   )}
                 />
+              </div>
+
+              <div>
+                <h3 className="text-lg font-medium mb-4">Current Projects</h3>
+                {fields.map((field, index) => (
+                  <div key={field.id} className="flex items-center gap-2 mb-2">
+                    <FormField
+                      control={form.control}
+                      name={`projects.${index}.value`}
+                      render={({ field }) => (
+                        <FormItem className="flex-grow">
+                          <FormControl>
+                            <Input placeholder={`Project ${index + 1}`} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                 <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => append({ value: "" })}
+                  className="mt-2"
+                >
+                  Add Project
+                </Button>
               </div>
 
               <Button type="submit" disabled={isSubmitting}>

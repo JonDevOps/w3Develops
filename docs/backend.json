@@ -34,6 +34,18 @@
         "bio": {
           "type": "string",
           "description": "A short biography of the user."
+        },
+        "portfolioUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of the user's portfolio or personal website."
+        },
+        "projects": {
+          "type": "array",
+          "description": "A list of projects the user is working on.",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
