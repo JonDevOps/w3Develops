@@ -109,7 +109,7 @@ export default function Header() {
                   <span className="sr-only">Open Search</span>
               </Button>
             </div>
-            <div className="hidden md:block w-full max-w-[13rem]">
+            <div className="hidden md:block w-full max-w-[15rem]">
               <SearchBar 
                 query={searchQuery}
                 onQueryChange={setSearchQuery}
