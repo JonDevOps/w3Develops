@@ -56,7 +56,16 @@ export default function LoginPage() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     initiateEmailSignIn(auth, values.email, values.password)
-    // No toast needed here, useEffect will handle redirect
+    // No toast needed here, the onAuthStateChanged listener in the provider
+    // will trigger the useEffect to handle the redirect.
+  }
+
+  if (isUserLoading || user) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    )
   }
 
   return (
@@ -64,7 +73,7 @@ export default function LoginPage() {
       <CardHeader>
         <CardTitle className="font-headline text-2xl">Welcome Back</CardTitle>
         <CardDescription>
-          Enter your credentials to access your account.
+          Sign in to your account to continue.
         </CardDescription>
       </CardHeader>
       <CardContent>

@@ -23,13 +23,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
-import { useAuth, useFirestore } from '@/firebase'
+import { useAuth, useFirestore, useUser } from '@/firebase'
 import {
   createUserWithEmailAndPassword,
 } from 'firebase/auth'
 import { doc, getDoc, writeBatch } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -42,6 +42,7 @@ export default function SignupPage() {
   const { toast } = useToast()
   const auth = useAuth()
   const firestore = useFirestore()
+  const { user, isUserLoading } = useUser();
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -54,6 +55,13 @@ export default function SignupPage() {
       password: '',
     },
   })
+
+  useEffect(() => {
+    if (!isUserLoading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, isUserLoading, router]);
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!firestore || !auth) return;
@@ -85,7 +93,7 @@ export default function SignupPage() {
       };
       
       const batch = writeBatch(firestore);
-batch.set(userProfileRef, userProfileData);
+      batch.set(userProfileRef, userProfileData);
       batch.set(usernameDocRef, { userId: user.uid });
       await batch.commit();
 
@@ -103,6 +111,14 @@ batch.set(userProfileRef, userProfileData);
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  if (isUserLoading || user) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    )
   }
 
   return (
