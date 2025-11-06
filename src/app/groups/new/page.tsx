@@ -46,6 +46,8 @@ export default function NewGroupPage() {
     },
   })
 
+  const { isSubmitting } = form.formState;
+
   async function onSubmit(values: z.infer<typeof newGroupSchema>) {
     if (!user || !firestore) {
         toast({
@@ -123,7 +125,7 @@ export default function NewGroupPage() {
                   <FormItem>
                     <FormLabel>Custom Group Name (Optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., React Rangers" {...field} />
+                      <Input placeholder="e.g., React Rangers" {...field} disabled={isSubmitting} />
                     </FormControl>
                      <FormDescription>
                       If you leave this blank, a standardized name will be generated for you.
@@ -144,6 +146,7 @@ export default function NewGroupPage() {
                         placeholder="What is the main goal of this group?"
                         className="resize-none"
                         {...field}
+                        disabled={isSubmitting}
                       />
                     </FormControl>
                     <FormMessage />
@@ -198,7 +201,9 @@ export default function NewGroupPage() {
               />
 
 
-              <Button type="submit">Create Group</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Creating Group...' : 'Create Group'}
+              </Button>
             </form>
           </Form>
         </CardContent>
