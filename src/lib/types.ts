@@ -3,8 +3,8 @@ import { Timestamp } from "firebase/firestore";
 export interface UserProfile {
   id: string;
   email: string;
-  displayName?: string;
-  name_lowercase: string;
+  username: string;
+  username_lowercase: string;
   profilePictureUrl?: string;
   bio?: string;
   socialLinks?: {

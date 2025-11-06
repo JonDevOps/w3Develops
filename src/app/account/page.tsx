@@ -101,11 +101,11 @@ export default function AccountPage() {
     <div className="space-y-8">
       <div className="flex items-center gap-6">
         <Avatar className="h-24 w-24">
-          <AvatarImage src={userProfile.profilePictureUrl || user.photoURL || ''} alt={userProfile.displayName || ''} />
-          <AvatarFallback className="text-3xl">{userProfile.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
+          <AvatarImage src={userProfile.profilePictureUrl || user.photoURL || ''} alt={userProfile.username || ''} />
+          <AvatarFallback className="text-3xl">{userProfile.username?.charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div>
-          <h1 className="text-3xl font-headline">Hello, {userProfile.displayName || user.email}!</h1>
+          <h1 className="text-3xl font-headline">Hello, {userProfile.username || user.email}!</h1>
           <p className="text-muted-foreground max-w-xl mt-2">{userProfile.bio || "You haven't added a bio yet. Edit your profile to tell the community about yourself."}</p>
           <div className="flex gap-2 mt-4">
               <Button asChild>

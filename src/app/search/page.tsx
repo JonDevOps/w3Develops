@@ -82,9 +82,9 @@ function SearchResults() {
     if (!lowerQ) return null;
     return query(
         collection(firestore, 'users'), 
-        orderBy('name_lowercase'),
-        where('name_lowercase', '>=', lowerQ),
-        where('name_lowercase', '<=', lowerQ + '\uf8ff'),
+        orderBy('username_lowercase'),
+        where('username_lowercase', '>=', lowerQ),
+        where('username_lowercase', '<=', lowerQ + '\uf8ff'),
         limit(10)
     ) as Query<UserProfile>;
   }, [lowerQ, firestore]);
@@ -175,10 +175,10 @@ function SearchResults() {
                   <CardContent className="p-4 flex items-center gap-4">
                     <Avatar>
                       <AvatarImage src={user.profilePictureUrl} />
-                      <AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
+                      <AvatarFallback>{user.username?.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-semibold">{user.displayName}</p>
+                      <p className="font-semibold">{user.username}</p>
                       <p className="text-sm text-muted-foreground line-clamp-2">{user.bio}</p>
                     </div>
                   </CardContent>
@@ -222,8 +222,7 @@ function SearchResults() {
                <Link href={`/cohorts/${cohort.id}`} key={cohort.id}>
                 <Card className="hover:bg-accent transition-colors">
                   <CardHeader>
-                      <CardTitle>{cohort.name}</CardTitle>
-                      <Badge variant="secondary" className="w-fit">{cohort.topic}</Badge>
+                      <CardTitle>{cohort.name}</CardTitle>                      <Badge variant="secondary" className="w-fit">{cohort.topic}</Badge>
                   </CardHeader>
                   <CardContent className="space-y-3">
                       <p className="text-sm text-muted-foreground h-10 overflow-hidden">{cohort.description}</p>

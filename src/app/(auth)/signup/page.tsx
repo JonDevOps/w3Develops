@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useAuth, useUser, useFirestore, initiateEmailSignUp, setDocumentNonBlocking } from '@/firebase';
 import { useToast } from "@/components/ui/use-toast";
-import { doc } from 'firebase/firestore';
+import { doc, collection, query, where, getDocs } from 'firebase/firestore';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 
 export default function SignupPage() {
@@ -21,7 +21,7 @@ export default function SignupPage() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [displayName, setDisplayName] = useState('');
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
     // Redirect if user is already logged in
@@ -32,7 +32,7 @@ export default function SignupPage() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!displayName || !email || !password) {
+    if (!username || !email || !password) {
       toast({
         variant: "destructive",
         title: "Missing fields",
@@ -42,22 +42,42 @@ export default function SignupPage() {
     }
 
     try {
+      // 1. Check if username is unique
+      const usernameLower = username.toLowerCase();
+      const usersRef = collection(firestore, 'users');
+      const q = query(usersRef, where("username_lowercase", "==", usernameLower));
+      const querySnapshot = await getDocs(q);
+      
+      if (!querySnapshot.empty) {
+        toast({
+          variant: "destructive",
+          title: "Username taken",
+          description: "This username is already in use. Please choose another one.",
+        });
+        return;
+      }
+
+      // 2. Create user with email and password
       const userCredential = await initiateEmailSignUp(auth, email, password);
       if (userCredential && userCredential.user) {
         const newUser = userCredential.user;
         const userRef = doc(firestore, "users", newUser.uid);
+        
+        // 3. Create user profile document in Firestore
         const userData = {
           id: newUser.uid,
           email: email,
-          displayName: displayName,
-          name_lowercase: displayName.toLowerCase(),
+          username: username,
+          username_lowercase: usernameLower,
           profilePictureUrl: '',
           bio: '',
           socialLinks: {},
           skills: [],
         };
+        
         // This is a non-blocking write. It will optimistically update.
         setDocumentNonBlocking(userRef, userData);
+        
         // The useEffect hook will handle the redirect to /account once the user state is updated.
       }
     } catch (error: any) {
@@ -98,14 +118,14 @@ export default function SignupPage() {
         <CardContent>
           <form onSubmit={handleSignUp} className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="displayName">Display Name</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
-                id="displayName"
+                id="username"
                 type="text"
-                placeholder="Ada Lovelace"
+                placeholder="adalovelace"
                 required
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
@@ -120,8 +140,7 @@ export default function SignupPage() {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input 
+              <Label htmlFor="password">Password</Label>              <Input 
                 id="password" 
                 type="password" 
                 required 

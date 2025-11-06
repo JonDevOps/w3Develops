@@ -21,7 +21,7 @@ export default function EditProfilePage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const [displayName, setDisplayName] = useState('');
+  const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [skills, setSkills] = useState<string[]>([]);
   const [currentSkill, setCurrentSkill] = useState('');
@@ -38,7 +38,7 @@ export default function EditProfilePage() {
 
   useEffect(() => {
     if (userProfile) {
-      setDisplayName(userProfile.displayName || '');
+      setUsername(userProfile.username || '');
       setBio(userProfile.bio || '');
       setSkills(userProfile.skills || []);
       setGithub(userProfile.socialLinks?.github || '');
@@ -72,8 +72,9 @@ export default function EditProfilePage() {
       return;
     }
     
+    // Note: We don't allow username changes here for simplicity.
+    // A real app would need a more complex flow for username changes (checking for uniqueness again).
     const updatedProfileData: Partial<UserProfile> = {
-      displayName,
       bio,
       skills,
       socialLinks: {
@@ -109,8 +110,9 @@ export default function EditProfilePage() {
         <CardContent>
           <form onSubmit={handleUpdateProfile} className="grid gap-6">
             <div className="grid gap-2">
-              <Label htmlFor="displayName">Display Name</Label>
-              <Input id="displayName" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required />
+              <Label htmlFor="username">Username</Label>
+              <Input id="username" value={username} disabled />
+              <p className="text-xs text-muted-foreground">Usernames cannot be changed after signup.</p>
             </div>
 
             <div className="grid gap-2">
@@ -137,8 +139,7 @@ export default function EditProfilePage() {
                     placeholder="Add a skill (e.g. React)"
                     onKeyDown={(e) => { if(e.key === 'Enter') { e.preventDefault(); handleAddSkill();}}}
                 />
-                <Button type="button" variant="outline" onClick={handleAddSkill}>Add</Button>
-              </div>
+                <Button type="button" variant="outline" onClick={handleAddSkill}>Add</Button>              </div>
                <p className="text-xs text-muted-foreground">Press Enter or click Add to add a skill.</p>
             </div>
             

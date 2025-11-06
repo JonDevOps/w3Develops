@@ -15,13 +15,13 @@
           "description": "User's email address.",
           "format": "email"
         },
-        "displayName": {
+        "username": {
           "type": "string",
-          "description": "User's display name."
+          "description": "User's unique username."
         },
-        "name_lowercase": {
+        "username_lowercase": {
           "type": "string",
-          "description": "Lowercase version of the user's display name for searching."
+          "description": "Lowercase version of the user's username for searching and uniqueness checks."
         },
         "profilePictureUrl": {
           "type": "string",
@@ -61,7 +61,8 @@
       "required": [
         "id",
         "email",
-        "name_lowercase"
+        "username",
+        "username_lowercase"
       ]
     },
     "StudyGroup": {

@@ -80,11 +80,11 @@ export default function UserProfilePage({ params }: { params: { userId: string }
       <Card>
         <CardContent className="p-6 flex flex-col md:flex-row items-center gap-6">
           <Avatar className="h-32 w-32 border-4 border-primary">
-            <AvatarImage src={userProfile.profilePictureUrl || ''} alt={userProfile.displayName} />
-            <AvatarFallback className="text-5xl">{userProfile.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
+            <AvatarImage src={userProfile.profilePictureUrl || ''} alt={userProfile.username} />
+            <AvatarFallback className="text-5xl">{userProfile.username?.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div className="text-center md:text-left">
-            <h1 className="text-3xl font-headline">{userProfile.displayName}</h1>
+            <h1 className="text-3xl font-headline">{userProfile.username}</h1>
             <p className="text-muted-foreground mt-1 max-w-2xl">{userProfile.bio}</p>
             <div className="flex justify-center md:justify-start items-center gap-4 mt-4">
               {userProfile.socialLinks?.github && (
