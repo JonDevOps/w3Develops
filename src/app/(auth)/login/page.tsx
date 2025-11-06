@@ -51,7 +51,7 @@ export default function LoginPage() {
       title: 'Login Attempted',
       description: 'You will be redirected upon successful login.',
     })
-    router.push('/')
+    router.push('/dashboard')
   }
 
   return (

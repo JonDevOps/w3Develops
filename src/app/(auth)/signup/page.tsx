@@ -23,12 +23,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
-import { useAuth, useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase'
+import { useAuth, useFirestore } from '@/firebase'
 import {
   createUserWithEmailAndPassword,
 } from 'firebase/auth'
 import { doc, setDoc } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates'
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -66,23 +67,15 @@ export default function SignupPage() {
         learningPace: 'Moderate',
       };
       
-      const userProfileRef = doc(firestore, 'users', user.uid, 'profile', user.uid)
+      const userProfileRef = doc(firestore, 'users', user.uid, 'profile', 'data')
       
-      setDoc(userProfileRef, userProfileData)
-        .catch(async (serverError) => {
-          const permissionError = new FirestorePermissionError({
-            path: userProfileRef.path,
-            operation: 'create',
-            requestResourceData: userProfileData,
-          });
-          errorEmitter.emit('permission-error', permissionError);
-        });
+      setDocumentNonBlocking(userProfileRef, userProfileData, { merge: true })
 
       toast({
         title: "Account Created!",
         description: "You have been successfully signed up.",
       })
-      router.push('/profile');
+      router.push('/dashboard');
     } catch(e: any) {
       toast({
         variant: "destructive",
