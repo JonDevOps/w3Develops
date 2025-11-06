@@ -31,10 +31,6 @@
             "format": "uri"
           }
         },
-        "primarySkill": {
-          "type": "string",
-          "description": "The user's primary skill."
-        },
         "bio": {
           "type": "string",
           "description": "A short biography of the user."

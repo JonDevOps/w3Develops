@@ -78,7 +78,6 @@ export default function SignupPage() {
         displayName: values.fullName,
         profilePictureUrl: '',
         socialLinks: [],
-        primarySkill: 'Frontend',
         bio: '',
       };
       

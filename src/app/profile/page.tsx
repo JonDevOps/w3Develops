@@ -30,7 +30,6 @@ const profileSchema = z.object({
   bio: z.string().max(160, { message: 'Bio must not be longer than 160 characters.' }).optional(),
   github: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   linkedin: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
-  primarySkill: z.enum(['Frontend', 'Backend', 'Full Stack', 'DevOps', 'UI/UX']),
 })
 
 export default function ProfilePage() {
@@ -53,7 +52,6 @@ export default function ProfilePage() {
       bio: '',
       github: '',
       linkedin: '',
-      primarySkill: 'Frontend',
     },
   })
 
@@ -65,7 +63,6 @@ export default function ProfilePage() {
         bio: userProfile.bio || '',
         github: userProfile.socialLinks?.find((l: string) => l.includes('github')) || '',
         linkedin: userProfile.socialLinks?.find((l: string) => l.includes('linkedin')) || '',
-        primarySkill: userProfile.primarySkill || 'Frontend',
       })
     }
   }, [userProfile, form])
@@ -81,7 +78,6 @@ export default function ProfilePage() {
         username: values.username,
         displayName: values.displayName,
         bio: values.bio || '',
-        primarySkill: values.primarySkill,
         socialLinks,
     }
     
@@ -197,34 +193,6 @@ export default function ProfilePage() {
                   )}
                 />
               </div>
-              
-              <FormField
-                control={form.control}
-                name="primarySkill"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Primary Skill</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your main area of focus" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Frontend">Frontend</SelectItem>
-                        <SelectItem value="Backend">Backend</SelectItem>
-                        <SelectItem value="Full Stack">Full Stack</SelectItem>
-                        <SelectItem value="DevOps">DevOps</SelectItem>
-                        <SelectItem value="UI/UX">UI/UX</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      This will help us match you with the right group.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
               <Button type="submit">Update Profile</Button>
             </form>
