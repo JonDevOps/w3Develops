@@ -7,22 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { collection, serverTimestamp } from 'firebase/firestore';
+import { collection, serverTimestamp, addDoc, query, where, getDocs, limit } from 'firebase/firestore';
+import { topics, commitmentLevels, ONE_WEEK_IN_MS } from '@/lib/constants';
 
-const topics = [
-  "HTML/CSS", "JavaScript", "Python", "React", "Django", "Node.js", "Rust", 
-  "Digital Marketing", "Web3", "Cryptocurrency", "Cybersecurity", "NFTs", "SQL", 
-  "Artificial Intelligence", "Web Design", "Programming Fundamentals", "Other"
-];
-
-const commitmentLevels = {
-  'part-time': 'Part-time (6 hours/day, 6 days/week)',
-  'full-time': 'Full-time (12 hours/day, 6 days/week)',
-}
 
 export default function CreateGroupPage() {
   const { user, isUserLoading } = useUser();
@@ -51,6 +42,8 @@ export default function CreateGroupPage() {
         return;
     }
     const finalTopic = topic === 'Other' ? customTopic : topic;
+    const finalCommitment = commitmentLevels[commitment as keyof typeof commitmentLevels];
+    
     if (!name || !finalTopic || !commitment) {
       toast({ variant: "destructive", title: "Missing Fields", description: "Please fill out all required fields." });
       return;
@@ -59,12 +52,42 @@ export default function CreateGroupPage() {
     setIsSubmitting(true);
     
     try {
+        const oneWeekAgo = new Date(Date.now() - ONE_WEEK_IN_MS);
+
+        // Check for existing, non-full, recent groups
+        const existingQuery = query(
+            collection(firestore, 'studyGroups'),
+            where('topic', '==', finalTopic),
+            where('commitment', '==', finalCommitment),
+            where('createdAt', '>', serverTimestamp.fromMillis(oneWeekAgo.getTime())),
+            limit(1)
+        );
+        const existingSnapshot = await getDocs(existingQuery);
+        let foundSuitable = false;
+        existingSnapshot.forEach(doc => {
+            const group = doc.data();
+            if (group.memberIds.length < 25) {
+                foundSuitable = true;
+            }
+        });
+
+        if (foundSuitable) {
+            toast({
+                variant: "destructive",
+                title: "Similar Group Exists",
+                description: "A similar group that is not full was recently created. Please join that one instead!",
+            });
+            router.push('/groups');
+            return; // Stop the creation process
+        }
+
+        // If no suitable group, proceed to create
         const groupsRef = collection(firestore, 'studyGroups');
-        await addDocumentNonBlocking(groupsRef, {
+        await addDoc(groupsRef, {
             name: name,
             name_lowercase: name.toLowerCase(),
             topic: finalTopic,
-            commitment: commitmentLevels[commitment as keyof typeof commitmentLevels],
+            commitment: finalCommitment,
             description: description || `A new group for ${finalTopic}`,
             memberIds: [user.uid],
             createdAt: serverTimestamp(),

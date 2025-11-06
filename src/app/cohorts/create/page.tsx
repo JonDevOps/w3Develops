@@ -7,22 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { collection, serverTimestamp } from 'firebase/firestore';
+import { collection, serverTimestamp, query, where, getDocs, addDoc, limit } from 'firebase/firestore';
+import { topics, commitmentLevels, ONE_WEEK_IN_MS } from '@/lib/constants';
 
-const topics = [
-  "HTML/CSS", "JavaScript", "Python", "React", "Django", "Node.js", "Rust", 
-  "Digital Marketing", "Web3", "Cryptocurrency", "Cybersecurity", "NFTs", "SQL", 
-  "Artificial Intelligence", "Web Design", "Programming Fundamentals", "Other"
-];
-
-const commitmentLevels = {
-  'part-time': 'Part-time (6 hours/day, 6 days/week)',
-  'full-time': 'Full-time (12 hours/day, 6 days/week)',
-}
 
 export default function CreateCohortPage() {
   const { user, isUserLoading } = useUser();
@@ -53,6 +44,8 @@ export default function CreateCohortPage() {
     }
     
     const finalTopic = topic === 'Other' ? customTopic : topic;
+    const finalCommitment = commitmentLevels[commitment as keyof typeof commitmentLevels];
+
     if (!name || !finalTopic || !commitment) {
       toast({ variant: "destructive", title: "Missing Fields", description: "Please fill out all required fields." });
       return;
@@ -61,12 +54,42 @@ export default function CreateCohortPage() {
     setIsSubmitting(true);
     
     try {
+      const oneWeekAgo = new Date(Date.now() - ONE_WEEK_IN_MS);
+      // Check for existing, non-full, recent cohorts
+      const existingQuery = query(
+        collection(firestore, 'cohorts'),
+        where('topic', '==', finalTopic),
+        where('commitment', '==', finalCommitment),
+        where('createdAt', '>', serverTimestamp.fromMillis(oneWeekAgo.getTime())),
+        limit(1)
+      );
+
+      const existingSnapshot = await getDocs(existingQuery);
+      let foundSuitable = false;
+      existingSnapshot.forEach(doc => {
+          const cohort = doc.data();
+          if (cohort.memberIds.length < 25) {
+              foundSuitable = true;
+          }
+      });
+
+      if (foundSuitable) {
+          toast({
+              variant: "destructive",
+              title: "Similar Cohort Exists",
+              description: "A similar cohort that is not full was recently created. Please join that one instead!",
+          });
+          router.push('/cohorts');
+          return;
+      }
+
+      // If no suitable cohort found, create a new one
       const cohortsRef = collection(firestore, 'cohorts');
-      await addDocumentNonBlocking(cohortsRef, {
+      await addDoc(cohortsRef, {
         name: name,
         name_lowercase: name.toLowerCase(),
         topic: finalTopic,
-        commitment: commitmentLevels[commitment as keyof typeof commitmentLevels],
+        commitment: finalCommitment,
         githubUrl: githubUrl,
         description: description || `A new cohort for ${finalTopic}`,
         memberIds: [user.uid],
