@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
-import { useAuth, useFirestore } from '@/firebase'
+import { useAuth, useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase'
 import {
   createUserWithEmailAndPassword,
 } from 'firebase/auth'
@@ -56,9 +56,7 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
-      const userProfileRef = doc(firestore, 'users', user.uid, 'profile', user.uid)
-      
-      await setDoc(userProfileRef, {
+      const userProfileData = {
         id: user.uid,
         userId: user.uid,
         displayName: values.fullName,
@@ -66,7 +64,19 @@ export default function SignupPage() {
         socialLinks: [],
         primarySkill: 'Frontend',
         learningPace: 'Moderate',
-      });
+      };
+      
+      const userProfileRef = doc(firestore, 'users', user.uid, 'profile', user.uid)
+      
+      setDoc(userProfileRef, userProfileData)
+        .catch(async (serverError) => {
+          const permissionError = new FirestorePermissionError({
+            path: userProfileRef.path,
+            operation: 'create',
+            requestResourceData: userProfileData,
+          });
+          errorEmitter.emit('permission-error', permissionError);
+        });
 
       toast({
         title: "Account Created!",
