@@ -17,6 +17,47 @@ import { useRouter } from 'next/navigation';
 import { JoinCohortModal } from '@/components/modals/JoinCohortModal';
 import JoinCohortButton from '@/components/JoinCohortButton';
 
+function CohortCardSkeleton() {
+  return (
+    <Card className="flex flex-col animate-pulse">
+      <CardHeader>
+        <div className='flex justify-between items-start'>
+          <div className="h-6 w-40 bg-muted rounded"></div>
+          <div className="h-6 w-16 bg-muted rounded-full"></div>
+        </div>
+        <div className="h-5 w-24 bg-muted rounded-full mt-1"></div>
+      </CardHeader>
+      <CardContent className="space-y-4 flex-grow flex flex-col justify-between">
+          <div>
+            <div className="h-4 bg-muted rounded w-full mb-2"></div>
+            <div className="h-4 bg-muted rounded w-5/6 mb-4"></div>
+            <div className="space-y-2">
+              <div className="h-5 w-36 bg-muted rounded"></div>
+              <div className="h-6 w-28 bg-muted rounded-full"></div>
+              <div className="h-5 w-44 bg-muted rounded"></div>
+            </div>
+          </div>
+        <div className="flex gap-2 items-center mt-4">
+          <div className="h-9 w-28 bg-muted rounded-md"></div>
+          <div className="h-9 w-28 bg-muted rounded-md"></div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function CohortsPageSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <CohortCardSkeleton />
+        <CohortCardSkeleton />
+        <CohortCardSkeleton />
+      </div>
+    </div>
+  )
+}
+
 export default function CohortsPage() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
@@ -68,7 +109,7 @@ export default function CohortsPage() {
   const isLoading = isLoadingNew || isLoadingInProgress;
 
   if (isUserLoading || !user) {
-    return <div>Loading...</div>;
+    return <CohortsPageSkeleton />;
   }
 
   return (
@@ -101,7 +142,7 @@ export default function CohortsPage() {
           />
         </div>
 
-        {isLoading && <p>Loading cohorts...</p>}
+        {isLoading && <CohortsPageSkeleton />}
         
         {!isLoading && !filteredCohorts.newCohorts?.length && !filteredCohorts.inProgressCohorts?.length && searchTerm && (
           <div className="text-center py-12">
@@ -151,7 +192,7 @@ export default function CohortsPage() {
               ))}
             </div>
           ) : (
-             <p className="text-muted-foreground">No new cohorts at this time.</p>
+             !isLoading && <p className="text-muted-foreground">No new cohorts at this time.</p>
           )}
         </section>
 
@@ -196,7 +237,7 @@ export default function CohortsPage() {
               ))}
             </div>
           ) : (
-             <p className="text-muted-foreground">No in-progress cohorts at this time.</p>
+             !isLoading && <p className="text-muted-foreground">No in-progress cohorts at this time.</p>
           )}
         </section>
       </div>

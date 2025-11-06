@@ -17,6 +17,43 @@ import { useRouter } from 'next/navigation';
 import { JoinGroupModal } from '@/components/modals/JoinGroupModal';
 import JoinGroupButton from '@/components/JoinGroupButton';
 
+function GroupCardSkeleton() {
+  return (
+    <Card className="flex flex-col animate-pulse">
+      <CardHeader>
+        <div className='flex justify-between items-start'>
+          <div className="h-6 w-40 bg-muted rounded"></div>
+          <div className="h-6 w-16 bg-muted rounded-full"></div>
+        </div>
+        <div className="h-5 w-24 bg-muted rounded-full mt-1"></div>
+      </CardHeader>
+      <CardContent className="space-y-4 flex-grow flex flex-col justify-between">
+          <div>
+            <div className="h-4 bg-muted rounded w-full mb-2"></div>
+            <div className="h-4 bg-muted rounded w-5/6 mb-4"></div>
+            <div className="space-y-2">
+              <div className="h-5 w-36 bg-muted rounded"></div>
+              <div className="h-6 w-28 bg-muted rounded-full"></div>
+              <div className="h-5 w-44 bg-muted rounded"></div>
+            </div>
+          </div>
+        <div className="h-9 w-28 bg-muted rounded-md mt-4"></div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function GroupsPageSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <GroupCardSkeleton />
+        <GroupCardSkeleton />
+        <GroupCardSkeleton />
+      </div>
+    </div>
+  )
+}
 
 export default function GroupsPage() {
   const firestore = useFirestore();
@@ -69,7 +106,7 @@ export default function GroupsPage() {
   const isLoading = isLoadingNew || isLoadingInProgress;
 
   if (isUserLoading || !user) {
-    return <div>Loading...</div>;
+    return <div><GroupsPageSkeleton /></div>;
   }
 
   return (
@@ -102,8 +139,8 @@ export default function GroupsPage() {
           />
         </div>
 
-        {isLoading && <p>Loading groups...</p>}
-
+        {isLoading && <GroupsPageSkeleton />}
+        
         {!isLoading && !filteredGroups.newGroups?.length && !filteredGroups.inProgressGroups?.length && searchTerm && (
           <div className="text-center py-12">
               <h3 className="text-xl font-semibold">No Groups Found</h3>
@@ -144,7 +181,7 @@ export default function GroupsPage() {
               ))}
             </div>
           ) : (
-            <p className="text-muted-foreground">No new groups at this time.</p>
+             !isLoading && <p className="text-muted-foreground">No new groups at this time.</p>
           )}
         </section>
         
@@ -177,7 +214,7 @@ export default function GroupsPage() {
               ))}
             </div>
           ) : (
-            <p className="text-muted-foreground">No in-progress groups at this time.</p>
+            !isLoading && <p className="text-muted-foreground">No in-progress groups at this time.</p>
           )}
         </section>
       </div>

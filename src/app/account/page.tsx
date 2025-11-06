@@ -11,7 +11,54 @@ import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Github, Linkedin, Twitter } from 'lucide-react';
+import { Github, Linkedin, Twitter, CalendarCheck } from 'lucide-react';
+
+function AccountPageSkeleton() {
+  return (
+    <div className="space-y-8 animate-pulse">
+      <div className="flex items-center gap-6">
+        <div className="rounded-full bg-muted h-24 w-24"></div>
+        <div className="space-y-2">
+          <div className="h-8 bg-muted rounded w-64"></div>
+          <div className="h-4 bg-muted rounded w-96"></div>
+          <div className="h-4 bg-muted rounded w-80"></div>
+          <div className="flex gap-2 pt-2">
+            <div className="h-10 w-32 bg-muted rounded-md"></div>
+            <div className="h-10 w-32 bg-muted rounded-md"></div>
+          </div>
+        </div>
+      </div>
+      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
+        <div className="lg:col-span-1 rounded-lg border bg-card p-6 space-y-3">
+            <div className="h-6 w-24 bg-muted rounded"></div>
+            <div className="h-10 w-full bg-muted rounded"></div>
+        </div>
+        <div className="lg:col-span-1 rounded-lg border bg-card p-6 space-y-3">
+            <div className="h-6 w-32 bg-muted rounded"></div>
+            <div className="h-10 w-full bg-muted rounded"></div>
+        </div>
+        <div className="lg:col-span-1 rounded-lg border bg-card p-6 space-y-3">
+            <div className="h-6 w-24 bg-muted rounded"></div>
+            <div className="h-10 w-full bg-muted rounded"></div>
+        </div>
+      </div>
+       <div className="grid gap-6 md:grid-cols-2">
+        <div className="rounded-lg border bg-card p-6 space-y-3">
+          <div className="h-6 w-48 bg-muted rounded"></div>
+          <div className="h-4 w-64 bg-muted rounded"></div>
+          <div className="h-10 mt-4 w-full bg-muted rounded"></div>
+          <div className="h-10 w-full bg-muted rounded"></div>
+        </div>
+         <div className="rounded-lg border bg-card p-6 space-y-3">
+          <div className="h-6 w-48 bg-muted rounded"></div>
+          <div className="h-4 w-64 bg-muted rounded"></div>
+          <div className="h-10 mt-4 w-full bg-muted rounded"></div>
+          <div className="h-10 w-full bg-muted rounded"></div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function AccountPage() {
   const { user, isUserLoading } = useUser();
@@ -46,19 +93,14 @@ export default function AccountPage() {
   const { data: studyGroups, isLoading: isGroupsLoading } = useCollection<StudyGroup>(userGroupsQuery);
 
 
-  if (isUserLoading || isProfileLoading) {
-    return <div>Loading...</div>;
+  if (isUserLoading || isProfileLoading || !userProfile) {
+    return <AccountPageSkeleton />;
   }
 
   if (!user) {
     return <div>Redirecting to login...</div>;
   }
   
-  if (!userProfile) {
-    // This case can happen briefly if the user doc hasn't been created yet after signup
-    return <div>Loading profile...</div>;
-  }
-
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-6">
@@ -96,26 +138,35 @@ export default function AccountPage() {
           </CardContent>
         </Card>
         
-        <Card className="lg:col-span-2">
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><CalendarCheck className="w-5 h-5" />Learning Pace</CardTitle>
+            </CardHeader>
+             <CardContent>
+                <Badge variant="secondary" className="text-base">{userProfile.learningPace || 'Not specified'}</Badge>
+            </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-1">
             <CardHeader>
                 <CardTitle>Social Links</CardTitle>
             </CardHeader>
-            <CardContent className="flex items-center gap-6">
+            <CardContent className="flex items-center gap-4">
                 {userProfile.socialLinks?.github ? (
                     <a href={userProfile.socialLinks.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
-                        <Github className="w-5 h-5" /> GitHub
+                        <Github className="w-5 h-5" />
                     </a>
-                ) : <p className="text-sm text-muted-foreground">No GitHub link added.</p>}
+                ) : <p className="text-sm text-muted-foreground">No GitHub</p>}
                  {userProfile.socialLinks?.linkedin ? (
                     <a href={userProfile.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
-                        <Linkedin className="w-5 h-5" /> LinkedIn
+                        <Linkedin className="w-5 h-5" />
                     </a>
-                ) : null}
+                ) : <p className="text-sm text-muted-foreground">No LinkedIn</p>}
                  {userProfile.socialLinks?.twitter ? (
                     <a href={userProfile.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
-                        <Twitter className="w-5 h-5" /> Twitter
+                        <Twitter className="w-5 h-5" />
                     </a>
-                ) : null}
+                ) : <p className="text-sm text-muted-foreground">No Twitter</p>}
             </CardContent>
         </Card>
 
@@ -128,7 +179,7 @@ export default function AccountPage() {
             <CardDescription>Cohorts you have created or joined to build projects.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {isCohortsLoading ? <p>Loading cohorts...</p> : 
+            {isCohortsLoading ? <div className="h-10 w-full bg-muted rounded animate-pulse"></div> : 
               (cohorts && cohorts.length > 0) ? (
                 <ul className="divide-y">
                   {cohorts.map(c => (
@@ -158,7 +209,7 @@ export default function AccountPage() {
             <CardDescription>Groups you are a member of to learn and collaborate.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {isGroupsLoading ? <p>Loading groups...</p> : 
+            {isGroupsLoading ? <div className="h-10 w-full bg-muted rounded animate-pulse"></div> : 
               (studyGroups && studyGroups.length > 0) ? (
                  <ul className="divide-y">
                   {studyGroups.map(g => (

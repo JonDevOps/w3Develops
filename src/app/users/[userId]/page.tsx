@@ -7,8 +7,40 @@ import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Github, Linkedin, Twitter, BrainCircuit, CalendarCheck } from 'lucide-react';
+import { Github, Linkedin, Twitter, BrainCircuit, Users } from 'lucide-react';
 import Link from 'next/link';
+
+function ProfilePageSkeleton() {
+  return (
+    <div className="space-y-8 animate-pulse">
+      <Card>
+        <CardContent className="p-6 flex flex-col md:flex-row items-center gap-6">
+          <div className="rounded-full bg-muted h-32 w-32"></div>
+          <div className="flex-1 space-y-3 text-center md:text-left">
+            <div className="h-8 bg-muted rounded w-48 mx-auto md:mx-0"></div>
+            <div className="h-4 bg-muted rounded w-full max-w-lg"></div>
+            <div className="h-4 bg-muted rounded w-full max-w-md"></div>
+            <div className="flex justify-center md:justify-start items-center gap-4 mt-4">
+              <div className="h-6 w-6 bg-muted rounded"></div>
+              <div className="h-6 w-6 bg-muted rounded"></div>
+              <div className="h-6 w-6 bg-muted rounded"></div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader><div className="h-6 w-32 bg-muted rounded"></div></CardHeader>
+          <CardContent><div className="h-10 w-full bg-muted rounded"></div></CardContent>
+        </Card>
+        <Card>
+          <CardHeader><div className="h-6 w-32 bg-muted rounded"></div></CardHeader>
+          <CardContent><div className="h-10 w-full bg-muted rounded"></div></CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
 
 export default function UserProfilePage({ params }: { params: { userId: string } }) {
   const { userId } = params;
@@ -36,7 +68,7 @@ export default function UserProfilePage({ params }: { params: { userId: string }
   const { data: studyGroups, isLoading: isGroupsLoading } = useCollection<StudyGroup>(userGroupsQuery);
   
   if (isProfileLoading) {
-    return <div className="text-center py-10">Loading user profile...</div>;
+    return <ProfilePageSkeleton />;
   }
 
   if (!userProfile) {
@@ -75,37 +107,26 @@ export default function UserProfilePage({ params }: { params: { userId: string }
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-1">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl"><BrainCircuit className="w-5 h-5" /> Skills</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {userProfile.skills && userProfile.skills.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {userProfile.skills.map(skill => <Badge key={skill}>{skill}</Badge>)}
-              </div>
-            ) : <p className="text-sm text-muted-foreground">No skills listed yet.</p>}
-          </CardContent>
-        </Card>
-
-        <Card className="md:col-span-2">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl"><CalendarCheck className="w-5 h-5" />Learning Pace</CardTitle>
-            </CardHeader>
-             <CardContent>
-                <Badge variant="secondary" className="text-base">{userProfile.learningPace || 'Not specified'}</Badge>
-            </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl"><BrainCircuit className="w-5 h-5" /> Skills</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {userProfile.skills && userProfile.skills.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {userProfile.skills.map(skill => <Badge key={skill}>{skill}</Badge>)}
+            </div>
+          ) : <p className="text-sm text-muted-foreground">No skills listed yet.</p>}
+        </CardContent>
+      </Card>
 
        <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Member of Build Cohorts</CardTitle>
+            <CardTitle className="flex items-center gap-2"><Users className="mr-2" />Build Cohorts</CardTitle>
           </CardHeader>
           <CardContent>
-            {isCohortsLoading ? <p>Loading...</p> :
+            {isCohortsLoading ? <div className="h-10 w-full bg-muted rounded animate-pulse"></div> :
              cohorts && cohorts.length > 0 ? (
                 <ul className="space-y-2">
                     {cohorts.map(c => (
@@ -123,10 +144,10 @@ export default function UserProfilePage({ params }: { params: { userId: string }
 
         <Card>
           <CardHeader>
-            <CardTitle>Member of Study Groups</CardTitle>
+            <CardTitle className="flex items-center gap-2"><Users className="mr-2" />Study Groups</CardTitle>
           </CardHeader>
           <CardContent>
-             {isGroupsLoading ? <p>Loading...</p> :
+             {isGroupsLoading ? <div className="h-10 w-full bg-muted rounded animate-pulse"></div> :
              studyGroups && studyGroups.length > 0 ? (
                 <ul className="space-y-2">
                     {studyGroups.map(g => (

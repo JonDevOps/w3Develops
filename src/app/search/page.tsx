@@ -12,6 +12,48 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Users } from 'lucide-react';
 
+function SearchResultsSkeleton() {
+  return (
+    <div className="space-y-8 animate-pulse">
+      <div className="h-8 w-96 bg-muted rounded"></div>
+      
+      {/* Users Skeleton */}
+      <section>
+        <div className="h-7 w-24 bg-muted rounded mb-4"></div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[...Array(3)].map((_, i) => (
+            <Card key={i}><CardContent className="p-4 flex items-center gap-4">
+              <div className="rounded-full bg-muted h-12 w-12"></div>
+              <div className="flex-1 space-y-2">
+                <div className="h-4 bg-muted rounded w-3/4"></div>
+                <div className="h-4 bg-muted rounded w-full"></div>
+              </div>
+            </CardContent></Card>
+          ))}
+        </div>
+      </section>
+
+      {/* Groups Skeleton */}
+      <section>
+        <div className="h-7 w-36 bg-muted rounded mb-4"></div>
+        <div className="grid gap-6 md:grid-cols-2">
+           {[...Array(2)].map((_, i) => (
+            <Card key={i}><CardHeader>
+              <div className="h-6 w-48 bg-muted rounded"></div>
+              <div className="h-5 w-24 bg-muted rounded-full mt-2"></div>
+            </CardHeader><CardContent className="space-y-3">
+              <div className="h-4 bg-muted rounded w-full"></div>
+              <div className="flex items-center gap-4 mt-4">
+                <div className="h-5 w-32 bg-muted rounded"></div>
+                <div className="h-6 w-28 bg-muted rounded-full"></div>
+              </div>
+            </CardContent></Card>
+          ))}
+        </div>
+      </section>
+    </div>
+  )
+}
 
 function SearchResults() {
   const searchParams = useSearchParams();
@@ -25,7 +67,7 @@ function SearchResults() {
         collection(firestore, 'users'), 
         orderBy('name_lowercase'),
         where('name_lowercase', '>=', lowerQ),
-        where('name_lowercase', '<', lowerQ + '\uf8ff'),
+        where('name_lowercase', '<=', lowerQ + '\uf8ff'),
         limit(10)
     );
   }, [q, firestore]);
@@ -37,7 +79,7 @@ function SearchResults() {
         collection(firestore, 'studyGroups'), 
         orderBy('name_lowercase'),
         where('name_lowercase', '>=', lowerQ),
-        where('name_lowercase', '<', lowerQ + '\uf8ff'),
+        where('name_lowercase', '<=', lowerQ + '\uf8ff'),
         limit(10)
     );
   }, [q, firestore]);
@@ -49,7 +91,7 @@ function SearchResults() {
         collection(firestore, 'cohorts'), 
         orderBy('name_lowercase'),
         where('name_lowercase', '>=', lowerQ),
-        where('name_lowercase', '<', lowerQ + '\uf8ff'),
+        where('name_lowercase', '<=', lowerQ + '\uf8ff'),
         limit(10)
     );
   }, [q, firestore]);
@@ -64,12 +106,14 @@ function SearchResults() {
   if (!q) {
     return <div className="text-center text-muted-foreground">Please enter a search term to begin.</div>;
   }
+  
+  if (isLoading) {
+    return <SearchResultsSkeleton />;
+  }
 
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-headline">Search Results for &quot;{q}&quot;</h1>
-      
-      {isLoading && <p>Searching...</p>}
       
       {noResults && (
         <div className="text-center py-12">
@@ -159,9 +203,8 @@ function SearchResults() {
 
 export default function SearchPage() {
     return (
-        <Suspense fallback={<div>Loading search...</div>}>
+        <Suspense fallback={<SearchResultsSkeleton />}>
             <SearchResults />
         </Suspense>
     )
 }
-    
