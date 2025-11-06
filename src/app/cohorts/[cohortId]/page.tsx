@@ -1,7 +1,7 @@
 'use client';
 
 import { useDoc, useMemoFirebase, useCollection, useUser } from '@/firebase';
-import { doc, DocumentReference, collection, query, where, Query, runTransaction, updateDoc } from 'firebase/firestore';
+import { doc, DocumentReference, collection, query, where, Query, runTransaction } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Cohort, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
