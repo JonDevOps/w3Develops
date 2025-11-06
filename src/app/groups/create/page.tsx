@@ -74,8 +74,7 @@ export default function CreateGroupPage() {
         }
 
         // If no suitable group, proceed to create
-        const groupsRef = collection(firestore, 'studyGroups');
-        const newGroupRef = await addDoc(groupsRef, {
+        const newGroupRef = await addDoc(collection(firestore, 'studyGroups'), {
             name: name,
             name_lowercase: name.toLowerCase(),
             topic: finalTopic,

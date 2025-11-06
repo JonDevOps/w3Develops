@@ -76,8 +76,7 @@ export default function CreateCohortPage() {
       }
 
       // If no suitable cohort found, create a new one
-      const cohortsRef = collection(firestore, 'cohorts');
-      const newCohortRef = await addDoc(cohortsRef, {
+      const newCohortRef = await addDoc(collection(firestore, 'cohorts'), {
         name: name,
         name_lowercase: name.toLowerCase(),
         topic: finalTopic,

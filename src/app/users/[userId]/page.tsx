@@ -2,7 +2,7 @@
 
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { useState, useEffect, useMemo } from 'react';
-import { doc, getDoc, DocumentReference, collection, query, where, Query, DocumentData } from 'firebase/firestore';
+import { doc, getDoc, DocumentReference, collection, query, where, Query } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,6 +28,10 @@ function ProfilePageSkeleton() {
             </div>
           </div>
         </CardContent>
+      </Card>
+      <Card>
+        <CardHeader><div className="h-6 w-32 bg-muted rounded"></div></CardHeader>
+        <CardContent><div className="h-10 w-full bg-muted rounded"></div></CardContent>
       </Card>
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
