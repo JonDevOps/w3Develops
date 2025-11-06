@@ -18,7 +18,8 @@ export interface StudyGroup {
   name: string;
   description?: string;
   memberIds: string[];
-  skill: string;
+  topic: string;
+  commitment: string;
 }
 
 export interface Project {
@@ -27,4 +28,6 @@ export interface Project {
   description?: string;
   ownerId: string;
   githubUrl?: string;
+  topic: string;
+  commitment: string;
 }

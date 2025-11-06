@@ -30,7 +30,7 @@ export default function Header() {
             Study Groups
           </Link>
           <Link href="/projects" className="text-muted-foreground transition-colors hover:text-foreground">
-            Projects
+            Build Projects
           </Link>
         </nav>
         <div className="flex items-center gap-4">

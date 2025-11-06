@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Project } from '@/lib/types';
-import { Github } from 'lucide-react';
+import { Github, Clock } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 export default function ProjectsPage() {
   const firestore = useFirestore();
@@ -43,10 +44,17 @@ export default function ProjectsPage() {
         {projects?.map(project => (
           <Card key={project.id}>
             <CardHeader>
-              <CardTitle>{project.name}</CardTitle>
+              <div className='flex justify-between items-start'>
+                <CardTitle>{project.name}</CardTitle>
+                <Badge variant="secondary" className="w-fit">{project.topic}</Badge>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground h-20 overflow-hidden">{project.description}</p>
+               <div className="flex items-center text-sm text-muted-foreground">
+                    <Clock className="w-4 h-4 mr-1" />
+                    <span>{project.commitment}</span>
+                </div>
               {project.githubUrl && (
                  <Button variant="outline" asChild size="sm">
                     <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">

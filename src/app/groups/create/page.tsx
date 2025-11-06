@@ -7,9 +7,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useAuth, useFirestore, useUser, addDocumentNonBlocking } from '@/firebase';
+import { useFirestore, useUser, addDocumentNonBlocking } from '@/firebase';
 import { useToast } from "@/components/ui/use-toast";
 import { collection } from 'firebase/firestore';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+
+const topics = [
+  "HTML/CSS", "JavaScript", "Python", "React", "Django", "Node.js", "Rust", 
+  "Digital Marketing", "Web3", "Cryptocurrency", "Cybersecurity", "NFTs", "SQL", 
+  "Artificial Intelligence", "Web Design", "Programming Fundamentals", "Other"
+];
+
+const commitmentLevels = {
+  'part-time': 'Part-time (6 hours/day, 6 days/week)',
+  'full-time': 'Full-time (12 hours/day, 6 days/week)',
+}
 
 export default function CreateGroupPage() {
   const firestore = useFirestore();
@@ -18,8 +31,10 @@ export default function CreateGroupPage() {
   const { toast } = useToast();
 
   const [name, setName] = useState('');
-  const [skill, setSkill] = useState('');
+  const [topic, setTopic] = useState('');
+  const [customTopic, setCustomTopic] = useState('');
   const [description, setDescription] = useState('');
+  const [commitment, setCommitment] = useState('part-time');
 
   const handleCreateGroup = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,17 +42,19 @@ export default function CreateGroupPage() {
         toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to create a group." });
         return;
     }
-    if (!name || !skill) {
-      toast({ variant: "destructive", title: "Missing Fields", description: "Please fill out the group name and skill." });
+    const finalTopic = topic === 'Other' ? customTopic : topic;
+    if (!name || !finalTopic || !commitment) {
+      toast({ variant: "destructive", title: "Missing Fields", description: "Please fill out all required fields." });
       return;
     }
     
     const groupsCollection = collection(firestore, "studyGroups");
     const newGroup = {
         name,
-        skill,
+        topic: finalTopic,
         description,
-        memberIds: [user.uid], // Creator is the first member
+        commitment: commitmentLevels[commitment as keyof typeof commitmentLevels],
+        memberIds: [user.uid],
     };
     
     addDocumentNonBlocking(groupsCollection, newGroup)
@@ -46,7 +63,6 @@ export default function CreateGroupPage() {
         router.push('/groups');
       })
       .catch((e) => {
-        // Errors are handled globally by FirebaseErrorListener, but we can still toast a generic message
         console.error(e);
         toast({ variant: "destructive", title: "Something went wrong", description: "Could not create the group." });
       });
@@ -58,7 +74,7 @@ export default function CreateGroupPage() {
         <CardHeader>
           <CardTitle>Create a New Study Group</CardTitle>
           <CardDescription>
-            Start a new group to collaborate with others on a specific skill.
+            Start a new group to collaborate with others on a specific topic.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -67,10 +83,40 @@ export default function CreateGroupPage() {
               <Label htmlFor="name">Group Name</Label>
               <Input id="name" placeholder="e.g., React Rangers" value={name} onChange={(e) => setName(e.target.value)} required />
             </div>
+            
             <div className="grid gap-2">
-              <Label htmlFor="skill">Primary Skill</Label>
-              <Input id="skill" placeholder="e.g., Next.js, Firebase, UI/UX" value={skill} onChange={(e) => setSkill(e.target.value)} required />
+              <Label htmlFor="topic">Topic of Study</Label>
+               <Select onValueChange={setTopic} value={topic}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a topic" />
+                </SelectTrigger>
+                <SelectContent>
+                  {topics.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
+
+            {topic === 'Other' && (
+              <div className="grid gap-2">
+                <Label htmlFor="customTopic">Custom Topic</Label>
+                <Input id="customTopic" placeholder="Enter your custom topic" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} required />
+              </div>
+            )}
+
+            <div className="grid gap-2">
+                <Label>Time Commitment</Label>
+                <RadioGroup defaultValue="part-time" onValueChange={setCommitment} value={commitment}>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="part-time" id="part-time" />
+                        <Label htmlFor="part-time">{commitmentLevels['part-time']}</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="full-time" id="full-time" />
+                        <Label htmlFor="full-time">{commitmentLevels['full-time']}</Label>
+                    </div>
+                </RadioGroup>
+            </div>
+
              <div className="grid gap-2">
               <Label htmlFor="description">Description</Label>
               <Textarea id="description" placeholder="What's the main goal of this group?" value={description} onChange={(e) => setDescription(e.target.value)} />

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { StudyGroup } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { Users } from 'lucide-react';
+import { Users, Clock } from 'lucide-react';
 
 export default function GroupsPage() {
   const firestore = useFirestore();
@@ -45,13 +45,19 @@ export default function GroupsPage() {
           <Card key={group.id}>
             <CardHeader>
               <CardTitle>{group.name}</CardTitle>
-              <Badge variant="secondary" className="w-fit">{group.skill}</Badge>
+              <Badge variant="secondary" className="w-fit">{group.topic}</Badge>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-4">{group.description}</p>
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Users className="w-4 h-4 mr-1" />
-                <span>{group.memberIds.length} Member(s)</span>
+              <div className="flex items-center text-sm text-muted-foreground gap-4">
+                <div className="flex items-center">
+                    <Users className="w-4 h-4 mr-1" />
+                    <span>{group.memberIds.length} Member(s)</span>
+                </div>
+                <div className="flex items-center">
+                    <Clock className="w-4 h-4 mr-1" />
+                    <span>{group.commitment}</span>
+                </div>
               </div>
             </CardContent>
           </Card>

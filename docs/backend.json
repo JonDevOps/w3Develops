@@ -88,15 +88,20 @@
             "type": "string"
           }
         },
-        "skill": {
+        "topic": {
           "type": "string",
-          "description": "The primary skill associated with this study group."
+          "description": "The primary topic associated with this study group."
+        },
+        "commitment": {
+            "type": "string",
+            "description": "The expected time commitment for the group."
         }
       },
       "required": [
         "id",
         "name",
-        "skill"
+        "topic",
+        "commitment"
       ]
     },
     "Project": {
@@ -120,12 +125,22 @@
         "githubUrl": {
           "type": "string",
           "format": "uri"
+        },
+        "topic": {
+          "type": "string",
+          "description": "The primary topic associated with this project."
+        },
+        "commitment": {
+          "type": "string",
+          "description": "The expected time commitment for the project."
         }
       },
       "required": [
         "id",
         "name",
-        "ownerId"
+        "ownerId",
+        "topic",
+        "commitment"
       ]
     }
   },
