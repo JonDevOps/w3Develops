@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Menu, User } from 'lucide-react'
+import { Menu, User, Briefcase } from 'lucide-react'
 import { useAuth, useUser } from '@/firebase'
 import { signOut } from 'firebase/auth'
 
@@ -18,7 +18,8 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Logo } from '../logo'
 
 const navLinks = [
-  { href: '/groups', label: 'Groups' },
+  { href: '/groups', label: 'Study Groups' },
+  { href: '/projects', label: 'Build Projects' },
   { href: '/#features', label: 'Features' },
   { href: '/#how-it-works', label: 'How It Works' },
 ]

@@ -90,7 +90,7 @@ export default function Home() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="secondary">
-              <Link href="/groups">See All Groups</Link>
+              <Link href="/groups">See All Study Groups</Link>
             </Button>
           </div>
         </div>

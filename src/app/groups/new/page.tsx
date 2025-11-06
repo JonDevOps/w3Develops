@@ -19,7 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useFirebase } from '@/firebase'
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
+import { addDoc, collection, serverTimestamp, query, where, getDocs, runTransaction, doc } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 
 const technologies = ["html/css", "javascript", "python", "react", "django", "nodejs", "rust", "digital marketing", "web3", "cryptocurrency", "cybersecurity", "nfts", "sql", "artifical intelligence", "web design", "programming fundementals"] as const;
@@ -59,18 +59,30 @@ export default function NewGroupPage() {
     const groupsCollectionRef = collection(firestore, 'learning_groups');
     
     try {
-        await addDoc(groupsCollectionRef, {
+      await runTransaction(firestore, async (transaction) => {
+        const groupCountQuery = query(groupsCollectionRef, where('primarySkill', '==', values.primarySkill), where('timeCommitment', '==', values.timeCommitment));
+        const groupCountSnapshot = await getDocs(groupCountQuery);
+        const groupCount = groupCountSnapshot.size;
+
+        const groupName = `${values.primarySkill.charAt(0).toUpperCase() + values.primarySkill.slice(1)} ${values.timeCommitment} ${groupCount + 1}`;
+
+        const newGroupRef = doc(groupsCollectionRef);
+
+        transaction.set(newGroupRef, {
             ...values,
+            name: groupName, // Use the generated name
             memberIds: [user.uid],
             groupSizeLimit: 25,
             createdAt: serverTimestamp(),
-        })
+        });
 
         toast({
             title: 'Group Created!',
-            description: `${values.name} has been successfully created.`,
+            description: `${groupName} has been successfully created.`,
         })
-        router.push('/groups');
+      });
+      
+      router.push('/groups');
     } catch (e: any) {
         toast({
             variant: "destructive",
@@ -83,7 +95,7 @@ export default function NewGroupPage() {
   return (
     <div className="container mx-auto max-w-2xl px-4 py-12">
       <h1 className="font-headline text-3xl md:text-4xl font-bold tracking-tight mb-8">
-        Create a New Group
+        Create a New Study Group
       </h1>
       <Card>
         <CardHeader>
@@ -104,6 +116,9 @@ export default function NewGroupPage() {
                     <FormControl>
                       <Input placeholder="e.g., React Rangers" {...field} />
                     </FormControl>
+                     <FormDescription>
+                      This will be overridden by our standard naming convention (e.g. JavaScript Part-time 1), but can be changed later.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -164,8 +179,8 @@ export default function NewGroupPage() {
                         </Trigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="part-time">Part-time (6-12 hours/week)</SelectItem>
-                        <SelectItem value="full-time">Full-time (12+ hours/week)</SelectItem>
+                        <SelectItem value="part-time">Part-time (6 hours per day)</SelectItem>
+                        <SelectItem value="full-time">Full-time (12 hours per day)</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

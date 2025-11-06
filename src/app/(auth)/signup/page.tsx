@@ -97,10 +97,6 @@ export default function SignupPage() {
       batch.set(usernameDocRef, { userId: user.uid });
       await batch.commit();
 
-      toast({
-        title: "Account Created!",
-        description: "You have been successfully signed up.",
-      })
       router.push('/dashboard');
     } catch(e: any) {
       toast({

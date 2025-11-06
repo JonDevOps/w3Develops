@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { useFirebase } from '@/firebase'
-import { addDoc, collection, query, where, getDocs, limit, updateDoc, arrayUnion, doc, serverTimestamp, FieldPath } from 'firebase/firestore'
+import { addDoc, collection, query, where, getDocs, limit, updateDoc, arrayUnion, doc, serverTimestamp, runTransaction } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 
 const technologies = ["html/css", "javascript", "python", "react", "django", "nodejs", "rust", "digital marketing", "web3", "cryptocurrency", "cybersecurity", "nfts", "sql", "artifical intelligence", "web design", "programming fundementals"] as const;
@@ -54,11 +54,12 @@ export default function FindGroupPage() {
 
     const groupsRef = collection(firestore, 'learning_groups');
     
-    // Query for an existing group that matches the criteria
+    // Query for an existing group that matches the criteria and has space
     const q = query(
       groupsRef,
       where('primarySkill', '==', values.primarySkill),
       where('timeCommitment', '==', values.timeCommitment),
+      where('memberIds.length', '<', 25), // This is not a valid firestore query
       limit(1)
     );
 
@@ -67,37 +68,43 @@ export default function FindGroupPage() {
 
         let groupJoined = false;
 
-        if (!querySnapshot.empty) {
-            const groupDoc = querySnapshot.docs[0];
+        const availableGroups = querySnapshot.docs.filter(doc => doc.data().memberIds.length < doc.data().groupSizeLimit);
+
+        if (availableGroups.length > 0) {
+            const groupDoc = availableGroups[0];
             const groupData = groupDoc.data();
             const memberIds = groupData.memberIds as string[];
 
-            if (memberIds.length < groupData.groupSizeLimit) {
-              // Found a group with space, attempt to join
-              if (memberIds.includes(user.uid)) {
-                  toast({
-                      title: 'Already in Group',
-                      description: `You are already a member of ${groupData.name}.`,
-                  });
-                  router.push('/groups');
-                  return;
-              }
-
-              const groupRef = doc(firestore, 'learning_groups', groupDoc.id);
-              await updateDoc(groupRef, {
-                  memberIds: arrayUnion(user.uid)
-              });
-              toast({
-                  title: 'Joined Existing Group!',
-                  description: `You have been added to ${groupData.name}.`,
-              });
-              groupJoined = true;
+            if (memberIds.includes(user.uid)) {
+                toast({
+                    title: 'Already in Group',
+                    description: `You are already a member of ${groupData.name}.`,
+                });
+                router.push('/groups');
+                return;
             }
+
+            const groupRef = doc(firestore, 'learning_groups', groupDoc.id);
+            await updateDoc(groupRef, {
+                memberIds: arrayUnion(user.uid)
+            });
+            toast({
+                title: 'Joined Existing Group!',
+                description: `You have been added to ${groupData.name}.`,
+            });
+            groupJoined = true;
         }
         
         if (!groupJoined) {
-            // No group found or existing ones are full, create a new one
-            const groupName = `${values.primarySkill.charAt(0).toUpperCase() + values.primarySkill.slice(1)} ${values.timeCommitment === 'full-time' ? 'Coders' : 'Learners'}`;
+          // No group found or existing ones are full, create a new one
+          await runTransaction(firestore, async (transaction) => {
+            const groupCountQuery = query(groupsRef, where('primarySkill', '==', values.primarySkill), where('timeCommitment', '==', values.timeCommitment));
+            const groupCountSnapshot = await getDocs(groupCountQuery);
+            const groupCount = groupCountSnapshot.size;
+
+            const groupName = `${values.primarySkill.charAt(0).toUpperCase() + values.primarySkill.slice(1)} ${values.timeCommitment} ${groupCount + 1}`;
+            
+            const newGroupRef = doc(groupsRef);
             const newGroup = {
                 name: groupName,
                 description: `A group for developers focusing on ${values.primarySkill}.`,
@@ -107,12 +114,14 @@ export default function FindGroupPage() {
                 groupSizeLimit: 25,
                 createdAt: serverTimestamp(),
             };
-            await addDoc(groupsRef, newGroup);
+            transaction.set(newGroupRef, newGroup);
+
             toast({
                 title: 'New Group Created!',
                 description: `You have been placed in a new group: ${groupName}.`,
             });
-            groupJoined = true;
+          });
+          groupJoined = true;
         }
 
         if (groupJoined) {
@@ -131,7 +140,7 @@ export default function FindGroupPage() {
   return (
     <div className="container mx-auto max-w-2xl px-4 py-12">
       <h1 className="font-headline text-3xl md:text-4xl font-bold tracking-tight mb-8">
-        Find Your Perfect Group
+        Find Your Perfect Study Group
       </h1>
       <Card>
         <CardHeader>
@@ -154,7 +163,7 @@ export default function FindGroupPage() {
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a technology" />
-                        </SelectTrigger>
+                        </Trigger>
                       </FormControl>
                       <SelectContent>
                          {technologies.map(tech => <SelectItem key={tech} value={tech}>{tech.charAt(0).toUpperCase() + tech.slice(1)}</SelectItem>)}
@@ -185,7 +194,7 @@ export default function FindGroupPage() {
                             <RadioGroupItem value="part-time" />
                           </FormControl>
                           <Label className="font-normal">
-                            Part-time (6-12 hours per week)
+                            Part-time (6 hours per day)
                           </Label>
                         </FormItem>
                         <FormItem className="flex items-center space-x-3 space-y-0">
@@ -193,7 +202,7 @@ export default function FindGroupPage() {
                             <RadioGroupItem value="full-time" />
                           </FormControl>
                           <Label className="font-normal">
-                            Full-time (12+ hours per week)
+                            Full-time (12 hours per day)
                           </Label>
                         </FormItem>
                       </RadioGroup>

@@ -123,9 +123,9 @@ export default function GroupsPage() {
   const renderEmptyState = () => (
     <div className="text-center py-16 px-4 border-2 border-dashed rounded-lg">
       <Group className="mx-auto h-16 w-16 text-muted-foreground" />
-      <h2 className="mt-6 text-xl font-semibold">No Groups Yet</h2>
+      <h2 className="mt-6 text-xl font-semibold">No Study Groups Yet</h2>
       <p className="mt-2 text-muted-foreground">
-        It looks like there are no active groups right now.
+        It looks like there are no active study groups right now.
       </p>
       <div className="mt-6">
         <Button asChild>
@@ -142,7 +142,7 @@ export default function GroupsPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="mb-12 text-center">
         <h1 className="font-headline text-4xl font-bold tracking-tight md:text-5xl">
-          Learning Groups
+          Study Groups
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-foreground/80">
           Discover active groups, create your own, or get matched with the perfect team.
@@ -176,6 +176,7 @@ export default function GroupsPage() {
             <CardContent className="flex-grow">
               <div className="mb-6 flex flex-wrap gap-2">
                 <Badge variant="secondary">{group.primarySkill}</Badge>
+                <Badge variant="outline">{group.timeCommitment}</Badge>
               </div>
               <h4 className="mb-2 text-sm font-semibold text-muted-foreground">
                 Members ({group.memberIds.length} / 25)

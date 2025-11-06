@@ -56,8 +56,6 @@ export default function LoginPage() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     initiateEmailSignIn(auth, values.email, values.password)
-    // No toast needed here, the onAuthStateChanged listener in the provider
-    // will trigger the useEffect to handle the redirect.
   }
 
   if (isUserLoading || user) {
