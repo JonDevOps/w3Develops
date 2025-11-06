@@ -10,8 +10,8 @@ service cloud.firestore {
     }
 
     // Allow public read on study groups.
-    // Allow creation if user is authenticated and is the first member.
-    // Allow updates (joining/leaving) if user is authenticated.
+    // Allow creation if user is authenticated and provides valid data.
+    // Allow updates only for joining or leaving.
     match /studyGroups/{groupId} {
       allow read: if true;
       allow create: if request.auth != null 
@@ -23,16 +23,17 @@ service cloud.firestore {
                     && request.resource.data.memberIds is list
                     && request.resource.data.memberIds.size() == 1
                     && request.resource.data.memberIds[0] == request.auth.uid;
-      allow update: if request.auth != null 
-                    // Allow joining (adding self)
-                    && (request.auth.uid in request.resource.data.memberIds && !(request.auth.uid in resource.data.memberIds))
-                    // Allow leaving (removing self)
-                    || (request.auth.uid in resource.data.memberIds && !(request.auth.uid in request.resource.data.memberIds));
+      allow update: if request.auth != null && (
+                      // Allow joining (adding self)
+                      (request.auth.uid in request.resource.data.memberIds && !(request.auth.uid in resource.data.memberIds)) ||
+                      // Allow leaving (removing self)
+                      (!(request.auth.uid in request.resource.data.memberIds) && (request.auth.uid in resource.data.memberIds))
+                    );
     }
 
     // Allow public read on cohorts.
-    // Allow creation if user is authenticated and is the first member.
-    // Allow updates (joining/leaving) if user is authenticated.
+    // Allow creation if user is authenticated and provides valid data.
+    // Allow updates only for joining or leaving.
     match /cohorts/{cohortId} {
       allow read: if true;
       allow create: if request.auth != null 
@@ -44,11 +45,12 @@ service cloud.firestore {
                     && request.resource.data.memberIds is list
                     && request.resource.data.memberIds.size() == 1
                     && request.resource.data.memberIds[0] == request.auth.uid;
-      allow update: if request.auth != null 
-                    // Allow joining (adding self)
-                    && (request.auth.uid in request.resource.data.memberIds && !(request.auth.uid in resource.data.memberIds))
-                    // Allow leaving (removing self)
-                    || (request.auth.uid in resource.data.memberIds && !(request.auth.uid in request.resource.data.memberIds));
+      allow update: if request.auth != null && (
+                      // Allow joining (adding self)
+                      (request.auth.uid in request.resource.data.memberIds && !(request.auth.uid in resource.data.memberIds)) ||
+                      // Allow leaving (removing self)
+                      (!(request.auth.uid in request.resource.data.memberIds) && (request.auth.uid in resource.data.memberIds))
+                    );
     }
   }
 }
