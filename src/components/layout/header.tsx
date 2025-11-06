@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Code2, Search } from 'lucide-react';
+import { Code2, Search, Menu } from 'lucide-react';
 import { useUser, useAuth } from '@/firebase';
 import {
   DropdownMenu,
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import SearchBar from './search-bar';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
@@ -25,10 +25,10 @@ export default function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
 
-  // Close search on navigation
-  useState(() => {
+  // Close search on navigation change
+  useEffect(() => {
     setIsSearchOpen(false);
-  });
+  }, [pathname]);
 
   return (
     <header className="bg-card border-b sticky top-0 z-50">
@@ -48,7 +48,7 @@ export default function Header() {
             </nav>
         </div>
         
-        <div className={cn("w-full md:w-auto md:flex-1 md:flex md:justify-center md:px-4", { 'hidden md:flex': !isSearchOpen })}>
+        <div className={cn("w-full md:w-auto md:flex-1 md:flex md:justify-center md:px-8", { 'hidden md:flex': !isSearchOpen })}>
            <div className="w-full md:max-w-md">
              <SearchBar />
            </div>
@@ -105,6 +105,24 @@ export default function Header() {
               </Button>
             </div>
           )}
+           <div className="md:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-6 w-6" />
+                  <span className="sr-only">Toggle Menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href="/groups">Study Groups</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/cohorts">Build Cohorts</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </header>
