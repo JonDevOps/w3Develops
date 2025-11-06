@@ -19,7 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { PlaceHolderImages } from '@/lib/placeholder-images'
-import { useDoc, useFirebase, useMemoFirebase, setDocumentNonBlocking, useUser } from '@/firebase'
+import { useDoc, useFirebase, useMemoFirebase, setDocumentNonBlocking } from '@/firebase'
 import { doc } from 'firebase/firestore'
 import { useEffect } from 'react'
 import { Trash } from 'lucide-react'

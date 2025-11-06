@@ -19,17 +19,16 @@ import {
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { ArrowRight, PlusCircle, Users, Group } from 'lucide-react'
-import { useCollection, useDoc, useFirebase, useMemoFirebase, useUser } from '@/firebase'
+import { useCollection, useDoc, useFirebase, useMemoFirebase } from '@/firebase'
 import { collection, doc } from 'firebase/firestore'
 
 function MemberAvatar({ memberId }: { memberId: string }) {
   const { firestore } = useFirebase()
-  const { isUserLoading } = useUser();
   
   const userProfileRef = useMemoFirebase(() => {
-    if (isUserLoading || !firestore) return null
+    if (!firestore) return null
     return doc(firestore, 'users', memberId, 'profile', 'data')
-  }, [firestore, memberId, isUserLoading])
+  }, [firestore, memberId])
 
   const { data: member } = useDoc(userProfileRef)
 

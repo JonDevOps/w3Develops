@@ -15,12 +15,11 @@ import React from 'react'
 
 function MemberPill({ memberId }: { memberId: string }) {
   const { firestore } = useFirebase()
-  const { isUserLoading } = useUser();
-
+  
   const userProfileRef = useMemoFirebase(() => {
-    if (isUserLoading || !firestore) return null
+    if (!firestore) return null
     return doc(firestore, 'users', memberId, 'profile', 'data')
-  }, [firestore, memberId, isUserLoading])
+  }, [firestore, memberId])
 
   const { data: member } = useDoc(userProfileRef)
 
