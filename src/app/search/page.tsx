@@ -2,9 +2,8 @@
 
 import { Suspense, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useCollection } from '@/firebase';
+import { useCollection, useFirestore } from '@/firebase';
 import { collection, query, where, orderBy, limit, Query, DocumentData } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
 import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
