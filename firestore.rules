@@ -50,9 +50,11 @@ service cloud.firestore {
      * @path /learning_groups/{learningGroupId}
      * @allow (get, list) Any signed-in user can read group information.
      * @allow (create) A user can create a learning group. The 'memberIds' should contain creator's id.
-     * @allow (update, delete) Only members of the learning group can update or delete it.
+     * @allow (update) A user can join a group if they are authenticated and the group is not full.
+     * @allow (delete) Only members of the learning group can delete it.
      * @deny (create) A user cannot create a group if their ID isn't in 'memberIds'.
-     * @deny (update, delete) A non-member cannot update or delete the learning group.
+     * @deny (update) A non-member cannot update the group unless they are joining.
+     * @deny (delete) A non-member cannot delete the learning group.
      * @principle Enforces shared access based on the 'memberIds' array, enabling secure group management.
      */
     match /learning_groups/{learningGroupId} {
@@ -63,14 +65,24 @@ service cloud.firestore {
       function isMember() {
           return isSignedIn() && request.auth.uid in resource.data.memberIds;
       }
+      
+      function isJoining() {
+        let incomingMembers = request.resource.data.memberIds;
+        let existingMembers = resource.data.memberIds;
+        return isSignedIn() 
+               && incomingMembers.size() == existingMembers.size() + 1
+               && incomingMembers.hasAll(existingMembers)
+               && incomingMembers.hasAll([request.auth.uid])
+               && request.resource.data.size() == resource.data.size();
+      }
 
       function isExistingMember() {
         return isMember() && resource != null;
       }
 
       allow get, list: if true;
-      allow create: if isSignedIn() && request.resource.data.memberIds.hasAny([request.auth.uid]);
-      allow update: if isExistingMember();
+      allow create: if isSignedIn() && request.resource.data.memberIds.hasAll([request.auth.uid]);
+      allow update: if isExistingMember() || isJoining();
       allow delete: if isExistingMember();
     }
   }
