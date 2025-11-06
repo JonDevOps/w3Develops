@@ -40,9 +40,9 @@ function MemberList({ memberIds }: { memberIds: string[] }) {
                     <div className="flex flex-col items-center text-center gap-2 hover:bg-accent p-2 rounded-lg">
                         <Avatar>
                             <AvatarImage src={member.profilePictureUrl} />
-                            <AvatarFallback>{member.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
+                            <AvatarFallback>{member.username?.charAt(0).toUpperCase()}</AvatarFallback>
                         </Avatar>
-                        <p className="text-sm font-medium truncate w-full">{member.displayName}</p>
+                        <p className="text-sm font-medium truncate w-full">{member.username}</p>
                     </div>
                 </Link>
             ))}
