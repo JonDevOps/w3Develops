@@ -29,6 +29,7 @@ export function Header() {
   const auth = useAuth()
 
   const handleLogout = async () => {
+    if (!auth) return;
     await signOut(auth)
   }
 
@@ -89,7 +90,7 @@ export function Header() {
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                    <DropdownMenuItem asChild>
-                    <Link href="/dashboard">Dashboard</Link>
+                    <Link href="/account">Dashboard</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/profile">Profile</Link>

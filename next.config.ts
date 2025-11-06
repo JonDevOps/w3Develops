@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/',
-        destination: '/dashboard',
+        destination: '/account',
         permanent: false,
         has: [
           {
@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/dashboard',
+        source: '/account',
         destination: '/login',
         permanent: false,
         missing: [
