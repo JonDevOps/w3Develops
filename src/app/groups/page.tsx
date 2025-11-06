@@ -19,43 +19,33 @@ import {
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { ArrowRight, PlusCircle, Users, Group } from 'lucide-react'
-import { useCollection, useDoc, useFirebase, useMemoFirebase } from '@/firebase'
-import { collection, doc } from 'firebase/firestore'
+import { useCollection, useFirebase, useMemoFirebase } from '@/firebase'
+import { collection } from 'firebase/firestore'
 
-function MemberAvatar({ memberId }: { memberId: string }) {
-  const { firestore, isUserLoading } = useFirebase()
-  
-  const userProfileRef = useMemoFirebase(() => {
-    if (isUserLoading || !firestore) return null
-    return doc(firestore, 'users', memberId, 'profile', 'data')
-  }, [firestore, memberId, isUserLoading])
+type GroupMember = {
+  userId: string;
+  username: string;
+  profilePictureUrl?: string;
+}
 
-  const { data: member, isLoading } = useDoc(userProfileRef)
-
-  if (isLoading || isUserLoading) {
-    return (
-      <Avatar className="border-2 border-background">
-        <AvatarFallback>?</AvatarFallback>
-      </Avatar>
-    )
-  }
-  
+function MemberAvatar({ member }: { member: GroupMember }) {
   if (!member) {
-    return null; // Don't render if member not found or still loading
+    return null;
   }
-
 
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger>
-          <Avatar className="border-2 border-background">
-            <AvatarImage src={member.profilePictureUrl} alt={member.displayName} />
-            <AvatarFallback>{member.username?.charAt(0) || '?'}</AvatarFallback>
-          </Avatar>
+        <TooltipTrigger asChild>
+            <Link href={`/profile/${member.username}`}>
+                <Avatar className="border-2 border-background">
+                    <AvatarImage src={member.profilePictureUrl} alt={member.username} />
+                    <AvatarFallback>{member.username?.charAt(0) || '?'}</AvatarFallback>
+                </Avatar>
+            </Link>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{member.username || member.displayName}</p>
+          <p>{member.username}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
@@ -66,8 +56,8 @@ export default function GroupsPage() {
   const { firestore, isUserLoading } = useFirebase()
   
   const groupsCollectionRef = useMemoFirebase(
-    () => (isUserLoading || !firestore ? null : collection(firestore, 'learning_groups')),
-    [firestore, isUserLoading]
+    () => (firestore ? collection(firestore, 'learning_groups') : null),
+    [firestore]
   )
   const { data: groups, isLoading } = useCollection(groupsCollectionRef)
 
@@ -130,16 +120,16 @@ export default function GroupsPage() {
                 <Badge variant="outline">{group.timeCommitment}</Badge>
               </div>
               <h4 className="mb-2 text-sm font-semibold text-muted-foreground">
-                Members ({group.memberIds.length} / 25)
+                Members ({group.members.length} / {group.groupSizeLimit || 25})
               </h4>
               <div className="-space-x-2 flex">
-                {group.memberIds.slice(0, 5).map((memberId: string) => (
-                  <MemberAvatar key={memberId} memberId={memberId} />
+                {group.members.slice(0, 5).map((member: GroupMember) => (
+                  <MemberAvatar key={member.userId} member={member} />
                 ))}
-                {group.memberIds.length > 5 && (
+                {group.members.length > 5 && (
                   <Avatar className="border-2 border-background">
                     <AvatarFallback>
-                      +{group.memberIds.length - 5}
+                      +{group.members.length - 5}
                     </AvatarFallback>
                   </Avatar>
                 )}

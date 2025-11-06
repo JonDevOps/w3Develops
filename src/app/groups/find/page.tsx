@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { useFirebase } from '@/firebase'
-import { collection, query, where, getDocs, limit, runTransaction, doc, serverTimestamp, arrayUnion, increment } from 'firebase/firestore'
+import { collection, query, where, getDocs, runTransaction, doc, serverTimestamp, arrayUnion, getDoc } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 
 const technologies = ["html/css", "javascript", "python", "react", "django", "nodejs", "rust", "digital marketing", "web3", "cryptocurrency", "cybersecurity", "nfts", "sql", "artifical intelligence", "web design", "programming fundementals"] as const;
@@ -31,7 +31,7 @@ const findGroupSchema = z.object({
 
 export default function FindGroupPage() {
   const { toast } = useToast()
-  const { user, firestore } = useFirebase()
+  const { user, firestore, isUserLoading } = useFirebase()
   const router = useRouter()
 
   const form = useForm<z.infer<typeof findGroupSchema>>({
@@ -57,7 +57,6 @@ export default function FindGroupPage() {
     const groupsRef = collection(firestore, 'learning_groups');
     
     try {
-      // Find suitable groups outside the transaction first to reduce transaction time
       const suitableGroupsQuery = query(
         groupsRef,
         where('primarySkill', '==', values.primarySkill),
@@ -67,22 +66,39 @@ export default function FindGroupPage() {
       
       const availableGroups = querySnapshot.docs.filter(doc => {
           const data = doc.data();
-          return data.memberIds.length < data.groupSizeLimit && !data.memberIds.includes(user.uid);
+          const memberIds = data.members?.map((m: any) => m.userId) || []
+          return memberIds.length < data.groupSizeLimit && !memberIds.includes(user.uid);
       });
 
       if (availableGroups.length > 0) {
-        // Attempt to join the first available group in a transaction
         const groupToJoinRef = availableGroups[0].ref;
         await runTransaction(firestore, async (transaction) => {
-          const groupDoc = await transaction.get(groupToJoinRef);
+          const [groupDoc, userProfileDoc] = await Promise.all([
+            transaction.get(groupToJoinRef),
+            getDoc(doc(firestore, 'users', user.uid, 'profile', 'data'))
+          ]);
+          
           if (!groupDoc.exists()) {
             throw "This group no longer exists. Please try again.";
           }
+          if (!userProfileDoc.exists()) {
+              throw "Could not find your user profile.";
+          }
+
           const groupData = groupDoc.data();
-          if (groupData.memberIds.length >= groupData.groupSizeLimit) {
+          const userProfile = userProfileDoc.data();
+
+          if (groupData.members.length >= groupData.groupSizeLimit) {
             throw "This group is now full. Please try finding another one.";
           }
-          transaction.update(groupToJoinRef, { memberIds: arrayUnion(user.uid) });
+          
+          const newMember = {
+              userId: user.uid,
+              username: userProfile.username,
+              profilePictureUrl: userProfile.profilePictureUrl || ''
+          };
+
+          transaction.update(groupToJoinRef, { members: arrayUnion(newMember) });
         });
         toast({
           title: 'Joined Existing Group!',
@@ -92,9 +108,20 @@ export default function FindGroupPage() {
         // No available group, create a new one within a transaction
         const counterRef = doc(firestore, 'counters', `group--${values.primarySkill}--${values.timeCommitment}`);
         const newGroupRef = doc(groupsRef); // Auto-generate ID for the new group
+        const userProfileRef = doc(firestore, 'users', user.uid, 'profile', 'data');
+
 
         await runTransaction(firestore, async (transaction) => {
-            const counterDoc = await transaction.get(counterRef);
+            const [counterDoc, userProfileDoc] = await Promise.all([
+                transaction.get(counterRef),
+                transaction.get(userProfileRef)
+            ]);
+            
+            if (!userProfileDoc.exists()) {
+                throw "Could not find your user profile to create a new group.";
+            }
+            const userProfile = userProfileDoc.data();
+
             const newCount = counterDoc.exists() ? counterDoc.data().count + 1 : 1;
             
             const skillLabel = values.primarySkill.charAt(0).toUpperCase() + values.primarySkill.slice(1);
@@ -106,14 +133,18 @@ export default function FindGroupPage() {
                 description: `A group for developers focusing on ${values.primarySkill}.`,
                 primarySkill: values.primarySkill,
                 timeCommitment: values.timeCommitment,
-                memberIds: [user.uid],
+                members: [{
+                    userId: user.uid,
+                    username: userProfile.username,
+                    profilePictureUrl: userProfile.profilePictureUrl || ''
+                }],
                 groupSizeLimit: 25,
                 createdAt: serverTimestamp(),
             };
             
             transaction.set(newGroupRef, newGroup);
             if (counterDoc.exists()) {
-              transaction.update(counterRef, { count: increment(1) });
+              transaction.update(counterRef, { count: counterDoc.data().count + 1 });
             } else {
               transaction.set(counterRef, { count: 1 });
             }
@@ -135,6 +166,10 @@ export default function FindGroupPage() {
             description: typeof e === 'string' ? e : e.message || "Could not find or create a group. Please try again.",
         });
     }
+  }
+  
+  if (isUserLoading) {
+    return <div className="container mx-auto px-4 py-12">Loading...</div>
   }
   
   return (
@@ -212,7 +247,7 @@ export default function FindGroupPage() {
                 )}
               />
 
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting || isUserLoading}>
                 {isSubmitting ? 'Finding Group...' : 'Find My Group'}
               </Button>
             </form>

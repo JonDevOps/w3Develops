@@ -90,11 +90,17 @@
           ],
           "description": "The expected time commitment for the group."
         },
-        "memberIds": {
+        "members": {
           "type": "array",
-          "description": "References to UserProfiles that are members of this group.",
+          "description": "An array of member objects, containing their ID, username, and profile picture URL.",
           "items": {
-            "type": "string"
+            "type": "object",
+            "properties": {
+              "userId": { "type": "string" },
+              "username": { "type": "string" },
+              "profilePictureUrl": { "type": "string", "format": "uri" }
+            },
+            "required": ["userId", "username"]
           }
         },
         "groupSizeLimit": {
@@ -115,7 +121,7 @@
       "required": [
         "name",
         "primarySkill",
-        "memberIds",
+        "members",
         "createdAt",
         "groupSizeLimit",
         "timeCommitment"

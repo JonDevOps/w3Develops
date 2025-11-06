@@ -33,7 +33,7 @@ const newGroupSchema = z.object({
 
 export default function NewGroupPage() {
   const { toast } = useToast()
-  const { user, firestore } = useFirebase()
+  const { user, firestore, isUserLoading } = useFirebase()
   const router = useRouter()
 
   const form = useForm<z.infer<typeof newGroupSchema>>({
@@ -62,10 +62,17 @@ export default function NewGroupPage() {
       const groupsCollectionRef = collection(firestore, 'learning_groups');
       const counterRef = doc(firestore, 'counters', `group--${values.primarySkill}--${values.timeCommitment}`);
       const newGroupRef = doc(groupsCollectionRef); // Auto-generate ID
+      const userProfileRef = doc(firestore, 'users', user.uid, 'profile', 'data');
 
       await runTransaction(firestore, async (transaction) => {
         let groupName = values.name;
         
+        const userProfileDoc = await transaction.get(userProfileRef);
+        if (!userProfileDoc.exists()) {
+          throw new Error("Could not find your user profile to create a group.");
+        }
+        const userProfile = userProfileDoc.data();
+
         if (!groupName) {
             const counterDoc = await transaction.get(counterRef);
             const newCount = counterDoc.exists() ? counterDoc.data().count + 1 : 1;
@@ -83,7 +90,11 @@ export default function NewGroupPage() {
         transaction.set(newGroupRef, {
             ...values,
             name: groupName,
-            memberIds: [user.uid],
+            members: [{
+              userId: user.uid,
+              username: userProfile.username,
+              profilePictureUrl: userProfile.profilePictureUrl || '',
+            }],
             groupSizeLimit: 25,
             createdAt: serverTimestamp(),
         });
@@ -101,6 +112,10 @@ export default function NewGroupPage() {
             description: e.message || "Could not create group.",
         });
     }
+  }
+
+  if (isUserLoading) {
+    return <div className="container mx-auto px-4 py-12">Loading...</div>
   }
   
   return (
@@ -201,7 +216,7 @@ export default function NewGroupPage() {
               />
 
 
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting || isUserLoading}>
                 {isSubmitting ? 'Creating Group...' : 'Create Group'}
               </Button>
             </form>

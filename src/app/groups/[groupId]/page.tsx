@@ -2,48 +2,26 @@
 'use client'
 
 import { useDoc, useFirebase, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase'
-import { arrayRemove, doc } from 'firebase/firestore'
+import { arrayRemove, arrayUnion, doc } from 'firebase/firestore'
 import { notFound, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { LogOut, MessageSquare } from 'lucide-react'
+import { LogOut, MessageSquare, UserPlus } from 'lucide-react'
 import Link from 'next/link'
 import { useToast } from '@/hooks/use-toast'
 import React from 'react'
 
-function MemberPill({ memberId }: { memberId: string }) {
-  const { firestore, isUserLoading } = useFirebase()
-  
-  const userProfileRef = useMemoFirebase(() => {
-    if (isUserLoading || !firestore) return null
-    return doc(firestore, 'users', memberId, 'profile', 'data')
-  }, [firestore, memberId, isUserLoading])
+type GroupMember = {
+  userId: string;
+  username: string;
+  profilePictureUrl?: string;
+  displayName?: string;
+}
 
-  const { data: member, isLoading } = useDoc(userProfileRef)
-
-  if (isLoading || isUserLoading) {
-    return (
-      <div className="flex items-center gap-2 rounded-full border bg-card p-1 pr-3">
-        <Avatar className="h-8 w-8">
-          <AvatarFallback>?</AvatarFallback>
-        </Avatar>
-        <span className="text-sm font-medium">Loading...</span>
-      </div>
-    )
-  }
-
-  if (!member) {
-      return (
-      <div className="flex items-center gap-2 rounded-full border bg-destructive/20 p-1 pr-3">
-        <Avatar className="h-8 w-8">
-          <AvatarFallback>!</AvatarFallback>
-        </Avatar>
-        <span className="text-sm font-medium text-destructive-foreground">User not found</span>
-      </div>
-    )
-  }
+function MemberPill({ member }: { member: GroupMember }) {
+  if (!member) return null;
 
   return (
     <Link href={`/profile/${member.username}`} className="transition-transform hover:scale-105">
@@ -52,7 +30,7 @@ function MemberPill({ memberId }: { memberId: string }) {
             <AvatarImage src={member.profilePictureUrl} alt={member.displayName} />
             <AvatarFallback>{member.username?.charAt(0) || '?'}</AvatarFallback>
         </Avatar>
-        <span className="text-sm font-medium">{member.displayName}</span>
+        <span className="text-sm font-medium">{member.displayName || member.username}</span>
         </div>
     </Link>
   )
@@ -67,18 +45,27 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
   const groupId = resolvedParams.groupId;
 
   const groupRef = useMemoFirebase(() => {
-    if (isUserLoading || !firestore || !groupId) return null
+    if (!firestore || !groupId) return null
     return doc(firestore, 'learning_groups', groupId)
-  }, [firestore, groupId, isUserLoading])
+  }, [firestore, groupId])
 
-  const { data: group, isLoading } = useDoc(groupRef)
+  const userProfileRef = useMemoFirebase(() => {
+      if (!user || !firestore) return null;
+      return doc(firestore, 'users', user.uid, 'profile', 'data')
+  }, [user, firestore])
 
+  const { data: group, isLoading: isGroupLoading } = useDoc(groupRef)
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc(userProfileRef)
+  
   const handleLeaveGroup = async () => {
-    if (!user || !groupRef) return
+    if (!user || !groupRef || !group) return
+
+    const memberToRemove = group.members.find((m: GroupMember) => m.userId === user.uid)
+    if (!memberToRemove) return;
 
     try {
         updateDocumentNonBlocking(groupRef, {
-            memberIds: arrayRemove(user.uid)
+            members: arrayRemove(memberToRemove)
         });
         toast({
             title: "You have left the group.",
@@ -93,8 +80,36 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
         })
     }
   }
+  
+  const handleJoinGroup = async () => {
+      if (!user || !groupRef || !userProfile) return;
 
-  if (isLoading || isUserLoading) {
+      const newMember = {
+          userId: user.uid,
+          username: userProfile.username,
+          profilePictureUrl: userProfile.profilePictureUrl || '',
+          displayName: userProfile.displayName
+      };
+
+      try {
+          updateDocumentNonBlocking(groupRef, {
+              members: arrayUnion(newMember)
+          });
+          toast({
+              title: "Welcome to the group!",
+              description: "You have successfully joined.",
+          });
+      } catch(e: any) {
+          toast({
+              variant: "destructive",
+              title: "Uh oh! Something went wrong.",
+              description: e.message || "Could not join the group.",
+          })
+      }
+  }
+
+
+  if (isGroupLoading || isUserLoading || isProfileLoading) {
     return <div className="container mx-auto px-4 py-12">Loading group dashboard...</div>
   }
 
@@ -102,7 +117,9 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
     return notFound()
   }
 
-  const isMember = user && group.memberIds.includes(user.uid);
+  const memberIds = group.members.map((m: GroupMember) => m.userId);
+  const isMember = user && memberIds.includes(user.uid);
+  const isFull = group.members.length >= group.groupSizeLimit;
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -123,9 +140,13 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
                         <MessageSquare className="mr-2"/> Group Chat
                     </a>
                 </Button>
-                {isMember && (
+                {isMember ? (
                     <Button variant="destructive" onClick={handleLeaveGroup}>
                         <LogOut className="mr-2"/> Leave Group
+                    </Button>
+                ) : (
+                    <Button onClick={handleJoinGroup} disabled={isFull}>
+                        <UserPlus className="mr-2"/> {isFull ? "Group Full" : "Join Group"}
                     </Button>
                 )}
             </div>
@@ -149,11 +170,11 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
         <div className="md:col-span-1">
             <Card>
                 <CardHeader>
-                    <CardTitle>Members ({group.memberIds.length} / {group.groupSizeLimit})</CardTitle>
+                    <CardTitle>Members ({group.members.length} / {group.groupSizeLimit})</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-wrap gap-3">
-                    {group.memberIds.map((memberId: string) => (
-                        <MemberPill key={memberId} memberId={memberId} />
+                    {group.members.map((member: GroupMember) => (
+                        <MemberPill key={member.userId} member={member} />
                     ))}
                 </CardContent>
             </Card>
