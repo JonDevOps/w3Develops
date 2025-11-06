@@ -1,6 +1,6 @@
 'use client';
-import { useState } from 'react';
-import { useUser, useFirestore } from '@/firebase';
+import { useState, useMemo } from 'react';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
@@ -10,13 +10,15 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { topics, commitmentLevels, ONE_WEEK_IN_MS } from '@/lib/constants';
-import { collection, query, where, limit, getDocs, runTransaction, addDoc, serverTimestamp, arrayUnion, doc } from 'firebase/firestore';
+import { topics, commitmentLevels } from '@/lib/constants';
+import { collection, query, where } from 'firebase/firestore';
+import { Cohort } from '@/lib/types';
+import JoinCohortButton from '../JoinCohortButton';
+import Link from 'next/link';
 
 interface JoinCohortModalProps {
   isOpen: boolean;
@@ -27,128 +29,122 @@ export function JoinCohortModal({ isOpen, onClose }: JoinCohortModalProps) {
   const { user } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
-  const { toast } = useToast();
 
   const [topic, setTopic] = useState('');
   const [customTopic, setCustomTopic] = useState('');
   const [commitment, setCommitment] = useState('part-time');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [step, setStep] = useState(1);
 
-  const handleMatchmaking = async () => {
-    if (!user || !firestore) {
-      toast({ variant: "destructive", title: "Not Authenticated" });
-      return;
-    }
-    const finalTopic = topic === 'Other' ? customTopic : topic;
-    const finalCommitment = commitmentLevels[commitment as keyof typeof commitmentLevels];
+  const finalTopic = topic === 'Other' ? customTopic : topic;
+  const finalCommitment = commitmentLevels[commitment as keyof typeof commitmentLevels];
 
-    if (!finalTopic || !finalCommitment) {
-      toast({ variant: "destructive", title: "Missing Fields" });
-      return;
-    }
+  const matchingCohortsQuery = useMemoFirebase(() => {
+    if (step !== 2 || !finalTopic || !finalCommitment || !user) return null;
+    
+    return query(
+      collection(firestore, 'cohorts'),
+      where('topic', '==', finalTopic),
+      where('commitment', '==', finalCommitment)
+    );
+  }, [step, finalTopic, finalCommitment, firestore, user]);
 
-    setIsSubmitting(true);
+  const { data: matchingCohorts, isLoading } = useCollection<Cohort>(matchingCohortsQuery);
 
-    try {
-      const oneWeekAgo = new Date(Date.now() - ONE_WEEK_IN_MS);
-      const cohortsRef = collection(firestore, 'cohorts');
-      
-      const q = query(
-        cohortsRef,
-        where('topic', '==', finalTopic),
-        where('commitment', '==', finalCommitment),
-        where('createdAt', '>', serverTimestamp.fromMillis(oneWeekAgo.getTime())),
-        orderBy('createdAt', 'desc')
-      );
-
-      const querySnapshot = await getDocs(q);
-      let suitableCohortId: string | null = null;
-
-      for (const doc of querySnapshot.docs) {
-        const cohort = doc.data();
-        if (cohort.memberIds.length < 25 && !cohort.memberIds.includes(user.uid)) {
-          suitableCohortId = doc.id;
-          break;
-        }
-      }
-      
-      if (suitableCohortId) {
-        // Found a suitable cohort, join it
-        const cohortRef = doc(firestore, 'cohorts', suitableCohortId);
-        await runTransaction(firestore, async (transaction) => {
-            transaction.update(cohortRef, { memberIds: arrayUnion(user.uid) });
-        });
-        toast({ title: "Joined Existing Cohort!", description: "We found a matching cohort for you." });
-        router.push(`/cohorts/${suitableCohortId}`);
-      } else {
-        // No suitable cohort found, create a new one
-        const newCohortRef = await addDoc(cohortsRef, {
-            name: `${finalTopic} Cohort`,
-            name_lowercase: `${finalTopic} Cohort`.toLowerCase(),
-            topic: finalTopic,
-            commitment: finalCommitment,
-            description: `A new cohort for ${finalTopic} learners with a ${finalCommitment} commitment.`,
-            memberIds: [user.uid],
-            createdAt: serverTimestamp(),
-        });
-        toast({ title: "New Cohort Created!", description: "We couldn't find a match, so we created a new cohort for you." });
-        router.push(`/cohorts/${newCohortRef.id}`);
-      }
-      onClose();
-    } catch (error: any) {
-      toast({ variant: "destructive", title: "Something went wrong", description: error.message });
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleFindCohorts = () => {
+    if (!finalTopic || !finalCommitment) return;
+    setStep(2);
   };
+  
+  const handleClose = () => {
+    setStep(1);
+    setTopic('');
+    setCustomTopic('');
+    setCommitment('part-time');
+    onClose();
+  }
+
+  const userCohorts = useMemo(() => {
+    return matchingCohorts?.filter(c => c.memberIds.length < 25 && !c.memberIds.includes(user?.uid || '')) || [];
+  }, [matchingCohorts, user]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Join a Build Cohort</DialogTitle>
           <DialogDescription>
-            Select your preferences and we'll match you with a cohort or create a new one.
+            {step === 1 
+              ? "Select your preferences to find matching cohorts."
+              : "Here are cohorts that match your criteria. Join one or create a new one."
+            }
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="topic">Topic / Technology</Label>
-            <Select onValueChange={setTopic} value={topic} required>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a topic" />
-              </SelectTrigger>
-              <SelectContent>
-                {topics.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-          {topic === 'Other' && (
+        
+        {step === 1 && (
+          <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="customTopic">Custom Topic</Label>
-              <Input id="customTopic" placeholder="e.g., Svelte" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} required />
+              <Label htmlFor="topic">Topic / Technology</Label>
+              <Select onValueChange={setTopic} value={topic}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a topic" />
+                </SelectTrigger>
+                <SelectContent>
+                  {topics.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
-          )}
-          <div className="grid gap-2">
-            <Label>Time Commitment</Label>
-            <RadioGroup defaultValue="part-time" onValueChange={setCommitment} value={commitment}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="part-time" id="part-time" />
-                <Label htmlFor="part-time">{commitmentLevels['part-time']}</Label>
+            {topic === 'Other' && (
+              <div className="grid gap-2">
+                <Label htmlFor="customTopic">Custom Topic</Label>
+                <input id="customTopic" placeholder="e.g., Svelte" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
               </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="full-time" id="full-time" />
-                <Label htmlFor="full-time">{commitmentLevels['full-time']}</Label>
-              </div>
-            </RadioGroup>
+            )}
+            <div className="grid gap-2">
+              <Label>Time Commitment</Label>
+              <RadioGroup defaultValue="part-time" onValueChange={setCommitment} value={commitment}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="part-time" id="part-time" />
+                  <Label htmlFor="part-time">{commitmentLevels['part-time']}</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="full-time" id="full-time" />
+                  <Label htmlFor="full-time">{commitmentLevels['full-time']}</Label>
+                </div>
+              </RadioGroup>
+            </div>
+            <Button onClick={handleFindCohorts} disabled={!finalTopic || !finalCommitment}>
+              Find Cohorts
+            </Button>
           </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleMatchmaking} disabled={isSubmitting}>
-            {isSubmitting ? 'Searching...' : 'Find or Create Cohort'}
-          </Button>
-        </DialogFooter>
+        )}
+
+        {step === 2 && (
+          <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto">
+            {isLoading && <p>Searching for cohorts...</p>}
+            {!isLoading && userCohorts.length > 0 && (
+              <div className="space-y-2">
+                {userCohorts.map(cohort => (
+                  <div key={cohort.id} className="flex items-center justify-between p-2 border rounded-md">
+                    <div>
+                      <p className="font-semibold">{cohort.name}</p>
+                      <p className="text-sm text-muted-foreground">{cohort.memberIds.length} / 25 members</p>
+                    </div>
+                    <JoinCohortButton cohort={cohort} />
+                  </div>
+                ))}
+              </div>
+            )}
+             {!isLoading && userCohorts.length === 0 && (
+                <div className="text-center py-4 space-y-2">
+                    <p className="text-muted-foreground">No matching open cohorts found.</p>
+                    <Button asChild onClick={handleClose}>
+                        <Link href="/cohorts/create">Create a New Cohort</Link>
+                    </Button>
+                </div>
+            )}
+            <Button variant="outline" onClick={() => setStep(1)} className="w-full">Back</Button>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

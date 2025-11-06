@@ -1,7 +1,7 @@
 'use client';
 
 import { useDoc, useMemoFirebase, useCollection, useUser } from '@/firebase';
-import { doc, DocumentReference, collection, query, where, Query, runTransaction } from 'firebase/firestore';
+import { doc, DocumentReference, collection, query, where, Query, runTransaction, arrayRemove } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Cohort, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -86,10 +86,8 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
                 throw new Error("Cohort does not exist!");
             }
             
-            const currentMemberIds = cohortDoc.data().memberIds || [];
-            const newMemberIds = currentMemberIds.filter((id: string) => id !== user.uid);
-            
-            transaction.update(cohortDocRef, { memberIds: newMemberIds });
+            // Use arrayRemove to safely remove the user's ID
+            transaction.update(cohortDocRef, { memberIds: arrayRemove(user.uid) });
         });
 
         toast({ title: 'Success', description: 'You have left the cohort.' });

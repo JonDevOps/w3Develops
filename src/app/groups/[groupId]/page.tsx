@@ -1,7 +1,7 @@
 'use client';
 
 import { useDoc, useMemoFirebase, useCollection, useUser } from '@/firebase';
-import { doc, DocumentReference, collection, query, where, Query, runTransaction } from 'firebase/firestore';
+import { doc, DocumentReference, collection, query, where, Query, runTransaction, arrayRemove } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { StudyGroup, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -84,11 +84,8 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
             if (!groupDoc.exists()) {
                 throw new Error("Group does not exist!");
             }
-            
-            const currentMemberIds = groupDoc.data().memberIds || [];
-            const newMemberIds = currentMemberIds.filter((id: string) => id !== user.uid);
-            
-            transaction.update(groupDocRef, { memberIds: newMemberIds });
+            // Use arrayRemove for a safe and concise update.
+            transaction.update(groupDocRef, { memberIds: arrayRemove(user.uid) });
         });
 
         toast({ title: 'Success', description: 'You have left the group.' });
