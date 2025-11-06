@@ -28,7 +28,7 @@ export default function LoginPage() {
     e.preventDefault();
     try {
         await initiateEmailSignIn(auth, email, password);
-        // onAuthStateChanged will handle the redirect
+        // onAuthStateChanged in the provider will trigger the useEffect above to redirect.
     } catch(error: any) {
         let description = "An unknown error occurred during sign in.";
         switch(error.code) {

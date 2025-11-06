@@ -30,15 +30,17 @@ async function findAndJoin(collectionName: 'studyGroups' | 'cohorts', params: Ma
         const collectionRef = firestore.collection(collectionName);
 
         const result = await firestore.runTransaction(async (transaction) => {
-            // Query for a suitable group/cohort
+            // Query for a suitable group/cohort that the user is NOT already in.
             const q = collectionRef
                 .where('topic', '==', topic)
                 .where('commitment', '==', commitment)
-                .where('createdAt', '>', oneWeekAgo);
+                .where('createdAt', '>', oneWeekAgo)
+                .where('memberIds', 'not-in', [userId]);
 
             const querySnapshot = await transaction.get(q);
             
             let suitableGroup = null;
+            // Find the first group with space.
             for (const doc of querySnapshot.docs) {
                 if (doc.data().memberIds.length < MAX_MEMBERS) {
                     suitableGroup = doc;

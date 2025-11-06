@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +22,13 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
 
+  useEffect(() => {
+    // Redirect if user is already logged in
+    if (!isUserLoading && user) {
+      router.push('/account');
+    }
+  }, [user, isUserLoading, router]);
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!displayName || !email || !password) {
@@ -42,15 +49,16 @@ export default function SignupPage() {
           id: newUser.uid,
           email: email,
           displayName: displayName,
+          name_lowercase: displayName.toLowerCase(),
           profilePictureUrl: '',
           bio: '',
           socialLinks: {},
           skills: [],
           learningPace: 'Intermediate',
         };
-        // This is a non-blocking write.
+        // This is a non-blocking write. It will optimistically update.
         setDocumentNonBlocking(userRef, userData);
-        router.push('/account');
+        // The useEffect hook will handle the redirect to /account once the user state is updated.
       }
     } catch (error: any) {
       let description = "An unknown error occurred during sign up.";
@@ -75,8 +83,6 @@ export default function SignupPage() {
   };
   
   if (isUserLoading || user) {
-     // Redirect if user is already logged in
-    if (user) router.push('/account');
     return <div>Loading...</div>;
   }
 
