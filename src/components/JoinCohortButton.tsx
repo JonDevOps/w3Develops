@@ -8,11 +8,13 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { PlusCircle } from 'lucide-react';
 import { Cohort } from '@/lib/types';
+import { useRouter } from 'next/navigation';
 
 export default function JoinCohortButton({ cohort }: { cohort: Cohort }) {
     const { user } = useUser();
     const { toast } = useToast();
     const firestore = useFirestore();
+    const router = useRouter();
     const [isJoining, setIsJoining] = useState(false);
     
     if (!user) return null;
@@ -49,6 +51,7 @@ export default function JoinCohortButton({ cohort }: { cohort: Cohort }) {
             updateDocumentNonBlocking(cohortRef, { memberIds: arrayUnion(user.uid) });
             
             toast({ title: 'Success!', description: `You've joined the cohort: ${cohort.name}`});
+            router.push(`/cohorts/${cohort.id}`);
 
         } catch (error: any) {
              toast({ variant: 'destructive', title: 'Could Not Join', description: error.message || "An unexpected error occurred." });

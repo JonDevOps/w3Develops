@@ -8,11 +8,13 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { PlusCircle } from 'lucide-react';
 import { StudyGroup } from '@/lib/types';
+import { useRouter } from 'next/navigation';
 
 export default function JoinGroupButton({ group }: { group: StudyGroup }) {
     const { user } = useUser();
     const { toast } = useToast();
     const firestore = useFirestore();
+    const router = useRouter();
     const [isJoining, setIsJoining] = useState(false);
     
     if (!user) return null;
@@ -51,6 +53,7 @@ export default function JoinGroupButton({ group }: { group: StudyGroup }) {
             updateDocumentNonBlocking(groupRef, { memberIds: arrayUnion(user.uid) });
 
             toast({ title: 'Success!', description: `You've joined the group: ${group.name}` });
+            router.push(`/groups/${group.id}`);
 
         } catch (error: any) {
             toast({ variant: 'destructive', title: 'Could Not Join', description: error.message || "An unexpected error occurred." });
