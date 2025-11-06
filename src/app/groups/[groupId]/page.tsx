@@ -1,7 +1,7 @@
 'use client';
 
-import { useDoc, useMemoFirebase, useCollection, useUser } from '@/firebase';
-import { doc, DocumentReference, collection, query, where, Query } from 'firebase/firestore';
+import { useDoc, useMemoFirebase, useCollection, useUser, updateDocumentNonBlocking } from '@/firebase';
+import { doc, DocumentReference, collection, query, where, Query, arrayRemove } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { StudyGroup, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -11,7 +11,6 @@ import { Users, CalendarDays, ArrowLeft, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { formatTimestamp } from '@/lib/utils';
-import { leaveGroup } from '@/app/actions/membership';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -72,17 +71,19 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
   const isMember = group?.memberIds.includes(user?.uid || '');
 
   const handleLeave = async () => {
-    if (!user || !group) return;
+    if (!user || !group || !groupDocRef) return;
 
     if (!confirm('Are you sure you want to leave this group?')) return;
     
     setIsLeaving(true);
-    const result = await leaveGroup(group.id, user.uid);
-    if (result.success) {
+    try {
+        updateDocumentNonBlocking(groupDocRef, {
+            memberIds: arrayRemove(user.uid)
+        });
         toast({ title: 'Success', description: 'You have left the group.' });
         router.push('/account');
-    } else {
-        toast({ variant: 'destructive', title: 'Error', description: result.message });
+    } catch (error: any) {
+        toast({ variant: 'destructive', title: 'Error', description: error.message || "Could not leave the group." });
     }
     setIsLeaving(false);
   }

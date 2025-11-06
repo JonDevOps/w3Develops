@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useCollection, useMemoFirebase, useUser } from '@/firebase';
-import { collection, Query, orderBy, where, limit, query } from 'firebase/firestore';
+import { useCollection, useMemoFirebase, useUser, updateDocumentNonBlocking } from '@/firebase';
+import { collection, Query, orderBy, where, limit, query, getDocs, arrayUnion, doc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,23 +14,18 @@ import { Input } from '@/components/ui/input';
 import { formatTimestamp } from '@/lib/utils';
 import { ONE_WEEK_IN_MS } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
-import { findAndJoinCohort } from '@/app/actions/matchmaking';
 import { useToast } from '@/components/ui/use-toast';
 
 function JoinCohortButton({ cohort }: { cohort: Cohort }) {
     const { user } = useUser();
     const { toast } = useToast();
-    const router = useRouter();
+    const firestore = useFirestore();
     const [isJoining, setIsJoining] = useState(false);
     
-    // Check if the user is already a member
     const isMember = user ? cohort.memberIds.includes(user.uid) : false;
-
-    // A user can join if the cohort is new, not full, and they are not a member
     const canJoin = cohort.memberIds.length < 25 && !isMember;
 
     if (!canJoin) {
-        // If they are a member, show a View button instead
         if (isMember) {
              return (
                 <Button variant="outline" asChild size="sm">
@@ -38,29 +33,45 @@ function JoinCohortButton({ cohort }: { cohort: Cohort }) {
                 </Button>
             );
         }
-        return null; // Otherwise, don't show any button
+        return null; 
     }
     
     const handleJoin = async () => {
-        if (!user) {
+        if (!user || !firestore) {
             toast({ variant: 'destructive', title: 'Not Logged In', description: 'You must be logged in to join a cohort.' });
             return;
         }
         setIsJoining(true);
-        const result = await findAndJoinCohort({
-            topic: cohort.topic,
-            commitment: cohort.commitment,
-            userId: user.uid,
-        });
+        
+        try {
+            // Client-side check: See if user is already in a similar cohort
+            const userCohortsQuery = query(
+                collection(firestore, 'cohorts'),
+                where('memberIds', 'array-contains', user.uid),
+                where('topic', '==', cohort.topic),
+                where('commitment', '==', cohort.commitment)
+            );
+            const existingCohortsSnapshot = await getDocs(userCohortsQuery);
 
-        if (result.success) {
-            toast({ title: 'Success!', description: result.message });
-            // Re-render or redirect is handled by parent state changes, or we can force a refresh if needed
-            // For now, the button will just change state. A full page reload would show it as "View".
-        } else {
-            toast({ variant: 'destructive', title: 'Could Not Join', description: result.message });
+            if (!existingCohortsSnapshot.empty) {
+                toast({ variant: 'destructive', title: 'Already in a similar cohort', description: "You're already a member of a cohort with the same topic and commitment." });
+                setIsJoining(false);
+                return;
+            }
+
+            // If check passes, attempt to join
+            const cohortRef = doc(firestore, 'cohorts', cohort.id);
+            updateDocumentNonBlocking(cohortRef, {
+                memberIds: arrayUnion(user.uid)
+            });
+
+            toast({ title: 'Success!', description: `You've joined the cohort: ${cohort.name}`});
+
+        } catch (error: any) {
+             toast({ variant: 'destructive', title: 'Could Not Join', description: error.message || "An unexpected error occurred." });
+        } finally {
+            setIsJoining(false);
         }
-        setIsJoining(false);
     };
 
     return (
@@ -133,9 +144,6 @@ export default function CohortsPage() {
           <p className="text-muted-foreground">Explore cohorts building projects in the w3Develops community.</p>
         </div>
         <div className="flex gap-2 flex-shrink-0">
-            <Button asChild>
-                <Link href="/cohorts/join">Join a Cohort</Link>
-            </Button>
             <Button asChild variant="secondary">
                 <Link href="/cohorts/create">Create a Cohort</Link>
             </Button>

@@ -1,7 +1,7 @@
 'use client';
 
-import { useDoc, useMemoFirebase, useCollection, useUser } from '@/firebase';
-import { doc, DocumentReference, collection, query, where, Query } from 'firebase/firestore';
+import { useDoc, useMemoFirebase, useCollection, useUser, updateDocumentNonBlocking } from '@/firebase';
+import { doc, DocumentReference, collection, query, where, Query, arrayRemove } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Cohort, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -11,7 +11,6 @@ import { Github, Users, CalendarDays, ArrowLeft, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { formatTimestamp } from '@/lib/utils';
-import { leaveCohort } from '@/app/actions/membership';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -73,17 +72,19 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
   const isMember = cohort?.memberIds.includes(user?.uid || '');
 
   const handleLeave = async () => {
-    if (!user || !cohort) return;
+    if (!user || !cohort || !cohortDocRef) return;
     
     if (!confirm('Are you sure you want to leave this cohort?')) return;
 
     setIsLeaving(true);
-    const result = await leaveCohort(cohort.id, user.uid);
-    if (result.success) {
+    try {
+        updateDocumentNonBlocking(cohortDocRef, {
+            memberIds: arrayRemove(user.uid)
+        });
         toast({ title: 'Success', description: 'You have left the cohort.' });
         router.push('/account');
-    } else {
-        toast({ variant: 'destructive', title: 'Error', description: result.message });
+    } catch(error: any) {
+        toast({ variant: 'destructive', title: 'Error', description: error.message || "Could not leave cohort." });
     }
     setIsLeaving(false);
   }

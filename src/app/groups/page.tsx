@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
-import { useCollection, useMemoFirebase, useUser } from '@/firebase';
-import { collection, Query, orderBy, where, limit, query } from 'firebase/firestore';
+import { useCollection, useMemoFirebase, useUser, updateDocumentNonBlocking } from '@/firebase';
+import { collection, Query, orderBy, where, limit, query, getDocs, arrayUnion, doc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,23 +14,18 @@ import { Input } from '@/components/ui/input';
 import { formatTimestamp } from '@/lib/utils';
 import { ONE_WEEK_IN_MS } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
-import { findAndJoinGroup } from '@/app/actions/matchmaking';
 import { useToast } from '@/components/ui/use-toast';
 
 function JoinGroupButton({ group }: { group: StudyGroup }) {
     const { user } = useUser();
     const { toast } = useToast();
-    const router = useRouter();
+    const firestore = useFirestore();
     const [isJoining, setIsJoining] = useState(false);
     
-    // Check if the user is already a member
     const isMember = user ? group.memberIds.includes(user.uid) : false;
-
-    // A user can join if the group is new, not full, and they are not a member
     const canJoin = group.memberIds.length < 25 && !isMember;
 
     if (!canJoin) {
-        // If they are a member, show a View button instead
         if (isMember) {
             return (
                 <Button variant="outline" asChild size="sm">
@@ -38,7 +33,7 @@ function JoinGroupButton({ group }: { group: StudyGroup }) {
                 </Button>
             );
         }
-        return null; // Otherwise, don't show any button
+        return null;
     }
     
     const handleJoin = async () => {
@@ -46,20 +41,40 @@ function JoinGroupButton({ group }: { group: StudyGroup }) {
             toast({ variant: 'destructive', title: 'Not Logged In', description: 'You must be logged in to join a group.' });
             return;
         }
-        setIsJoining(true);
-        const result = await findAndJoinGroup({
-            topic: group.topic,
-            commitment: group.commitment,
-            userId: user.uid,
-        });
 
-        if (result.success) {
-            toast({ title: 'Success!', description: result.message });
-            // The button will disappear on re-render as isMember becomes true
-        } else {
-            toast({ variant: 'destructive', title: 'Could Not Join', description: result.message });
+        setIsJoining(true);
+
+        try {
+            // Client-side check: See if user is already in a similar group
+            const userGroupsQuery = query(
+                collection(firestore, 'studyGroups'),
+                where('memberIds', 'array-contains', user.uid),
+                where('topic', '==', group.topic),
+                where('commitment', '==', group.commitment)
+            );
+            const existingGroupsSnapshot = await getDocs(userGroupsQuery);
+
+            if (!existingGroupsSnapshot.empty) {
+                toast({ variant: 'destructive', title: 'Already in a similar group', description: "You're already a member of a group with the same topic and commitment." });
+                setIsJoining(false);
+                return;
+            }
+
+            // If check passes, attempt to join
+            const groupRef = doc(firestore, 'studyGroups', group.id);
+            updateDocumentNonBlocking(groupRef, {
+                memberIds: arrayUnion(user.uid)
+            });
+
+            toast({ title: 'Success!', description: `You've joined the group: ${group.name}` });
+            // The UI will update automatically due to the real-time listener.
+            // isMember will become true, and the button will change to "View Group".
+
+        } catch (error: any) {
+            toast({ variant: 'destructive', title: 'Could Not Join', description: error.message || "An unexpected error occurred." });
+        } finally {
+            setIsJoining(false);
         }
-        setIsJoining(false);
     };
 
     return (
