@@ -16,12 +16,12 @@ function ProfilePageSkeleton() {
     <div className="space-y-8 animate-pulse">
       <Card>
         <CardContent className="p-6 flex flex-col md:flex-row items-center gap-6">
-          <div className="rounded-full bg-muted h-32 w-32"></div>
-          <div className="flex-1 space-y-3 text-center md:text-left">
+          <div className="rounded-full bg-muted h-32 w-32 flex-shrink-0"></div>
+          <div className="flex-1 space-y-3 text-center md:text-left w-full">
             <div className="h-8 bg-muted rounded w-48 mx-auto md:mx-0"></div>
-            <div className="h-4 bg-muted rounded w-full max-w-lg"></div>
-            <div className="h-4 bg-muted rounded w-full max-w-md"></div>
-            <div className="flex justify-center md:justify-start items-center gap-4 mt-4">
+            <div className="h-4 bg-muted rounded w-full max-w-lg mx-auto md:mx-0"></div>
+            <div className="h-4 bg-muted rounded w-full max-w-md mx-auto md:mx-0"></div>
+            <div className="flex justify-center md:justify-start items-center gap-4 pt-2">
               <div className="h-6 w-6 bg-muted rounded"></div>
               <div className="h-6 w-6 bg-muted rounded"></div>
               <div className="h-6 w-6 bg-muted rounded"></div>
@@ -95,7 +95,7 @@ export default function UserProfilePage({ params }: { params: { userId: string }
     <div className="space-y-8">
       <Card>
         <CardContent className="p-6 flex flex-col md:flex-row items-center gap-6">
-          <Avatar className="h-32 w-32 border-4 border-primary">
+          <Avatar className="h-32 w-32 border-4 border-primary flex-shrink-0">
             <AvatarImage src={userProfile.profilePictureUrl || ''} alt={userProfile.username} />
             <AvatarFallback className="text-5xl">{userProfile.username?.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
