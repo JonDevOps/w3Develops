@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { ExternalLink, LogOut, MessageSquare } from 'lucide-react'
+import { LogOut, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
 import { useToast } from '@/hooks/use-toast'
 
@@ -24,7 +24,7 @@ function MemberPill({ memberId }: { memberId: string }) {
   if (!member) {
     return (
       <div className="flex items-center gap-2 rounded-full border bg-card p-1 pr-3">
-        <Avatar className="h-6 w-6">
+        <Avatar className="h-8 w-8">
           <AvatarFallback>?</AvatarFallback>
         </Avatar>
         <span className="text-sm font-medium">Loading...</span>
