@@ -1,7 +1,6 @@
 'use client';
 import { useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -18,6 +17,7 @@ import { collection, query, where } from 'firebase/firestore';
 import { Cohort } from '@/lib/types';
 import JoinCohortButton from '../JoinCohortButton';
 import Link from 'next/link';
+import { Input } from '../ui/input';
 
 interface JoinCohortModalProps {
   isOpen: boolean;
@@ -94,19 +94,19 @@ export function JoinCohortModal({ isOpen, onClose }: JoinCohortModalProps) {
             {topic === 'Other' && (
               <div className="grid gap-2">
                 <Label htmlFor="customTopic">Custom Topic</Label>
-                <Input id="customTopic" placeholder="e.g., Svelte" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+                <Input id="customTopic" placeholder="e.g., Svelte" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} />
               </div>
             )}
             <div className="grid gap-2">
               <Label>Time Commitment</Label>
               <RadioGroup defaultValue="part-time" onValueChange={setCommitment} value={commitment}>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="part-time" id="part-time" />
-                  <Label htmlFor="part-time">{commitmentLevels['part-time']}</Label>
+                  <RadioGroupItem value="part-time" id="part-time-modal" />
+                  <Label htmlFor="part-time-modal">{commitmentLevels['part-time']}</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="full-time" id="full-time" />
-                  <Label htmlFor="full-time">{commitmentLevels['full-time']}</Label>
+                  <RadioGroupItem value="full-time" id="full-time-modal" />
+                  <Label htmlFor="full-time-modal">{commitmentLevels['full-time']}</Label>
                 </div>
               </RadioGroup>
             </div>

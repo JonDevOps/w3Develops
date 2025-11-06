@@ -74,11 +74,11 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
 
   const handleLeave = async () => {
     if (!user || !firestore || !cohortDocRef) return;
-    
+
     if (!confirm('Are you sure you want to leave this cohort?')) return;
 
     setIsLeaving(true);
-    
+
     try {
         await runTransaction(firestore, async (transaction) => {
             const cohortDoc = await transaction.get(cohortDocRef);
@@ -99,7 +99,7 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
     } finally {
         setIsLeaving(false);
     }
-  }
+  };
 
   if (isCohortLoading) {
     return <div className="text-center py-10">Loading cohort dashboard...</div>;

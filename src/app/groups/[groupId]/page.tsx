@@ -97,7 +97,7 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
     } finally {
         setIsLeaving(false);
     }
-  }
+  };
 
   if (isGroupLoading) {
     return <div className="text-center py-10">Loading group dashboard...</div>;
