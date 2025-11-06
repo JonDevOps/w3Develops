@@ -112,9 +112,11 @@ export default function UserProfilePage({ params }: { params: { userId: string }
              cohorts && cohorts.length > 0 ? (
                 <ul className="space-y-2">
                     {cohorts.map(c => (
-                        <li key={c.id} className="font-medium p-2 rounded-md hover:bg-accent flex justify-between items-center">
-                          <span>{c.name}</span>
-                          <Badge variant="secondary">{c.topic}</Badge>
+                        <li key={c.id}>
+                          <Link href={`/cohorts/${c.id}`} className="font-medium p-2 rounded-md hover:bg-accent flex justify-between items-center">
+                            <span>{c.name}</span>
+                            <Badge variant="secondary">{c.topic}</Badge>
+                          </Link>
                         </li>
                     ))}
                 </ul>
@@ -131,9 +133,11 @@ export default function UserProfilePage({ params }: { params: { userId: string }
              studyGroups && studyGroups.length > 0 ? (
                 <ul className="space-y-2">
                     {studyGroups.map(g => (
-                        <li key={g.id} className="font-medium p-2 rounded-md hover:bg-accent flex justify-between items-center">
-                          <span>{g.name}</span>
-                          <Badge variant="secondary">{g.topic}</Badge>
+                        <li key={g.id}>
+                          <Link href={`/groups/${g.id}`} className="font-medium p-2 rounded-md hover:bg-accent flex justify-between items-center">
+                            <span>{g.name}</span>
+                            <Badge variant="secondary">{g.topic}</Badge>
+                          </Link>
                         </li>
                     ))}
                 </ul>

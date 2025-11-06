@@ -4,6 +4,7 @@ export interface UserProfile {
   id: string;
   email: string;
   displayName?: string;
+  name_lowercase: string;
   profilePictureUrl?: string;
   bio?: string;
   socialLinks?: {

@@ -20,12 +20,12 @@ function SearchResults() {
 
   const usersQuery = useMemoFirebase(() => {
     if (!q) return null;
-    const end = q + '\uf8ff';
+    const end = q.toLowerCase() + '\uf8ff';
     return query(
         collection(firestore, 'users'), 
-        orderBy('displayName'),
-        where('displayName', '>=', q),
-        where('displayName', '<=', end),
+        orderBy('name_lowercase'),
+        where('name_lowercase', '>=', q.toLowerCase()),
+        where('name_lowercase', '<=', end),
         limit(10)
     );
   }, [q, firestore]);
@@ -107,21 +107,21 @@ function SearchResults() {
           <h2 className="text-2xl font-semibold mb-4">Study Groups</h2>
           <div className="grid gap-6 md:grid-cols-2">
             {groups.map(group => (
-              <Card key={group.id}>
-                <CardHeader>
-                    <div className="flex justify-between items-start">
-                        <CardTitle>{group.name}</CardTitle>
-                        <Badge variant="secondary">{group.topic}</Badge>
-                    </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                    <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
-                    <div className="flex items-center text-sm text-muted-foreground gap-4">
-                        <div className="flex items-center"><Users className="w-4 h-4 mr-1" />{group.memberIds.length} / 25 Members</div>
-                        <Badge variant="outline" className="w-fit">{group.commitment}</Badge>
-                    </div>
-                </CardContent>
-              </Card>
+              <Link href={`/groups/${group.id}`} key={group.id}>
+                <Card className="hover:bg-accent transition-colors">
+                  <CardHeader>
+                      <CardTitle>{group.name}</CardTitle>
+                      <Badge variant="secondary" className="w-fit">{group.topic}</Badge>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                      <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
+                      <div className="flex items-center text-sm text-muted-foreground gap-4">
+                          <div className="flex items-center"><Users className="w-4 h-4 mr-1" />{group.memberIds.length} / 25 Members</div>
+                          <Badge variant="outline" className="w-fit">{group.commitment}</Badge>
+                      </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </section>
@@ -132,21 +132,21 @@ function SearchResults() {
           <h2 className="text-2xl font-semibold mb-4">Build Cohorts</h2>
           <div className="grid gap-6 md:grid-cols-2">
             {cohorts.map(cohort => (
-               <Card key={cohort.id}>
-                <CardHeader>
-                    <div className="flex justify-between items-start">
-                        <CardTitle>{cohort.name}</CardTitle>
-                        <Badge variant="secondary">{cohort.topic}</Badge>
-                    </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                    <p className="text-sm text-muted-foreground h-10 overflow-hidden">{cohort.description}</p>
-                    <div className="flex items-center text-sm text-muted-foreground gap-4">
-                        <div className="flex items-center"><Users className="w-4 h-4 mr-1" />{cohort.memberIds.length} / 25 Members</div>
-                        <Badge variant="outline" className="w-fit">{cohort.commitment}</Badge>
-                    </div>
-                </CardContent>
-              </Card>
+               <Link href={`/cohorts/${cohort.id}`} key={cohort.id}>
+                <Card className="hover:bg-accent transition-colors">
+                  <CardHeader>
+                      <CardTitle>{cohort.name}</CardTitle>
+                      <Badge variant="secondary" className="w-fit">{cohort.topic}</Badge>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                      <p className="text-sm text-muted-foreground h-10 overflow-hidden">{cohort.description}</p>
+                      <div className="flex items-center text-sm text-muted-foreground gap-4">
+                          <div className="flex items-center"><Users className="w-4 h-4 mr-1" />{cohort.memberIds.length} / 25 Members</div>
+                          <Badge variant="outline" className="w-fit">{cohort.commitment}</Badge>
+                      </div>
+                  </CardContent>
+                </Card>
+               </Link>
             ))}
           </div>
         </section>

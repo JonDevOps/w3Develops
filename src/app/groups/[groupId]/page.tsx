@@ -21,10 +21,8 @@ function MemberList({ memberIds }: { memberIds: string[] }) {
 
     const membersQuery = useMemoFirebase(() => {
         if (!memberIds || memberIds.length === 0) return null;
-        // Firestore 'in' queries are limited to 10 elements.
-        // For larger groups, this would need pagination or a different approach.
-        // For this app, we'll assume groups are smaller than 30.
-        return query(collection(firestore, 'users'), where('id', 'in', memberIds.slice(0, 30))) as Query;
+        // Firestore 'in' queries are limited to 30 elements. Our max group size is smaller.
+        return query(collection(firestore, 'users'), where('id', 'in', memberIds)) as Query;
     }, [firestore, memberIds]);
 
     const { data: members, isLoading } = useCollection<UserProfile>(membersQuery);
