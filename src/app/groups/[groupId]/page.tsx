@@ -21,7 +21,8 @@ function MemberList({ memberIds }: { memberIds: string[] }) {
 
     const membersQuery = useMemoFirebase(() => {
         if (!memberIds || memberIds.length === 0) return null;
-        // Firestore 'in' queries are limited to 30 elements. Our max group size is smaller.
+        // Use a 'where in' query to fetch only the members of this group.
+        // This is secure and efficient. Firestore limits 'in' queries to 30 elements.
         return query(collection(firestore, 'users'), where('id', 'in', memberIds)) as Query;
     }, [firestore, memberIds]);
 
