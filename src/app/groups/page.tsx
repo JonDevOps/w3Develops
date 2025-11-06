@@ -28,7 +28,7 @@ function MemberAvatar({ memberId }: { memberId: string }) {
   const userProfileRef = useMemoFirebase(() => {
     if (!firestore) return null
     return doc(firestore, 'users', memberId, 'profile', 'data')
-  }, [memberId])
+  }, [firestore, memberId])
 
   const { data: member } = useDoc(userProfileRef)
 
@@ -62,7 +62,7 @@ export default function GroupsPage() {
   
   const groupsCollectionRef = useMemoFirebase(
     () => (firestore ? collection(firestore, 'learning_groups') : null),
-    []
+    [firestore]
   )
   const { data: groups, isLoading } = useCollection(groupsCollectionRef)
 
