@@ -108,42 +108,45 @@ export default function GroupsPage() {
       {!isLoading && !isUserLoading && groups && groups.length === 0 && renderEmptyState()}
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {groups?.map((group) => (
-          <Card key={group.id} className="flex flex-col">
-            <CardHeader>
-              <CardTitle className="font-headline text-2xl">{group.name}</CardTitle>
-              <CardDescription>{group.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-grow">
-              <div className="mb-6 flex flex-wrap gap-2">
-                <Badge variant="secondary">{group.primarySkill}</Badge>
-                <Badge variant="outline">{group.timeCommitment}</Badge>
-              </div>
-              <h4 className="mb-2 text-sm font-semibold text-muted-foreground">
-                Members ({group.members.length} / {group.groupSizeLimit || 25})
-              </h4>
-              <div className="-space-x-2 flex">
-                {group.members.slice(0, 5).map((member: GroupMember) => (
-                  <MemberAvatar key={member.userId} member={member} />
-                ))}
-                {group.members.length > 5 && (
-                  <Avatar className="border-2 border-background">
-                    <AvatarFallback>
-                      +{group.members.length - 5}
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button asChild className="w-full">
-                  <Link href={`/groups/${group.id}`}>
-                    View Dashboard <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-            </CardFooter>
-          </Card>
-        ))}
+        {groups?.map((group) => {
+          const members = group.members || [];
+          return (
+            <Card key={group.id} className="flex flex-col">
+              <CardHeader>
+                <CardTitle className="font-headline text-2xl">{group.name}</CardTitle>
+                <CardDescription>{group.description}</CardDescription>
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <div className="mb-6 flex flex-wrap gap-2">
+                  <Badge variant="secondary">{group.primarySkill}</Badge>
+                  <Badge variant="outline">{group.timeCommitment}</Badge>
+                </div>
+                <h4 className="mb-2 text-sm font-semibold text-muted-foreground">
+                  Members ({members.length} / {group.groupSizeLimit || 25})
+                </h4>
+                <div className="-space-x-2 flex">
+                  {members.slice(0, 5).map((member: GroupMember) => (
+                    <MemberAvatar key={member.userId} member={member} />
+                  ))}
+                  {members.length > 5 && (
+                    <Avatar className="border-2 border-background">
+                      <AvatarFallback>
+                        +{members.length - 5}
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button asChild className="w-full">
+                    <Link href={`/groups/${group.id}`}>
+                      View Dashboard <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+              </CardFooter>
+            </Card>
+          )}
+        )}
       </div>
     </div>
   )
