@@ -50,11 +50,12 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
   const { firestore, user } = useFirebase()
   const router = useRouter()
   const { toast } = useToast()
+  const { groupId } = params;
 
   const groupRef = useMemoFirebase(() => {
-    if (!firestore || !params.groupId) return null
-    return doc(firestore, 'learning_groups', params.groupId)
-  }, [firestore, params.groupId])
+    if (!firestore || !groupId) return null
+    return doc(firestore, 'learning_groups', groupId)
+  }, [firestore, groupId])
 
   const { data: group, isLoading } = useDoc(groupRef)
 
