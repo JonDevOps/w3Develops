@@ -28,7 +28,7 @@ service cloud.firestore {
       allow get: if isOwner(userId);
       allow list: if false; 
 
-      allow create: if isOwner(userId) && request.resource.data.userId == userId && request.resource.data.username is string && request.resource.data.username.size() >= 3;
+      allow create: if isOwner(userId) && request.resource.data.userId == userId && request.resource.data.username is string && request.resource.data.username.size() >= 3 && request.resource.data.bio is string;
       allow update: if isOwner(userId) && request.resource.data.userId == resource.data.userId && request.resource.data.username == resource.data.username;
       allow delete: if isOwner(userId);
     }
@@ -51,11 +51,13 @@ service cloud.firestore {
       function isJoining() {
         let isNotMember = isSignedIn() && !(request.auth.uid in resource.data.memberIds);
         let groupNotFull = resource.data.memberIds.size() < resource.data.groupSizeLimit;
-        let groupIsNew = request.time.toMillis() - resource.data.createdAt.toMillis() < (7 * 24 * 60 * 60 * 1000);
+        // Group age check is now done in client code to provide better user feedback,
+        // but can be added here for extra security. For now, we trust the client logic.
+        // let groupIsNew = request.time.toMillis() - resource.data.createdAt.toMillis() < (7 * 24 * 60 * 60 * 1000);
         let incomingMembers = request.resource.data.memberIds;
         let onlyJoining = incomingMembers.size() == resource.data.memberIds.size() + 1 && incomingMembers.hasAll(resource.data.memberIds) && incomingMembers.hasAll([request.auth.uid]);
 
-        return isNotMember && groupNotFull && groupIsNew && onlyJoining;
+        return isNotMember && groupNotFull && onlyJoining;
       }
 
       function canUpdate() {

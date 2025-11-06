@@ -36,8 +36,8 @@
           "description": "The user's primary skill."
         },
         "bio": {
-            "type": "string",
-            "description": "A short biography of the user."
+          "type": "string",
+          "description": "A short biography of the user."
         }
       },
       "required": [
@@ -56,7 +56,9 @@
           "description": "The ID of the user who owns this username."
         }
       },
-      "required": ["userId"]
+      "required": [
+        "userId"
+      ]
     },
     "LearningGroup": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -74,7 +76,10 @@
         },
         "timeCommitment": {
           "type": "string",
-          "enum": ["part-time", "full-time"],
+          "enum": [
+            "part-time",
+            "full-time"
+          ],
           "description": "The expected time commitment for the group."
         },
         "memberIds": {
@@ -120,21 +125,27 @@
       {
         "path": "/users/{userId}/profile/data",
         "definition": {
-          "schema": { "$ref": "#/entities/UserProfile" },
+          "schema": {
+            "$ref": "#/entities/UserProfile"
+          },
           "description": "Stores a single user profile information document."
         }
       },
       {
         "path": "/usernames/{username}",
         "definition": {
-          "schema": { "$ref": "#/entities/Username" },
+          "schema": {
+            "$ref": "#/entities/Username"
+          },
           "description": "A collection to enforce unique usernames. The document ID is the username itself."
         }
       },
       {
         "path": "/learning_groups/{learningGroupId}",
         "definition": {
-          "schema": { "$ref": "#/entities/LearningGroup" },
+          "schema": {
+            "$ref": "#/entities/LearningGroup"
+          },
           "description": "Stores learning group data."
         }
       }
