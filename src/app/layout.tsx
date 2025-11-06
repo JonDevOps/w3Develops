@@ -3,7 +3,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
-import { FirebaseClientProvider } from "@/firebase";
+import { FirebaseClientProvider } from "@/firebase/client-provider";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 
@@ -46,5 +46,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-    

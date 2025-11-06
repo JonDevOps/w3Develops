@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Search, Menu, ArrowLeft } from 'lucide-react';
-import { useUser, useAuth, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useAuth, useFirestore } from '@/firebase/provider';
+import { useDoc } from '@/firebase/firestore/use-doc';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -66,7 +67,7 @@ export default function Header() {
     });
   };
 
-  const userDocRef = useMemoFirebase(() => {
+  const userDocRef = useMemo(() => {
     if (!user) return null;
     return doc(firestore, 'users', user.uid) as DocumentReference<UserProfile>;
   }, [user, firestore]);

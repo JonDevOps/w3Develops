@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@/firebase';
+import { useUser } from '@/firebase/provider';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';

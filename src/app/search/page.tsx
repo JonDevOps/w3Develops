@@ -2,9 +2,9 @@
 
 import { Suspense, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useCollection, useMemoFirebase } from '@/firebase';
+import { useCollection } from '@/firebase/firestore/use-collection';
 import { collection, query, where, orderBy, limit, Query } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
+import { useFirestore } from '@/firebase/provider';
 import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -78,7 +78,7 @@ function SearchResults() {
 
   const lowerQ = useMemo(() => q?.toLowerCase(), [q]);
 
-  const usersQuery = useMemoFirebase(() => {
+  const usersQuery = useMemo(() => {
     if (!lowerQ) return null;
     return query(
         collection(firestore, 'users'), 
@@ -90,7 +90,7 @@ function SearchResults() {
   }, [lowerQ, firestore]);
   
   // --- Groups Queries ---
-  const groupsByNameQuery = useMemoFirebase(() => {
+  const groupsByNameQuery = useMemo(() => {
     if (!lowerQ) return null;
     return query(
         collection(firestore, 'studyGroups'), 
@@ -101,7 +101,7 @@ function SearchResults() {
     ) as Query<StudyGroup>;
   }, [lowerQ, firestore]);
 
-  const groupsByTopicQuery = useMemoFirebase(() => {
+  const groupsByTopicQuery = useMemo(() => {
     if (!lowerQ) return null;
     return query(
         collection(firestore, 'studyGroups'), 
@@ -112,7 +112,7 @@ function SearchResults() {
   }, [q, firestore]);
 
   // --- Cohorts Queries ---
-  const cohortsByNameQuery = useMemoFirebase(() => {
+  const cohortsByNameQuery = useMemo(() => {
     if (!lowerQ) return null;
     return query(
         collection(firestore, 'cohorts'), 
@@ -123,7 +123,7 @@ function SearchResults() {
     ) as Query<Cohort>;
   }, [lowerQ, firestore]);
 
-  const cohortsByTopicQuery = useMemoFirebase(() => {
+  const cohortsByTopicQuery = useMemo(() => {
     if (!lowerQ) return null;
     return query(
         collection(firestore, 'cohorts'), 

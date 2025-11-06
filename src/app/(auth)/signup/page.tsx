@@ -7,7 +7,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useAuth, useUser, useFirestore, initiateEmailSignUp, setDocumentNonBlocking } from '@/firebase';
+import { useAuth, useUser, useFirestore } from '@/firebase/provider';
+import { initiateEmailSignUp } from '@/firebase/non-blocking-login';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from "@/components/ui/use-toast";
 import { doc, collection, query, where, getDocs } from 'firebase/firestore';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';

@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase/provider';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { doc, DocumentReference } from 'firebase/firestore';
 import { UserProfile } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -29,7 +31,7 @@ export default function EditProfilePage() {
   const [linkedin, setLinkedin] = useState('');
   const [twitter, setTwitter] = useState('');
 
-  const userDocRef = useMemoFirebase(() => {
+  const userDocRef = useMemo(() => {
     if (!user) return null;
     return doc(firestore, 'users', user.uid) as DocumentReference<UserProfile>;
   }, [user, firestore]);

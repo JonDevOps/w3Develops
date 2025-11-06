@@ -7,7 +7,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useAuth, useUser, initiateEmailSignIn } from '@/firebase';
+import { useAuth, useUser } from '@/firebase/provider';
+import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 

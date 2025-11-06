@@ -1,8 +1,9 @@
 'use client';
 
-import { useDoc, useMemoFirebase, useCollection, useUser } from '@/firebase';
+import { useCollection, useDoc } from '@/firebase/firestore/use-doc';
+import { useMemo } from 'react';
 import { doc, DocumentReference, collection, query, where, Query } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
+import { useFirestore } from '@/firebase/provider';
 import { Cohort, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -15,7 +16,7 @@ import { ONE_WEEK_IN_MS } from '@/lib/constants';
 function MemberList({ memberIds }: { memberIds: string[] }) {
     const firestore = useFirestore();
 
-    const membersQuery = useMemoFirebase(() => {
+    const membersQuery = useMemo(() => {
         if (!memberIds || memberIds.length === 0) return null;
         // Use a 'where in' query to fetch only the members of this cohort.
         // This is secure and efficient. Firestore limits 'in' queries to 30 elements.
@@ -55,7 +56,7 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
   const { cohortId } = params;
   const firestore = useFirestore();
   
-  const cohortDocRef = useMemoFirebase(() => {
+  const cohortDocRef = useMemo(() => {
     if (!cohortId) return null;
     return doc(firestore, 'cohorts', cohortId) as DocumentReference<Cohort>;
   }, [cohortId, firestore]);

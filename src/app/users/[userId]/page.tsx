@@ -1,8 +1,9 @@
 'use client';
 
-import { useDoc, useMemoFirebase, useCollection } from '@/firebase';
+import { useDoc, useCollection } from '@/firebase/firestore/use-doc';
+import { useMemo } from 'react';
 import { doc, DocumentReference, collection, query, where, Query } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
+import { useFirestore } from '@/firebase/provider';
 import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -46,21 +47,21 @@ export default function UserProfilePage({ params }: { params: { userId: string }
   const { userId } = params;
   const firestore = useFirestore();
 
-  const userDocRef = useMemoFirebase(() => {
+  const userDocRef = useMemo(() => {
     if (!userId) return null;
     return doc(firestore, 'users', userId) as DocumentReference<UserProfile>;
   }, [userId, firestore]);
 
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
 
-  const userCohortsQuery = useMemoFirebase(() => {
+  const userCohortsQuery = useMemo(() => {
     if (!userId) return null;
     return query(collection(firestore, 'cohorts'), where('memberIds', 'array-contains', userId)) as Query;
   }, [userId, firestore]);
 
   const { data: cohorts, isLoading: isCohortsLoading } = useCollection<Cohort>(userCohortsQuery);
 
-  const userGroupsQuery = useMemoFirebase(() => {
+  const userGroupsQuery = useMemo(() => {
     if (!userId) return null;
     return query(collection(firestore, 'studyGroups'), where('memberIds', 'array-contains', userId)) as Query;
   }, [userId, firestore]);
