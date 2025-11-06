@@ -1,8 +1,8 @@
 'use client';
 
-import { useCollection, useDoc } from '@/firebase/firestore/use-doc';
-import { useMemo } from 'react';
-import { doc, DocumentReference, collection, query, where, Query } from 'firebase/firestore';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import { useEffect, useState, useMemo } from 'react';
+import { doc, DocumentReference, collection, query, where, getDocs, Query } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import { Cohort, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -15,16 +15,33 @@ import { ONE_WEEK_IN_MS } from '@/lib/constants';
 
 function MemberList({ memberIds }: { memberIds: string[] }) {
     const firestore = useFirestore();
+    const [members, setMembers] = useState<UserProfile[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const membersQuery = useMemo(() => {
-        if (!memberIds || memberIds.length === 0) return null;
-        // Use a 'where in' query to fetch only the members of this cohort.
-        // This is secure and efficient. Firestore limits 'in' queries to 30 elements.
-        // If a cohort could have more, pagination would be needed.
-        return query(collection(firestore, 'users'), where('id', 'in', memberIds));
+    useEffect(() => {
+        const fetchMembers = async () => {
+            if (!memberIds || memberIds.length === 0) {
+                setIsLoading(false);
+                return;
+            }
+            setIsLoading(true);
+            try {
+                // Firestore 'in' queries are limited to 30 elements. 
+                // For larger groups, pagination would be necessary.
+                const membersQuery = query(collection(firestore, 'users'), where('id', 'in', memberIds.slice(0, 30)));
+                const snapshot = await getDocs(membersQuery);
+                const memberData = snapshot.docs.map(doc => doc.data() as UserProfile);
+                setMembers(memberData);
+            } catch (error) {
+                console.error("Error fetching members:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchMembers();
     }, [firestore, memberIds]);
 
-    const { data: members, isLoading } = useCollection<UserProfile>(membersQuery);
 
     if (isLoading) {
         return <p>Loading members...</p>;

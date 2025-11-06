@@ -9,10 +9,10 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useAuth, useUser, useFirestore } from '@/firebase/provider';
 import { initiateEmailSignUp } from '@/firebase/non-blocking-login';
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from "@/components/ui/use-toast";
-import { doc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, collection, query, where, getDocs, runTransaction } from 'firebase/firestore';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
+import { UserProfile } from '@/lib/types';
 
 export default function SignupPage() {
   const auth = useAuth();
@@ -44,57 +44,59 @@ export default function SignupPage() {
     }
 
     try {
-      // 1. Check if username is unique
-      const usernameLower = username.toLowerCase();
-      const usersRef = collection(firestore, 'users');
-      const q = query(usersRef, where("username_lowercase", "==", usernameLower));
-      const querySnapshot = await getDocs(q);
-      
-      if (!querySnapshot.empty) {
-        toast({
-          variant: "destructive",
-          title: "Username taken",
-          description: "This username is already in use. Please choose another one.",
-        });
-        return;
-      }
-
-      // 2. Create user with email and password
+      // 1. Create user with email and password first
       const userCredential = await initiateEmailSignUp(auth, email, password);
       if (userCredential && userCredential.user) {
         const newUser = userCredential.user;
-        const userRef = doc(firestore, "users", newUser.uid);
+        const usernameLower = username.toLowerCase();
         
-        // 3. Create user profile document in Firestore
-        const userData = {
-          id: newUser.uid,
-          email: email,
-          username: username,
-          username_lowercase: usernameLower,
-          profilePictureUrl: '',
-          bio: '',
-          socialLinks: {},
-          skills: [],
-        };
+        // 2. Use a transaction to guarantee username uniqueness and create the profile
+        const userDocRef = doc(firestore, "users", newUser.uid);
         
-        // This is a non-blocking write. It will optimistically update.
-        setDocumentNonBlocking(userRef, userData);
-        
-        // The useEffect hook will handle the redirect to /account once the user state is updated.
+        await runTransaction(firestore, async (transaction) => {
+          // Check for username uniqueness within the transaction
+          const usersRef = collection(firestore, 'users');
+          const q = query(usersRef, where("username_lowercase", "==", usernameLower));
+          const querySnapshot = await transaction.get(q);
+
+          if (!querySnapshot.empty) {
+            // This will abort the transaction
+            throw new Error("This username is already in use. Please choose another one.");
+          }
+
+          // If username is unique, create the user profile document
+          const userData: UserProfile = {
+            id: newUser.uid,
+            email: email,
+            username: username,
+            username_lowercase: usernameLower,
+            profilePictureUrl: '',
+            bio: '',
+            socialLinks: {},
+            skills: [],
+          };
+          transaction.set(userDocRef, userData);
+        });
+
+        // If transaction is successful, the useEffect will handle the redirect.
       }
     } catch (error: any) {
       let description = "An unknown error occurred during sign up.";
-      // Map common Firebase auth errors to friendlier messages
-      switch (error.code) {
-        case 'auth/email-already-in-use':
-          description = "This email address is already in use by another account.";
-          break;
-        case 'auth/weak-password':
-          description = "The password is too weak. Please use at least 6 characters.";
-          break;
-        case 'auth/invalid-email':
-          description = "The email address is not valid.";
-          break;
+      // Handle both auth errors and transaction errors
+      if (error.message === "This username is already in use. Please choose another one.") {
+        description = error.message;
+      } else {
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            description = "This email address is already in use by another account.";
+            break;
+          case 'auth/weak-password':
+            description = "The password is too weak. Please use at least 6 characters.";
+            break;
+          case 'auth/invalid-email':
+            description = "The email address is not valid.";
+            break;
+        }
       }
       toast({
         variant: "destructive",
