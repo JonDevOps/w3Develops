@@ -85,7 +85,7 @@ export default function CreateCohortPage() {
 
       // If no suitable cohort found, create a new one
       const cohortsRef = collection(firestore, 'cohorts');
-      await addDoc(cohortsRef, {
+      const newCohortRef = await addDoc(cohortsRef, {
         name: name,
         name_lowercase: name.toLowerCase(),
         topic: finalTopic,
@@ -96,12 +96,12 @@ export default function CreateCohortPage() {
         createdAt: serverTimestamp(),
       });
       toast({ title: "Success!", description: "Your new build cohort has been created." });
-      router.push('/cohorts');
+      router.push(`/cohorts/${newCohortRef.id}`);
     } catch (error: any) {
         toast({ variant: "destructive", title: "Could Not Create Cohort", description: error.message || "An unexpected error occurred." });
+    } finally {
+        setIsSubmitting(false);
     }
-
-    setIsSubmitting(false);
   };
 
   if (isUserLoading || !user) {

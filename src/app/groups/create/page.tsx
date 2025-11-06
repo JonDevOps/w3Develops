@@ -83,7 +83,7 @@ export default function CreateGroupPage() {
 
         // If no suitable group, proceed to create
         const groupsRef = collection(firestore, 'studyGroups');
-        await addDoc(groupsRef, {
+        const newGroupRef = await addDoc(groupsRef, {
             name: name,
             name_lowercase: name.toLowerCase(),
             topic: finalTopic,
@@ -93,12 +93,12 @@ export default function CreateGroupPage() {
             createdAt: serverTimestamp(),
         });
         toast({ title: "Success!", description: "Your new study group has been created." });
-        router.push('/groups');
+        router.push(`/groups/${newGroupRef.id}`);
     } catch (error: any) {
         toast({ variant: "destructive", title: "Could Not Create Group", description: error.message || "An unexpected error occurred." });
+    } finally {
+        setIsSubmitting(false);
     }
-
-    setIsSubmitting(false);
   };
 
   if (isUserLoading || !user) {
