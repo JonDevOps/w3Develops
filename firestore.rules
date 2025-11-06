@@ -22,13 +22,13 @@ service cloud.firestore {
 
     /**
      * @description Controls access to user profile information.
-     * @path /users/{userId}/profile
+     * @path /users/{userId}/profile/{document}
      * @allow (create) User with UID 'user_abc' can create their own profile with userId: 'user_abc'.
      * @allow (get, update, delete) User with UID 'user_abc' can get, update, and delete their own profile.
      * @deny (create, update, delete) User with UID 'user_xyz' cannot create, update, or delete 'user_abc' profile.
      * @principle Enforces document ownership for writes, restricts access to a user's own data tree, and validates relational integrity between documents.
      */
-    match /users/{userId}/profile {
+    match /users/{userId}/profile/{document} {
       function isOwner(userId) {
         return request.auth != null && request.auth.uid == userId;
       }
