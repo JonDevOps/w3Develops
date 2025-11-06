@@ -54,7 +54,6 @@ export default function SignupPage() {
           bio: '',
           socialLinks: {},
           skills: [],
-          learningPace: 'Intermediate',
         };
         // This is a non-blocking write. It will optimistically update.
         setDocumentNonBlocking(userRef, userData);
@@ -145,4 +144,3 @@ export default function SignupPage() {
     </div>
   );
 }
-    

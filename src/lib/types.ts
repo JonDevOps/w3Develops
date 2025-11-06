@@ -13,7 +13,6 @@ export interface UserProfile {
     twitter?: string;
   };
   skills?: string[];
-  learningPace?: 'Beginner' | 'Intermediate' | 'Advanced';
 }
 
 export interface StudyGroup {
@@ -38,4 +37,3 @@ export interface Cohort {
   commitment: string;
   createdAt: Timestamp;
 }
-    

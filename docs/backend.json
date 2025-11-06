@@ -56,10 +56,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "learningPace": {
-          "type": "string",
-          "description": "User's preferred learning pace (e.g., 'Beginner', 'Intermediate', 'Advanced')."
         }
       },
       "required": [
@@ -200,4 +196,3 @@
     }
   }
 }
-    

@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Github, Linkedin, Twitter, CalendarCheck } from 'lucide-react';
+import { Github, Linkedin, Twitter } from 'lucide-react';
 
 function AccountPageSkeleton() {
   return (
@@ -28,17 +28,13 @@ function AccountPageSkeleton() {
           </div>
         </div>
       </div>
-      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
         <div className="lg:col-span-1 rounded-lg border bg-card p-6 space-y-3">
             <div className="h-6 w-24 bg-muted rounded"></div>
             <div className="h-10 w-full bg-muted rounded"></div>
         </div>
         <div className="lg:col-span-1 rounded-lg border bg-card p-6 space-y-3">
             <div className="h-6 w-32 bg-muted rounded"></div>
-            <div className="h-10 w-full bg-muted rounded"></div>
-        </div>
-        <div className="lg:col-span-1 rounded-lg border bg-card p-6 space-y-3">
-            <div className="h-6 w-24 bg-muted rounded"></div>
             <div className="h-10 w-full bg-muted rounded"></div>
         </div>
       </div>
@@ -122,7 +118,7 @@ export default function AccountPage() {
         </div>
       </div>
       
-      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
         <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle>Your Skills</CardTitle>
@@ -138,15 +134,6 @@ export default function AccountPage() {
           </CardContent>
         </Card>
         
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2"><CalendarCheck className="w-5 h-5" />Learning Pace</CardTitle>
-            </CardHeader>
-             <CardContent>
-                <Badge variant="secondary" className="text-base">{userProfile.learningPace || 'Not specified'}</Badge>
-            </CardContent>
-        </Card>
-
         <Card className="lg:col-span-1">
             <CardHeader>
                 <CardTitle>Social Links</CardTitle>

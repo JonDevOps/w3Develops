@@ -13,14 +13,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-
-const allSkills = [
-  "HTML/CSS", "JavaScript", "Python", "React", "Django", "Node.js", "Rust", 
-  "Digital Marketing", "Web3", "Cryptocurrency", "Cybersecurity", "NFTs", "SQL", 
-  "Artificial Intelligence", "Web Design", "Programming Fundamentals"
-];
-
 
 export default function EditProfilePage() {
   const { user, isUserLoading } = useUser();
@@ -35,8 +27,6 @@ export default function EditProfilePage() {
   const [github, setGithub] = useState('');
   const [linkedin, setLinkedin] = useState('');
   const [twitter, setTwitter] = useState('');
-  const [learningPace, setLearningPace] = useState<'Beginner' | 'Intermediate' | 'Advanced'>('Intermediate');
-
 
   const userDocRef = useMemoFirebase(() => {
     if (!user) return null;
@@ -53,7 +43,6 @@ export default function EditProfilePage() {
       setGithub(userProfile.socialLinks?.github || '');
       setLinkedin(userProfile.socialLinks?.linkedin || '');
       setTwitter(userProfile.socialLinks?.twitter || '');
-      setLearningPace(userProfile.learningPace || 'Intermediate');
     }
   }, [userProfile]);
   
@@ -86,7 +75,6 @@ export default function EditProfilePage() {
       displayName,
       bio,
       skills,
-      learningPace,
       socialLinks: {
         github: github,
         linkedin: linkedin,
@@ -153,24 +141,6 @@ export default function EditProfilePage() {
                <p className="text-xs text-muted-foreground">Press Enter or click Add to add a skill.</p>
             </div>
             
-            <div className="grid gap-2">
-                <Label>Preferred Learning Pace</Label>
-                <RadioGroup onValueChange={(v) => setLearningPace(v as any)} value={learningPace}>
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Beginner" id="pace-beginner" />
-                        <Label htmlFor="pace-beginner">Beginner</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Intermediate" id="pace-intermediate" />
-                        <Label htmlFor="pace-intermediate">Intermediate</Label>
-                    </div>
-                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Advanced" id="pace-advanced" />
-                        <Label htmlFor="pace-advanced">Advanced</Label>
-                    </div>
-                </RadioGroup>
-            </div>
-
             <div className="grid gap-4">
                 <h3 className="text-lg font-medium">Social Links</h3>
                  <div className="grid gap-2">
