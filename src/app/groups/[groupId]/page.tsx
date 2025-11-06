@@ -38,12 +38,11 @@ function MemberPill({ member }: { member: GroupMember }) {
 
 
 export default function GroupDashboardPage({ params }: { params: { groupId: string } }) {
-  const resolvedParams = React.use(params);
   const { user, isUserLoading } = useUser()
   const firestore = useFirestore()
   const router = useRouter()
   const { toast } = useToast()
-  const groupId = resolvedParams.groupId;
+  const groupId = params.groupId;
 
   const groupRef = useMemoFirebase(() => {
     if (!firestore || !groupId) return null
@@ -61,12 +60,16 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
   const handleLeaveGroup = async () => {
     if (!user || !groupRef || !group) return
 
-    const memberToRemove = group.members.find((m: GroupMember) => m.userId === user.uid)
-    if (!memberToRemove) return;
+    const memberIds = (group.members as any[]).map(m => m.userId);
+    const memberIndex = memberIds.indexOf(user.uid);
+    if (memberIndex === -1) return;
+    
+    const memberToRemove = group.members[memberIndex];
 
     updateDocumentNonBlocking(groupRef, {
         members: arrayRemove(memberToRemove)
     });
+
     toast({
         title: "You have left the group.",
         description: "You can always join another group from the study groups page.",
@@ -109,8 +112,8 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
     return notFound()
   }
 
-  const memberIds = group.members.map((m: GroupMember) => m.userId);
-  const isMember = user && memberIds.includes(user.uid);
+  const memberUserIds = group.members.map((m: GroupMember) => m.userId);
+  const isMember = user && memberUserIds.includes(user.uid);
   const isFull = group.members.length >= group.groupSizeLimit;
 
   return (
@@ -175,3 +178,5 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
     </div>
   )
 }
+
+    

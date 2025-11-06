@@ -22,42 +22,24 @@ service cloud.firestore {
     
     // --- User Profile Rules (/users/{userId}) ---
     match /users/{userId} {
-      // READ: Any signed-in user can view a profile.
       allow get: if isSignedIn();
-      
-      // CREATE: A user can only create their own profile.
-      // - The new document's userId must match their auth uid.
       allow create: if isOwner(userId) && getIncomingData().userId == userId;
-      
-      // UPDATE: A user can only update their own profile.
-      // - Critical fields like userId and username must not be changed.
       allow update: if isOwner(userId) 
                       && getIncomingData().userId == getExistingData().userId
                       && getIncomingData().username == getExistingData().username;
-
-      // DELETE: A user can delete their own profile.
       allow delete: if isOwner(userId);
-
-      // LIST: Listing all user profiles is disallowed for security.
       allow list: if false;
     }
 
     // --- Username Uniqueness Rules (/usernames/{username}) ---
     match /usernames/{username} {
-      // READ: Anyone can check if a username exists.
       allow get: if true;
-      
-      // CREATE: A user can claim a username if it's not taken.
-      // - The new document's userId must match their auth uid.
       allow create: if isSignedIn() && getIncomingData().userId == request.auth.uid;
-      
-      // UPDATE/DELETE: Not allowed to prevent tampering.
       allow update, delete: if false;
     }
     
     // --- Counter Rules (/counters/{counterId}) ---
     match /counters/{counterId} {
-      // Any signed-in user can read or write to counters for group creation purposes.
       allow read, write: if isSignedIn();
     }
 
@@ -65,61 +47,68 @@ service cloud.firestore {
     match /learning_groups/{learningGroupId} {
       
       // --- Helper Functions for Groups ---
-      function isGroupMember(userId) {
-        return userId in getExistingData().members.map(member => member.userId);
+      function isGroupMember() {
+        return request.auth.uid in getExistingData().members;
       }
       
-      function isNewMemberListValid(currentMembers, newMembers) {
-          return newMembers.size() == currentMembers.size() + 1
-                 && newMembers.hasAny(currentMembers) == false;
+      function didJoin() {
+        let newMembers = getIncomingData().members;
+        let oldMembers = getExistingData().members;
+        // The new member's UID must be in the new list
+        return request.auth.uid in newMembers &&
+               // The new member must NOT have been in the old list
+               !(request.auth.uid in oldMembers) &&
+               // The new list size must be one greater than the old one
+               newMembers.size() == oldMembers.size() + 1;
       }
       
-      function isLeaving(currentMembers, newMembers) {
-         return newMembers.size() == currentMembers.size() - 1 &&
-                currentMembers.hasAll(newMembers);
-      }
-      
-      function didJoin(currentMembers, newMembers) {
-        let joinedUser = newMembers.diff(currentMembers).added().get(
-            currentMembers.diff(newMembers).removed().keys()[0]
-        );
-        return newMembers.size() == currentMembers.size() + 1 &&
-               currentMembers.hasAll(newMembers.removeAll([joinedUser])) &&
-               joinedUser.userId == request.auth.uid;
+      function didLeave() {
+         let newMembers = getIncomingData().members;
+         let oldMembers = getExistingData().members;
+         // The leaving member's UID must NOT be in the new list
+         return !(request.auth.uid in newMembers) &&
+                // The leaving member's UID MUST have been in the old list
+                request.auth.uid in oldMembers &&
+                // The new list size must be one less than the old one
+                newMembers.size() == oldMembers.size() - 1;
       }
 
       // READ: Any user can view or list groups.
       allow get, list: if true;
       
       // CREATE: A signed-in user can create a group.
-      // - They must be the first and only member upon creation.
+      // - Their UID must be the only one in the members map.
       allow create: if isSignedIn() 
                       && getIncomingData().members.size() == 1
-                      && getIncomingData().members[0].userId == request.auth.uid;
+                      && request.auth.uid in getIncomingData().members;
       
       // UPDATE: Logic for joining, leaving, or updating group info.
       allow update: if isSignedIn() && (
-        // Case 1: A user is joining the group.
+        // Case 1: A user is joining the group, and the group is not full.
         (
-          !isGroupMember(request.auth.uid) && // User is not already a member
-          getExistingData().members.size() < getExistingData().groupSizeLimit && // Group is not full
-          didJoin(getExistingData().members, getIncomingData().members)
+          didJoin() &&
+          getExistingData().members.size() < getExistingData().groupSizeLimit
         ) ||
         // Case 2: A user is leaving the group.
         (
-          isGroupMember(request.auth.uid) &&
-          isLeaving(getExistingData().members, getIncomingData().members)
+          didLeave()
         ) ||
         // Case 3: A current member is updating other fields (NOT members list).
         (
-          isGroupMember(request.auth.uid) &&
+          isGroupMember() &&
           getIncomingData().members == getExistingData().members // Member list is unchanged
         )
       );
       
       // DELETE: Not allowed for now to prevent accidental data loss.
-      // Can be changed to `if isGroupMember(request.auth.uid)` to allow members to delete.
       allow delete: if false;
+
+      // Rule for querying groups a user is a member of
+      match /learning_groups/{learningGroupId} {
+        allow list: if request.query.where.array_contains == request.auth.uid;
+      }
     }
   }
 }
+
+    
