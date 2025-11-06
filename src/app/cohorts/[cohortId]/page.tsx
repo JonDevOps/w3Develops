@@ -23,7 +23,8 @@ function MemberList({ memberIds }: { memberIds: string[] }) {
         if (!memberIds || memberIds.length === 0) return null;
         // Use a 'where in' query to fetch only the members of this cohort.
         // This is secure and efficient. Firestore limits 'in' queries to 30 elements.
-        return query(collection(firestore, 'users'), where('id', 'in', memberIds)) as Query;
+        // If a cohort could have more, pagination would be needed.
+        return query(collection(firestore, 'users'), where('id', 'in', memberIds));
     }, [firestore, memberIds]);
 
     const { data: members, isLoading } = useCollection<UserProfile>(membersQuery);
