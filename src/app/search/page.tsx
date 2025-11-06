@@ -1,9 +1,9 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, where, orderBy, limit } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit, Query } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
 import Link from 'next/link';
@@ -55,53 +55,96 @@ function SearchResultsSkeleton() {
   )
 }
 
+// Helper to merge and deduplicate results
+function mergeResults<T extends { id: string }>(...arrays: (T[] | null | undefined)[]): T[] {
+  const map = new Map<string, T>();
+  for (const arr of arrays) {
+    if (arr) {
+      for (const item of arr) {
+        if (!map.has(item.id)) {
+          map.set(item.id, item);
+        }
+      }
+    }
+  }
+  return Array.from(map.values());
+}
+
+
 function SearchResults() {
   const searchParams = useSearchParams();
   const q = searchParams.get('q');
   const firestore = useFirestore();
 
+  const lowerQ = useMemo(() => q?.toLowerCase(), [q]);
+
   const usersQuery = useMemoFirebase(() => {
-    if (!q) return null;
-    const lowerQ = q.toLowerCase();
+    if (!lowerQ) return null;
     return query(
         collection(firestore, 'users'), 
         orderBy('name_lowercase'),
         where('name_lowercase', '>=', lowerQ),
         where('name_lowercase', '<=', lowerQ + '\uf8ff'),
         limit(10)
-    );
-  }, [q, firestore]);
-
-  const groupsQuery = useMemoFirebase(() => {
-    if (!q) return null;
-    const lowerQ = q.toLowerCase();
+    ) as Query<UserProfile>;
+  }, [lowerQ, firestore]);
+  
+  // --- Groups Queries ---
+  const groupsByNameQuery = useMemoFirebase(() => {
+    if (!lowerQ) return null;
     return query(
         collection(firestore, 'studyGroups'), 
         orderBy('name_lowercase'),
         where('name_lowercase', '>=', lowerQ),
         where('name_lowercase', '<=', lowerQ + '\uf8ff'),
         limit(10)
-    );
+    ) as Query<StudyGroup>;
+  }, [lowerQ, firestore]);
+
+  const groupsByTopicQuery = useMemoFirebase(() => {
+    if (!lowerQ) return null;
+    return query(
+        collection(firestore, 'studyGroups'), 
+        where('topic', '>=', q), // Case-sensitive search on topic may be needed
+        where('topic', '<=', q + '\uf8ff'),
+        limit(10)
+    ) as Query<StudyGroup>;
   }, [q, firestore]);
 
-  const cohortsQuery = useMemoFirebase(() => {
-    if (!q) return null;
-    const lowerQ = q.toLowerCase();
+  // --- Cohorts Queries ---
+  const cohortsByNameQuery = useMemoFirebase(() => {
+    if (!lowerQ) return null;
     return query(
         collection(firestore, 'cohorts'), 
         orderBy('name_lowercase'),
         where('name_lowercase', '>=', lowerQ),
         where('name_lowercase', '<=', lowerQ + '\uf8ff'),
         limit(10)
-    );
+    ) as Query<Cohort>;
+  }, [lowerQ, firestore]);
+
+  const cohortsByTopicQuery = useMemoFirebase(() => {
+    if (!lowerQ) return null;
+    return query(
+        collection(firestore, 'cohorts'), 
+        where('topic', '>=', q),
+        where('topic', '<=', q + '\uf8ff'),
+        limit(10)
+    ) as Query<Cohort>;
   }, [q, firestore]);
 
-  const { data: users, isLoading: usersLoading } = useCollection<UserProfile>(usersQuery);
-  const { data: groups, isLoading: groupsLoading } = useCollection<StudyGroup>(groupsQuery);
-  const { data: cohorts, isLoading: cohortsLoading } = useCollection<Cohort>(cohortsQuery);
 
-  const isLoading = usersLoading || groupsLoading || cohortsLoading;
-  const noResults = !isLoading && !users?.length && !groups?.length && !cohorts?.length;
+  const { data: users, isLoading: usersLoading } = useCollection<UserProfile>(usersQuery);
+  const { data: groupsByName, isLoading: groupsByNameLoading } = useCollection<StudyGroup>(groupsByNameQuery);
+  const { data: groupsByTopic, isLoading: groupsByTopicLoading } = useCollection<StudyGroup>(groupsByTopicQuery);
+  const { data: cohortsByName, isLoading: cohortsByNameLoading } = useCollection<Cohort>(cohortsByNameQuery);
+  const { data: cohortsByTopic, isLoading: cohortsByTopicLoading } = useCollection<Cohort>(cohortsByTopicQuery);
+
+  const mergedGroups = useMemo(() => mergeResults(groupsByName, groupsByTopic), [groupsByName, groupsByTopic]);
+  const mergedCohorts = useMemo(() => mergeResults(cohortsByName, cohortsByTopic), [cohortsByName, cohortsByTopic]);
+
+  const isLoading = usersLoading || groupsByNameLoading || groupsByTopicLoading || cohortsByNameLoading || cohortsByTopicLoading;
+  const noResults = !isLoading && !users?.length && !mergedGroups.length && !mergedCohorts.length;
 
   if (!q) {
     return <div className="text-center text-muted-foreground">Please enter a search term to begin.</div>;
@@ -146,11 +189,11 @@ function SearchResults() {
         </section>
       )}
 
-      {groups && groups.length > 0 && (
+      {mergedGroups.length > 0 && (
          <section>
           <h2 className="text-2xl font-semibold mb-4">Study Groups</h2>
           <div className="grid gap-6 md:grid-cols-2">
-            {groups.map(group => (
+            {mergedGroups.map(group => (
               <Link href={`/groups/${group.id}`} key={group.id}>
                 <Card className="hover:bg-accent transition-colors">
                   <CardHeader>
@@ -171,11 +214,11 @@ function SearchResults() {
         </section>
       )}
 
-       {cohorts && cohorts.length > 0 && (
+       {mergedCohorts.length > 0 && (
          <section>
           <h2 className="text-2xl font-semibold mb-4">Build Cohorts</h2>
           <div className="grid gap-6 md:grid-cols-2">
-            {cohorts.map(cohort => (
+            {mergedCohorts.map(cohort => (
                <Link href={`/cohorts/${cohort.id}`} key={cohort.id}>
                 <Card className="hover:bg-accent transition-colors">
                   <CardHeader>
