@@ -1,12 +1,11 @@
 'use server';
 
-import { FieldValue, getFirestore } from 'firebase-admin/firestore';
-import { initializeAdminApp } from '@/firebase/admin';
+import { FieldValue } from 'firebase-admin/firestore';
+import { adminFirestore } from '@/firebase/admin';
 import { revalidatePath } from 'next/cache';
 
 async function leave(collectionName: 'studyGroups' | 'cohorts', id: string, userId: string) {
-    initializeAdminApp();
-    const firestore = getFirestore();
+    const firestore = adminFirestore;
 
     try {
         const docRef = firestore.collection(collectionName).doc(id);
@@ -16,7 +15,7 @@ async function leave(collectionName: 'studyGroups' | 'cohorts', id: string, user
         });
 
         // Revalidate the pages that show this information to reflect the change
-        revalidatePath(`/${collectionName}/${id}`);
+        revalidatePath(`/${collectionName.slice(0, -1)}s/${id}`); // e.g. /groups/:id
         revalidatePath('/account');
 
         return { success: true, message: `Successfully left the ${collectionName === 'studyGroups' ? 'group' : 'cohort'}.` };

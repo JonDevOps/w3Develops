@@ -1,11 +1,7 @@
 'use server';
 
-import { 
-    FieldValue,
-    Timestamp,
-    getFirestore,
-} from 'firebase-admin/firestore';
-import { initializeAdminApp } from '@/firebase/admin';
+import { FieldValue } from 'firebase-admin/firestore';
+import { adminFirestore } from '@/firebase/admin';
 
 const MAX_MEMBERS = 25;
 const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
@@ -16,11 +12,9 @@ interface MatchmakingParams {
     userId: string;
 }
 
-// This function now correctly uses the Firebase Admin SDK on the server.
+// This function now correctly uses the centralized Firebase Admin instance.
 async function findAndJoin(collectionName: 'studyGroups' | 'cohorts', params: MatchmakingParams) {
-    // Initialize the Admin SDK on the server.
-    initializeAdminApp();
-    const firestore = getFirestore();
+    const firestore = adminFirestore;
     
     try {
         const { topic, commitment, userId } = params;
@@ -36,11 +30,14 @@ async function findAndJoin(collectionName: 'studyGroups' | 'cohorts', params: Ma
             
             const existingMembershipSnapshot = await existingMembershipQuery.get();
             if (!existingMembershipSnapshot.empty) {
-                return { success: false, message: `You are already in a ${coll === 'studyGroups' ? 'group' : 'cohort'} with this topic and commitment.` };
+                 const docData = existingMembershipSnapshot.docs[0].data();
+                 const name = docData.name || 'a group/cohort';
+                 const type = coll === 'studyGroups' ? 'study group' : 'build cohort';
+                return { success: false, message: `You are already in a ${type} (${name}) with this topic and commitment.` };
             }
         }
 
-        const oneWeekAgo = Timestamp.fromMillis(Date.now() - ONE_WEEK_IN_MS);
+        const oneWeekAgo = new Date(Date.now() - ONE_WEEK_IN_MS);
         
         const collectionRef = firestore.collection(collectionName);
 
