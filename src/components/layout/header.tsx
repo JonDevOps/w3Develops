@@ -27,7 +27,9 @@ export default function Header() {
   const firestore = useFirestore();
   const router = useRouter();
   const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const mobileSearchContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isMobileSearchVisible) {
@@ -36,6 +38,26 @@ export default function Header() {
         searchInputRef.current?.focus();
       }, 50);
     }
+  }, [isMobileSearchVisible]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        isMobileSearchVisible &&
+        mobileSearchContainerRef.current &&
+        !mobileSearchContainerRef.current.contains(event.target as Node)
+      ) {
+        setIsMobileSearchVisible(false);
+      }
+    }
+
+    if (isMobileSearchVisible) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [isMobileSearchVisible]);
 
   const handleLogout = () => {
@@ -61,13 +83,17 @@ export default function Header() {
     <header className="bg-card border-b sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         {/* Mobile Search View */}
-        <div className={`flex items-center gap-2 md:hidden ${isMobileSearchVisible ? 'w-full' : 'hidden'}`}>
+        <div ref={mobileSearchContainerRef} className={`flex items-center gap-2 md:hidden ${isMobileSearchVisible ? 'w-full' : 'hidden'}`}>
             <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchVisible(false)}>
                 <ArrowLeft className="h-6 w-6" />
                 <span className="sr-only">Back</span>
             </Button>
             <div className="w-full">
-                <SearchBar ref={searchInputRef} />
+                <SearchBar 
+                  ref={searchInputRef}
+                  query={searchQuery}
+                  onQueryChange={setSearchQuery}
+                />
             </div>
         </div>
 
@@ -84,7 +110,10 @@ export default function Header() {
               </Button>
             </div>
             <div className="hidden md:block w-full max-w-sm">
-              <SearchBar />
+              <SearchBar 
+                query={searchQuery}
+                onQueryChange={setSearchQuery}
+              />
             </div>
           </div>
         
@@ -130,15 +159,10 @@ export default function Header() {
                       <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
                           <p className="text-sm font-medium leading-none">{username}</p>
-                          <p className="text-xs leading-none text-muted-foreground">
-                            {user.email}
-                          </p>
                       </div>
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild><Link href="/account">Dashboard</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild><Link href="/profile/edit">Edit Profile</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild><Link href={`/users/${user.uid}`}>View Profile</Link></DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={handleLogout}>
                       Log out
