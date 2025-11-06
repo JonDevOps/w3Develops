@@ -138,7 +138,7 @@ export default function NewGroupPage() {
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a technology focus" />
-                        </SelectTrigger>
+                        </Trigger>
                       </FormControl>
                       <SelectContent>
                         {technologies.map(tech => <SelectItem key={tech} value={tech}>{tech.charAt(0).toUpperCase() + tech.slice(1)}</SelectItem>)}
