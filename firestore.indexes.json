@@ -1,0 +1,22 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "learning_groups",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "primarySkill",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timeCommitment",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "memberIds",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ]
+}

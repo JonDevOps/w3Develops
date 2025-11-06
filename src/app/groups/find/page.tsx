@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { useFirebase } from '@/firebase'
-import { addDoc, collection, query, where, getDocs, limit, updateDoc, arrayUnion, doc, serverTimestamp } from 'firebase/firestore'
+import { addDoc, collection, query, where, getDocs, limit, updateDoc, arrayUnion, doc, serverTimestamp, FieldPath } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 
 const technologies = ["html/css", "javascript", "python", "react", "django", "nodejs", "rust", "digital marketing", "web3", "cryptocurrency", "cybersecurity", "nfts", "sql", "artifical intelligence", "web design", "programming fundementals"] as const;
@@ -59,7 +59,7 @@ export default function FindGroupPage() {
       groupsRef,
       where('primarySkill', '==', values.primarySkill),
       where('timeCommitment', '==', values.timeCommitment),
-      where('groupSizeLimit', '>', 24), // Simple way to check if it's less than 25
+      where(new FieldPath('memberIds', 'length'), '<', 25),
       limit(1)
     );
 
