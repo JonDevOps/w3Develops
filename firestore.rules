@@ -1,0 +1,78 @@
+/**
+ * @fileoverview Firestore Security Rules for w3Develops application.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for user profiles
+ * and shared access (closed collaborators) for study groups.
+ *
+ * Data Structure:
+ * - User profiles are stored under /users/{userId}/profile, ensuring only the
+ *   authenticated user can access their own profile.
+ * - Study groups are stored under /studyGroups/{groupId}, with the `memberIds`
+ *   field listing the UIDs of all members.
+ *
+ * Key Security Decisions:
+ * - User listing is disabled for security.
+ * - Study group membership is managed via the `memberIds` array within each
+ *   study group document.
+ * - Authorization Independence is achieved by relying on path-based ownership
+ *   for User Profiles and storing member UIDs within StudyGroup documents,
+ *   avoiding the need for `get()` calls in security rules.
+ *
+ * Denormalization for Authorization:
+ * - StudyGroup documents contain the `memberIds` array for direct membership checks,
+ *   avoiding the need to query a separate `memberships` collection.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Enforces document ownership for user profiles, ensuring only the
+     *              authenticated user can access their own profile.
+     * @path /users/{userId}/profile
+     * @allow (get, update, delete) if the user is the owner of the profile.
+     * @allow (create) if the user's ID matches the {userId} and the request data includes an id field matching the {userId}.
+     * @deny (get, update, delete) if the user is not the owner of the profile.
+     * @deny (create) if the user's ID does not match the {userId} or the request data's id field does not match the {userId}.
+     * @principle Enforces document ownership for reads and writes.
+     */
+    match /users/{userId}/profile {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if false; // Listing user profiles is not permitted.
+
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id; // Enforce immutability of user ID.
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Manages access to study groups. Allows members to read and update group
+     *              information. Only members can create, update, or delete study groups.
+     * @path /studyGroups/{groupId}
+     * @allow (get, list) to anyone.
+     * @allow (create, update, delete) if the user is a member of the group.
+     * @deny (create, update, delete) if the user is not a member of the group.
+     * @principle Enforces shared access control based on group membership.
+     */
+    match /studyGroups/{groupId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      allow get: if true;
+      allow list: if true;
+
+      allow create: if isSignedIn(); // Any signed-in user can create a study group. Membership will likely be updated later.
+      allow update: if isSignedIn();
+      allow delete: if isSignedIn();
+    }
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user's profile within the w3Develops application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserProfile entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address.",
+          "format": "email"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User's display name."
+        },
+        "profilePictureUrl": {
+          "type": "string",
+          "description": "URL of the user's profile picture.",
+          "format": "uri"
+        },
+        "socialLinks": {
+          "type": "array",
+          "description": "An array of social media links associated with the user.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "primarySkill": {
+          "type": "string",
+          "description": "User's primary skill for group sorting."
+        },
+        "learningPace": {
+          "type": "string",
+          "description": "User's preferred learning pace for group sorting (e.g., 'Beginner', 'Intermediate', 'Advanced')."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "displayName",
+        "primarySkill",
+        "learningPace"
+      ]
+    },
+    "StudyGroup": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "StudyGroup",
+      "type": "object",
+      "description": "Represents a study group within the w3Develops application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the StudyGroup entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the study group."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the study group's focus or purpose."
+        },
+        "memberIds": {
+          "type": "array",
+          "description": "References to UserProfiles. (Relationship: UserProfile N:N StudyGroup)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "skill": {
+          "type": "string",
+          "description": "The primary skill associated with this study group."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "skill"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}/profile",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores user profile data. Path-based ownership ensures only the authenticated user can access their own profile. Includes the user's email, display name, profile picture URL, social links, primary skill, and learning pace.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/studyGroups/{groupId}",
+        "definition": {
+          "entityName": "StudyGroup",
+          "schema": {
+            "$ref": "#/backend/entities/StudyGroup"
+          },
+          "description": "Stores study group data, including name, description, and an array of memberIds. The 'memberIds' array facilitates managing group memberships and authorizations. This structure supports listing all study groups.",
+          "params": [
+            {
+              "name": "groupId",
+              "description": "The unique identifier of the study group."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This Firestore structure is designed for the w3Develops application, prioritizing security, scalability, and ease of debugging. It adheres to the principle of Authorization Independence by denormalizing authorization-related data, avoiding the need for `get()` calls in security rules. It also ensures data clarity with explicit naming and modeling.\n\n**User Profiles:** User profiles are stored under `/users/{userId}/profile`. This path-based ownership is secure, efficient, and simplifies access control. The `userId` parameter directly corresponds to the authenticated user's UID.\n\n**Study Groups:** Study groups are stored under `/studyGroups/{groupId}`. The `StudyGroup` document includes a `memberIds` field that lists the UIDs of all members. \n\n**Authorization Independence and QAPs:**\n\n*   The structure achieves Authorization Independence by relying on path-based ownership for User Profiles and storing member UIDs within StudyGroup documents.\n*   QAPs (Rules are not Filters) are supported via structural segregation for User Profiles and a membership map within StudyGroup documents.\n\nThis design facilitates simple, robust, and easily debuggable security rules, aligning with the core design principles."
+  }
+}
