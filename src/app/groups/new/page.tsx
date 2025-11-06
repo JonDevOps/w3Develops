@@ -58,9 +58,8 @@ export default function NewGroupPage() {
         return;
     }
     
-    const groupsCollectionRef = collection(firestore, 'learning_groups');
-    
     try {
+      const groupsCollectionRef = collection(firestore, 'learning_groups');
       const counterRef = doc(firestore, 'counters', `group--${values.primarySkill}--${values.timeCommitment}`);
       const newGroupRef = doc(groupsCollectionRef); // Auto-generate ID
 
@@ -83,12 +82,13 @@ export default function NewGroupPage() {
 
         transaction.set(newGroupRef, {
             ...values,
-            name: groupName, // Use the custom or generated name
+            name: groupName,
             memberIds: [user.uid],
             groupSizeLimit: 25,
             createdAt: serverTimestamp(),
         });
       });
+
        toast({
             title: 'Group Created!',
             description: `A new group has been successfully created.`,
