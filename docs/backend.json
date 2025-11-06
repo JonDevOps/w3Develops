@@ -8,11 +8,15 @@
       "properties": {
         "userId": {
           "type": "string",
-          "description": "Reference to the user's ID in the authentication system. (Relationship: User 1:1 UserProfile)"
+          "description": "Reference to the user's ID in the authentication system."
+        },
+        "username": {
+          "type": "string",
+          "description": "The user's unique, public-facing username."
         },
         "displayName": {
           "type": "string",
-          "description": "The user's display name."
+          "description": "The user's full name."
         },
         "profilePictureUrl": {
           "type": "string",
@@ -23,7 +27,8 @@
           "type": "array",
           "description": "An array of social media links.",
           "items": {
-            "type": "string"
+            "type": "string",
+            "format": "uri"
           }
         },
         "primarySkill": {
@@ -41,10 +46,21 @@
       },
       "required": [
         "userId",
-        "displayName",
-        "primarySkill",
-        "learningPace"
+        "username",
+        "displayName"
       ]
+    },
+    "Username": {
+      "title": "Username",
+      "type": "object",
+      "description": "A document to enforce username uniqueness.",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The ID of the user who owns this username."
+        }
+      },
+      "required": ["userId"]
     },
     "LearningGroup": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -60,26 +76,40 @@
           "type": "string",
           "description": "The primary skill focus of the group."
         },
+        "timeCommitment": {
+          "type": "string",
+          "enum": ["part-time", "full-time"],
+          "description": "The expected time commitment for the group."
+        },
         "memberIds": {
           "type": "array",
-          "description": "References to UserProfiles that are members of this group. (Relationship: LearningGroup 1:N UserProfile)",
+          "description": "References to UserProfiles that are members of this group.",
           "items": {
             "type": "string"
           }
         },
         "groupSizeLimit": {
           "type": "number",
-          "description": "The maximum number of members allowed in the group."
+          "description": "The maximum number of members allowed in the group.",
+          "default": 25
         },
         "description": {
           "type": "string",
           "description": "A description of the learning group."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the group was created."
         }
       },
       "required": [
         "name",
         "primarySkill",
-        "memberIds"
+        "memberIds",
+        "createdAt",
+        "groupSizeLimit",
+        "timeCommitment"
       ]
     }
   },
@@ -94,36 +124,24 @@
       {
         "path": "/users/{userId}/profile/data",
         "definition": {
-          "entityName": "UserProfile",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "Stores a single user profile information document. The `userId` parameter ensures path-based ownership, allowing only the authenticated user to access their own profile data.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier for the user, obtained from Firebase Authentication."
-            }
-          ]
+          "schema": { "$ref": "#/entities/UserProfile" },
+          "description": "Stores a single user profile information document."
+        }
+      },
+      {
+        "path": "/usernames/{username}",
+        "definition": {
+          "schema": { "$ref": "#/entities/Username" },
+          "description": "A collection to enforce unique usernames. The document ID is the username itself."
         }
       },
       {
         "path": "/learning_groups/{learningGroupId}",
         "definition": {
-          "entityName": "LearningGroup",
-          "schema": {
-            "$ref": "#/backend/entities/LearningGroup"
-          },
-          "description": "Stores learning group data. Includes the `memberIds` array for authorization, ensuring only members can access the group's details. This enables authorization independence, avoiding the need for `get()` calls in security rules.",
-          "params": [
-            {
-              "name": "learningGroupId",
-              "description": "The unique identifier for the learning group."
-            }
-          ]
+          "schema": { "$ref": "#/entities/LearningGroup" },
+          "description": "Stores learning group data."
         }
       }
-    ],
-    "reasoning": "The Firestore structure is designed to provide a secure and scalable solution for the w3Develops application. It incorporates key principles like Authorization Independence (CRITICAL), DBAC (Database-based Access Control), and clear data segregation to ensure robust security rules and easy debuggability.  \n\nUserProfile data is stored as a single document at `/users/{userId}/profile/data`. Path-based ownership simplifies security rules ensuring only the authenticated user can access their profile.\n\nLearning Groups are stored under `/learning_groups/{learningGroupId}`. Access is managed via a `memberIds` array (denormalized for Authorization Independence) within each learning group document.  This approach supports QAPs by enabling secure listing and filtering of groups without relying on complex rule logic.\n\nAuthorization Independence: The `memberIds` array within the `LearningGroup` collection provides Authorization Independence. Security rules can check if `request.auth.uid` is in the `memberIds` array to grant access, avoiding potentially insecure `get()` calls to other documents.\n\nQAPs: Public Group List: The structure supports QAPs for the Public Group List feature. The `learning_groups` collection can be queried securely, and the security rules can ensure that list operations are only permitted if, for example, the user is authenticated. Because the authorization data lives on the documents themselves, rules can be written such as `request.auth.uid in resource.data.memberIds`."
+    ]
   }
 }

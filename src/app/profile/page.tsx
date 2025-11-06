@@ -29,6 +29,7 @@ import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates'
 
 const profileSchema = z.object({
   displayName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  username: z.string().min(3, { message: 'Username must be at least 3 characters.'}),
   bio: z.string().max(160, { message: 'Bio must not be longer than 160 characters.' }).optional(),
   github: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   linkedin: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
@@ -52,6 +53,7 @@ export default function ProfilePage() {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       displayName: '',
+      username: '',
       bio: '',
       github: '',
       linkedin: '',
@@ -64,6 +66,7 @@ export default function ProfilePage() {
     if (userProfile) {
       form.reset({
         displayName: userProfile.displayName || '',
+        username: userProfile.username || '',
         bio: userProfile.bio || '',
         github: userProfile.socialLinks?.find((l: string) => l.includes('github')) || '',
         linkedin: userProfile.socialLinks?.find((l: string) => l.includes('linkedin')) || '',
@@ -81,6 +84,7 @@ export default function ProfilePage() {
 
     const updatedProfile = {
         userId: user.uid, // CRITICAL: Ensure userId is included for security rules
+        username: values.username,
         displayName: values.displayName,
         bio: values.bio || '',
         primarySkill: values.primarySkill,
@@ -132,6 +136,23 @@ export default function ProfilePage() {
                     <FormControl>
                       <Input placeholder="John Doe" {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder="john_doe" {...field} disabled />
+                    </FormControl>
+                     <FormDescription>
+                      Username cannot be changed.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -27,12 +27,13 @@ import { useAuth, useFirestore } from '@/firebase'
 import {
   createUserWithEmailAndPassword,
 } from 'firebase/auth'
-import { doc, setDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates'
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  username: z.string().min(3, { message: 'Username must be at least 3 characters.'}).regex(/^[a-zA-Z0-9_]+$/, { message: 'Username can only contain letters, numbers, and underscores.' }),
   email: z.string().email({ message: 'Please enter a valid email.' }),
   password: z.string().min(8, { message: 'Password must be at least 8 characters.' }),
 })
@@ -47,29 +48,46 @@ export default function SignupPage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       fullName: '',
+      username: '',
       email: '',
       password: '',
     },
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!firestore) return;
+
+    // Check for username uniqueness
+    const usernameRef = doc(firestore, 'usernames', values.username);
+    const usernameDoc = await getDoc(usernameRef);
+
+    if (usernameDoc.exists()) {
+      form.setError('username', { type: 'manual', message: 'This username is already taken.' });
+      return;
+    }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
       const userProfileData = {
-        id: user.uid,
         userId: user.uid,
+        username: values.username,
         displayName: values.fullName,
         profilePictureUrl: '',
         socialLinks: [],
         primarySkill: 'Frontend',
         learningPace: 'Moderate',
+        bio: '',
       };
       
       const userProfileRef = doc(firestore, 'users', user.uid, 'profile', 'data')
       
-      setDocumentNonBlocking(userProfileRef, userProfileData, { merge: true })
+      // We use setDoc here because we need to perform multiple writes atomically
+      // This is a simplified version; a better approach would be a transaction or a Cloud Function.
+      await setDoc(userProfileRef, userProfileData);
+      await setDoc(usernameRef, { userId: user.uid });
+
 
       toast({
         title: "Account Created!",
@@ -104,6 +122,19 @@ export default function SignupPage() {
                   <FormLabel>Full Name</FormLabel>
                   <FormControl>
                     <Input placeholder="John Doe" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="john_doe" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
