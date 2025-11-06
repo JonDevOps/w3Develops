@@ -8,12 +8,69 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Cohort } from '@/lib/types';
-import { Github, Users, Search, CalendarDays } from 'lucide-react';
+import { Github, Users, Search, CalendarDays, PlusCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { formatTimestamp } from '@/lib/utils';
 import { ONE_WEEK_IN_MS } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
+import { findAndJoinCohort } from '@/app/actions/matchmaking';
+import { useToast } from '@/components/ui/use-toast';
+
+function JoinCohortButton({ cohort }: { cohort: Cohort }) {
+    const { user } = useUser();
+    const { toast } = useToast();
+    const router = useRouter();
+    const [isJoining, setIsJoining] = useState(false);
+    
+    // Check if the user is already a member
+    const isMember = user ? cohort.memberIds.includes(user.uid) : false;
+
+    // A user can join if the cohort is new, not full, and they are not a member
+    const canJoin = cohort.memberIds.length < 25 && !isMember;
+
+    if (!canJoin) {
+        // If they are a member, show a View button instead
+        if (isMember) {
+             return (
+                <Button variant="outline" asChild size="sm">
+                    <Link href={`/cohorts/${cohort.id}`}>View Cohort</Link>
+                </Button>
+            );
+        }
+        return null; // Otherwise, don't show any button
+    }
+    
+    const handleJoin = async () => {
+        if (!user) {
+            toast({ variant: 'destructive', title: 'Not Logged In', description: 'You must be logged in to join a cohort.' });
+            return;
+        }
+        setIsJoining(true);
+        const result = await findAndJoinCohort({
+            topic: cohort.topic,
+            commitment: cohort.commitment,
+            userId: user.uid,
+        });
+
+        if (result.success) {
+            toast({ title: 'Success!', description: result.message });
+            // Re-render or redirect is handled by parent state changes, or we can force a refresh if needed
+            // For now, the button will just change state. A full page reload would show it as "View".
+        } else {
+            toast({ variant: 'destructive', title: 'Could Not Join', description: result.message });
+        }
+        setIsJoining(false);
+    };
+
+    return (
+        <Button onClick={handleJoin} disabled={isJoining} size="sm">
+            <PlusCircle className="w-4 h-4 mr-2" />
+            {isJoining ? 'Joining...' : 'Join Cohort'}
+        </Button>
+    );
+}
+
 
 export default function CohortsPage() {
   const firestore = useFirestore();
@@ -120,21 +177,26 @@ export default function CohortsPage() {
                   </div>
                    <Badge variant="secondary" className="w-fit text-center">{cohort.topic}</Badge>
                 </CardHeader>
-                <CardContent className="space-y-4 flex-grow flex flex-col">
-                  <p className="text-sm text-muted-foreground h-10 overflow-hidden flex-grow">{cohort.description}</p>
-                   <div className="flex flex-col text-sm text-muted-foreground gap-2">
-                    <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {cohort.memberIds.length} / 25 Members</div>
-                    <Badge variant="outline" className="w-fit">{cohort.commitment}</Badge>
-                    <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(cohort.createdAt)}</div>
+                <CardContent className="space-y-4 flex-grow flex flex-col justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-4 h-10 overflow-hidden">{cohort.description}</p>
+                       <div className="flex flex-col text-sm text-muted-foreground gap-2">
+                        <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {cohort.memberIds.length} / 25 Members</div>
+                        <Badge variant="outline" className="w-fit">{cohort.commitment}</Badge>
+                        <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(cohort.createdAt)}</div>
+                      </div>
+                    </div>
+                  <div className="flex gap-2 items-center">
+                    {cohort.githubUrl && (
+                        <Button variant="outline" asChild size="sm">
+                            <a href={cohort.githubUrl} target="_blank" rel="noopener noreferrer">
+                                <Github className="w-4 h-4 mr-2" />
+                                View on GitHub
+                            </a>
+                        </Button>
+                    )}
+                    <JoinCohortButton cohort={cohort} />
                   </div>
-                  {cohort.githubUrl && (
-                    <Button variant="outline" asChild size="sm">
-                        <a href={cohort.githubUrl} target="_blank" rel="noopener noreferrer">
-                            <Github className="w-4 h-4 mr-2" />
-                            View on GitHub
-                        </a>
-                    </Button>
-                  )}
                 </CardContent>
               </Card>
             ))}
@@ -155,21 +217,25 @@ export default function CohortsPage() {
                     </Link>
                     <Badge variant="secondary" className="w-fit text-center">{cohort.topic}</Badge>
                 </CardHeader>
-                <CardContent className="space-y-4 flex-grow flex flex-col">
-                  <p className="text-sm text-muted-foreground h-10 overflow-hidden flex-grow">{cohort.description}</p>
-                  <div className="flex flex-col text-sm text-muted-foreground gap-2">
-                        <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {cohort.memberIds.length} / 25 Members</div>
-                        <Badge variant="outline" className="w-fit">{cohort.commitment}</Badge>
-                        <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(cohort.createdAt)}</div>
-                  </div>
-                  {cohort.githubUrl && (
-                    <Button variant="outline" asChild size="sm">
-                        <a href={cohort.githubUrl} target="_blank" rel="noopener noreferrer">
-                            <Github className="w-4 h-4 mr-2" />
-                            View on GitHub
-                        </a>
-                    </Button>
-                  )}
+                <CardContent className="space-y-4 flex-grow flex flex-col justify-between">
+                    <div>
+                        <p className="text-sm text-muted-foreground mb-4 h-10 overflow-hidden">{cohort.description}</p>
+                        <div className="flex flex-col text-sm text-muted-foreground gap-2">
+                                <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {cohort.memberIds.length} / 25 Members</div>
+                                <Badge variant="outline" className="w-fit">{cohort.commitment}</Badge>
+                                <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(cohort.createdAt)}</div>
+                        </div>
+                    </div>
+                  <div className="flex gap-2 items-center">
+                    {cohort.githubUrl && (
+                        <Button variant="outline" asChild size="sm">
+                            <a href={cohort.githubUrl} target="_blank" rel="noopener noreferrer">
+                                <Github className="w-4 h-4 mr-2" />
+                                View on GitHub
+                            </a>
+                        </Button>
+                    )}
+                    </div>
                 </CardContent>
               </Card>
             ))}

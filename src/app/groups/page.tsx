@@ -9,11 +9,66 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { StudyGroup } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { Users, Search, CalendarDays } from 'lucide-react';
+import { Users, Search, CalendarDays, PlusCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { formatTimestamp } from '@/lib/utils';
 import { ONE_WEEK_IN_MS } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
+import { findAndJoinGroup } from '@/app/actions/matchmaking';
+import { useToast } from '@/components/ui/use-toast';
+
+function JoinGroupButton({ group }: { group: StudyGroup }) {
+    const { user } = useUser();
+    const { toast } = useToast();
+    const router = useRouter();
+    const [isJoining, setIsJoining] = useState(false);
+    
+    // Check if the user is already a member
+    const isMember = user ? group.memberIds.includes(user.uid) : false;
+
+    // A user can join if the group is new, not full, and they are not a member
+    const canJoin = group.memberIds.length < 25 && !isMember;
+
+    if (!canJoin) {
+        // If they are a member, show a View button instead
+        if (isMember) {
+            return (
+                <Button variant="outline" asChild size="sm">
+                    <Link href={`/groups/${group.id}`}>View Group</Link>
+                </Button>
+            );
+        }
+        return null; // Otherwise, don't show any button
+    }
+    
+    const handleJoin = async () => {
+        if (!user) {
+            toast({ variant: 'destructive', title: 'Not Logged In', description: 'You must be logged in to join a group.' });
+            return;
+        }
+        setIsJoining(true);
+        const result = await findAndJoinGroup({
+            topic: group.topic,
+            commitment: group.commitment,
+            userId: user.uid,
+        });
+
+        if (result.success) {
+            toast({ title: 'Success!', description: result.message });
+            // The button will disappear on re-render as isMember becomes true
+        } else {
+            toast({ variant: 'destructive', title: 'Could Not Join', description: result.message });
+        }
+        setIsJoining(false);
+    };
+
+    return (
+        <Button onClick={handleJoin} disabled={isJoining} size="sm">
+            <PlusCircle className="w-4 h-4 mr-2" />
+            {isJoining ? 'Joining...' : 'Join Group'}
+        </Button>
+    );
+}
 
 export default function GroupsPage() {
   const firestore = useFirestore();
@@ -120,12 +175,17 @@ export default function GroupsPage() {
                   </div>
                   <Badge variant="secondary" className="w-fit">{group.topic}</Badge>
                 </CardHeader>
-                <CardContent className="space-y-4 flex-grow flex flex-col">
-                  <p className="text-sm text-muted-foreground h-10 overflow-hidden flex-grow">{group.description}</p>
-                  <div className="flex flex-col text-sm text-muted-foreground gap-2">
-                    <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {group.memberIds.length} / 25 Members</div>
-                    <Badge variant="outline" className="w-fit">{group.commitment}</Badge>
-                    <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(group.createdAt)}</div>
+                <CardContent className="space-y-4 flex-grow flex flex-col justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-4 h-10 overflow-hidden">{group.description}</p>
+                    <div className="flex flex-col text-sm text-muted-foreground gap-2">
+                        <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {group.memberIds.length} / 25 Members</div>
+                        <Badge variant="outline" className="w-fit">{group.commitment}</Badge>
+                        <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(group.createdAt)}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                     <JoinGroupButton group={group} />
                   </div>
                 </CardContent>
               </Card>
