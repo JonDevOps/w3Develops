@@ -8,10 +8,20 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { UserProfile, StudyGroup, Project } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function AccountPage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
+
+  // Redirect to login if user is not loaded or not logged in
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isUserLoading, router]);
 
   const userDocRef = useMemoFirebase(() => {
     if (!user) return null;
@@ -39,9 +49,9 @@ export default function AccountPage() {
     return <div>Loading...</div>;
   }
 
-  if (!user) {
-    // This should ideally be handled by a route guard or middleware
-    return <div>Please log in to see your account details.</div>;
+  if (!user || !userProfile) {
+    // This state should be brief as the useEffect will redirect.
+    return <div>Loading...</div>;
   }
 
   return (

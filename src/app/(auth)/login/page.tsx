@@ -24,9 +24,26 @@ export default function LoginPage() {
     }
   }, [user, isUserLoading, router]);
 
-  const handleSignIn = (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    initiateEmailSignIn(auth, email, password);
+    try {
+        await initiateEmailSignIn(auth, email, password);
+        // onAuthStateChanged will handle the redirect
+    } catch(error: any) {
+        let description = "An unknown error occurred during sign in.";
+        switch(error.code) {
+            case 'auth/user-not-found':
+            case 'auth/wrong-password':
+            case 'auth/invalid-credential':
+                description = "Invalid email or password.";
+                break;
+        }
+        toast({
+            variant: "destructive",
+            title: "Login Failed",
+            description: description,
+        });
+    }
   };
 
   if (isUserLoading || user) {

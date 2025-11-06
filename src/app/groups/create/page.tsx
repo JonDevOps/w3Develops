@@ -40,6 +40,7 @@ export default function CreateGroupPage() {
     e.preventDefault();
     if (!user) {
         toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to create a group." });
+        router.push('/login');
         return;
     }
     const finalTopic = topic === 'Other' ? customTopic : topic;
@@ -57,15 +58,11 @@ export default function CreateGroupPage() {
         memberIds: [user.uid],
     };
     
-    addDocumentNonBlocking(groupsCollection, newGroup)
-      .then(() => {
-        toast({ title: "Group Created!", description: `${name} has been created successfully.` });
-        router.push('/groups');
-      })
-      .catch((e) => {
-        console.error(e);
-        toast({ variant: "destructive", title: "Something went wrong", description: "Could not create the group." });
-      });
+    // We don't await this, letting it run in the background.
+    addDocumentNonBlocking(groupsCollection, newGroup);
+    
+    toast({ title: "Group Created!", description: `${name} has been created successfully.` });
+    router.push('/groups');
   };
 
   return (

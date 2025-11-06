@@ -41,6 +41,7 @@ export default function CreateProjectPage() {
     e.preventDefault();
     if (!user) {
         toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to add a project." });
+        router.push('/login');
         return;
     }
     
@@ -60,15 +61,11 @@ export default function CreateProjectPage() {
         ownerId: user.uid,
     };
     
-    addDocumentNonBlocking(projectsCollection, newProject)
-      .then(() => {
-        toast({ title: "Project Added!", description: `${name} has been added to the showcase.` });
-        router.push('/projects');
-      })
-      .catch((e) => {
-        console.error(e);
-        toast({ variant: "destructive", title: "Something went wrong", description: "Could not add the project." });
-      });
+    // Non-blocking write
+    addDocumentNonBlocking(projectsCollection, newProject);
+
+    toast({ title: "Project Added!", description: `${name} has been added to the showcase.` });
+    router.push('/projects');
   };
 
   return (
@@ -88,8 +85,8 @@ export default function CreateProjectPage() {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="topic">Topic of Study</Label>
-               <Select onValueChange={setTopic} value={topic}>
+              <Label htmlFor="topic">Topic</Label>
+               <Select onValueChange={setTopic} value={topic} required>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a topic" />
                 </SelectTrigger>
@@ -121,11 +118,11 @@ export default function CreateProjectPage() {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="githubUrl">GitHub URL</Label>
+              <Label htmlFor="githubUrl">GitHub URL (Optional)</Label>
               <Input id="githubUrl" placeholder="https://github.com/user/repo" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} />
             </div>
              <div className="grid gap-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">Description (Optional)</Label>
               <Textarea id="description" placeholder="A brief description of your project." value={description} onChange={(e) => setDescription(e.target.value)} />
             </div>
             <Button type="submit">Add Project</Button>
