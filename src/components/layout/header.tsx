@@ -1,9 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Search, Menu } from 'lucide-react';
+import { Search, Menu, Code2 } from 'lucide-react';
 import { useUser, useAuth } from '@/firebase';
 import {
   DropdownMenu,
@@ -15,7 +14,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import SearchBar from './search-bar';
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 
@@ -37,36 +35,17 @@ export default function Header() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <div className="flex items-center gap-4">
           <Link href={logoHref} className="flex items-center gap-2 flex-shrink-0">
-            <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="h-8 w-8" />
+            <Code2 className="h-8 w-8 text-primary" />
             <span className="font-headline text-lg font-semibold">w3Develops</span>
           </Link>
-          
-          {/* Search Dropdown for mobile */}
-          <div className="md:hidden">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                      <Search className="h-5 w-5" />
-                      <span className="sr-only">Search</span>
-                  </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-screen max-w-[calc(100vw-2rem)] mt-2" align="start">
-                  <div className="p-2">
-                        <SearchBar />
-                  </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
         </div>
         
-        {/* Center Search for desktop */}
-        <div className="hidden md:flex flex-1 justify-center px-8">
-            <div className="w-full max-w-md">
+        <div className="flex-1 flex justify-center px-4 sm:px-8">
+            <div className="w-full max-w-lg">
                 <SearchBar />
             </div>
         </div>
 
-        {/* Right Section: Nav, Auth, Menu */}
         <div className="flex items-center gap-4">
             <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
                 <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground">
@@ -86,6 +65,9 @@ export default function Header() {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                    <div className="p-2">
+                      <SearchBar />
+                    </div>
                     <DropdownMenuItem asChild><Link href="/groups">Study Groups</Link></DropdownMenuItem>
                     <DropdownMenuItem asChild><Link href="/cohorts">Build Cohorts</Link></DropdownMenuItem>
                 </DropdownMenuContent>
