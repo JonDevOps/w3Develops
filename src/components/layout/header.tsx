@@ -67,18 +67,18 @@ export default function Header() {
             <Link href={logoHref} className="flex items-center gap-2 flex-shrink-0">
               <Image src="/logo.jpg" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
             </Link>
+            <div className="md:hidden">
+              <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchVisible(true)}>
+                  <Search className="h-6 w-6" />
+                  <span className="sr-only">Open Search</span>
+              </Button>
+            </div>
             <div className="hidden md:block w-full max-w-sm">
               <SearchBar />
             </div>
           </div>
         
           <div className="flex items-center gap-4">
-              <div className="md:hidden">
-                <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchVisible(true)}>
-                    <Search className="h-6 w-6" />
-                    <span className="sr-only">Open Search</span>
-                </Button>
-              </div>
               <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
                   <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground">
                       Study Groups
