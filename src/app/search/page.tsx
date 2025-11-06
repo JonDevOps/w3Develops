@@ -9,8 +9,9 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Users } from 'lucide-react';
+import { Users, CalendarDays } from 'lucide-react';
 import { topics, ONE_WEEK_IN_MS } from '@/lib/constants';
+import { formatTimestamp } from '@/lib/utils';
 
 function SearchResultsSkeleton() {
   return (
@@ -198,12 +199,12 @@ function SearchResults() {
       {mergedGroups.length > 0 && (
          <section>
           <h2 className="text-2xl font-semibold mb-4">Study Groups</h2>
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {mergedGroups.map(group => {
               const isNew = group.createdAt && (Date.now() - group.createdAt.toMillis()) < ONE_WEEK_IN_MS;
               return (
                 <Link href={`/groups/${group.id}`} key={group.id}>
-                  <Card className="hover:bg-accent transition-colors h-full">
+                  <Card className="hover:bg-accent transition-colors h-full flex flex-col">
                     <CardHeader>
                       <div className="flex justify-between items-start">
                         <CardTitle>{group.name}</CardTitle>
@@ -211,11 +212,12 @@ function SearchResults() {
                       </div>
                       <Badge variant="secondary" className="w-fit">{group.topic}</Badge>
                     </CardHeader>
-                    <CardContent className="space-y-3">
+                    <CardContent className="space-y-4 flex-grow flex flex-col justify-between">
                         <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
-                        <div className="flex items-center text-sm text-muted-foreground gap-4">
-                            <div className="flex items-center"><Users className="w-4 h-4 mr-1" />{group.memberIds.length} / 25 Members</div>
+                        <div className="flex flex-col text-sm text-muted-foreground gap-2">
+                            <div className="flex items-center"><Users className="w-4 h-4 mr-2" />{group.memberIds.length} / 25 Members</div>
                             <Badge variant="outline" className="w-fit">{group.commitment}</Badge>
+                            <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(group.createdAt)}</div>
                         </div>
                     </CardContent>
                   </Card>
@@ -229,12 +231,12 @@ function SearchResults() {
        {mergedCohorts.length > 0 && (
          <section>
           <h2 className="text-2xl font-semibold mb-4">Build Cohorts</h2>
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {mergedCohorts.map(cohort => {
               const isNew = cohort.createdAt && (Date.now() - cohort.createdAt.toMillis()) < ONE_WEEK_IN_MS;
               return (
                <Link href={`/cohorts/${cohort.id}`} key={cohort.id}>
-                <Card className="hover:bg-accent transition-colors h-full">
+                <Card className="hover:bg-accent transition-colors h-full flex flex-col">
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <CardTitle>{cohort.name}</CardTitle>
@@ -242,11 +244,12 @@ function SearchResults() {
                     </div>
                     <Badge variant="secondary" className="w-fit">{cohort.topic}</Badge>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="space-y-4 flex-grow flex flex-col justify-between">
                       <p className="text-sm text-muted-foreground h-10 overflow-hidden">{cohort.description}</p>
-                      <div className="flex items-center text-sm text-muted-foreground gap-4">
-                          <div className="flex items-center"><Users className="w-4 h-4 mr-1" />{cohort.memberIds.length} / 25 Members</div>
+                       <div className="flex flex-col text-sm text-muted-foreground gap-2">
+                          <div className="flex items-center"><Users className="w-4 h-4 mr-2" />{cohort.memberIds.length} / 25 Members</div>
                           <Badge variant="outline" className="w-fit">{cohort.commitment}</Badge>
+                          <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(cohort.createdAt)}</div>
                       </div>
                   </CardContent>
                 </Card>
