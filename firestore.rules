@@ -3,52 +3,53 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Allow any authenticated user to read user profiles.
+    // Allow public read on user profiles for browsing.
     // Users can only write to their own profile.
     match /users/{userId} {
-      allow read: if request.auth != null;
+      allow read: if true;
       allow write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Any authenticated user can read study groups and cohorts.
+    // Allow public read on study groups for browsing.
+    // Write rules remain protected.
     match /studyGroups/{groupId} {
-      allow read: if request.auth != null;
+      allow read: if true;
       // Allow create if user is first member.
-      // Allow update (joining) if user is adding themselves and group is not full.
-      // Allow update (leaving) if user is removing themselves.
-      // Allow update by members for other fields (e.g. description).
+      // Allow update for joining/leaving.
       allow create: if request.auth != null && request.resource.data.memberIds[0] == request.auth.uid;
       allow update: if request.auth != null && (
-        ( // Joining
+        ( // Joining: user adds themselves, group not full
           request.resource.data.memberIds == resource.data.memberIds.concat([request.auth.uid]) &&
           resource.data.memberIds.size() < 25
         ) ||
-        ( // Leaving
+        ( // Leaving: user removes themselves
           request.resource.data.memberIds == resource.data.memberIds.diff([request.auth.uid])
         ) ||
-        ( // Other updates by members
-          request.auth.uid in resource.data.memberIds
+        ( // Other updates by members (e.g., description)
+          request.auth.uid in resource.data.memberIds &&
+          !('memberIds' in request.resource.data) // Prevent members from editing the member list itself
         )
       );
     }
 
+    // Allow public read on cohorts for browsing.
+    // Write rules remain protected.
     match /cohorts/{cohortId} {
-      allow read: if request.auth != null;
+      allow read: if true;
        // Allow create if user is first member.
-      // Allow update (joining) if user is adding themselves and group is not full.
-      // Allow update (leaving) if user is removing themselves.
-      // Allow update by members for other fields (e.g. description).
+      // Allow update for joining/leaving.
       allow create: if request.auth != null && request.resource.data.memberIds[0] == request.auth.uid;
       allow update: if request.auth != null && (
-        ( // Joining
+        ( // Joining: user adds themselves, cohort not full
           request.resource.data.memberIds == resource.data.memberIds.concat([request.auth.uid]) &&
           resource.data.memberIds.size() < 25
         ) ||
-        ( // Leaving
+        ( // Leaving: user removes themselves
           request.resource.data.memberIds == resource.data.memberIds.diff([request.auth.uid])
         ) ||
-        ( // Other updates by members
-          request.auth.uid in resource.data.memberIds
+        ( // Other updates by members (e.g., description)
+          request.auth.uid in resource.data.memberIds &&
+          !('memberIds' in request.resource.data) // Prevent members from editing the member list itself
         )
       );
     }
