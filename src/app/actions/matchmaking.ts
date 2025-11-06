@@ -61,7 +61,7 @@ async function findAndJoin(collectionName: 'studyGroups' | 'cohorts', params: Ma
                     topic: topic,
                     commitment: commitment,
                     memberIds: [userId],
-                    createdAt: FieldValue.serverTimestamp(),
+                    createdAt: FieldValue.serverTimestamp(), // Use serverTimestamp for consistency
                     description: `A new ${collectionName === 'studyGroups' ? 'group' : 'cohort'} for ${topic}.`
                 };
                 

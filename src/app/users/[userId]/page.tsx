@@ -7,7 +7,7 @@ import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Github, Linkedin, Twitter, Mail, Calendar, BrainCircuit } from 'lucide-react';
+import { Github, Linkedin, Twitter, Mail, BrainCircuit, CalendarCheck } from 'lucide-react';
 import Link from 'next/link';
 
 export default function UserProfilePage({ params }: { params: { userId: string } }) {
@@ -44,7 +44,7 @@ export default function UserProfilePage({ params }: { params: { userId: string }
   }
 
   return (
-    <div className="container mx-auto p-4 space-y-8">
+    <div className="space-y-8">
       <Card>
         <CardContent className="p-6 flex flex-col md:flex-row items-center gap-6">
           <Avatar className="h-32 w-32 border-4 border-primary">
@@ -81,7 +81,7 @@ export default function UserProfilePage({ params }: { params: { userId: string }
       <div className="grid gap-6 md:grid-cols-3">
         <Card className="md:col-span-1">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><BrainCircuit className="w-5 h-5" /> Skills</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-xl"><BrainCircuit className="w-5 h-5" /> Skills</CardTitle>
           </CardHeader>
           <CardContent>
             {userProfile.skills && userProfile.skills.length > 0 ? (
@@ -94,7 +94,7 @@ export default function UserProfilePage({ params }: { params: { userId: string }
 
         <Card className="md:col-span-2">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Calendar className="w-5 h-5" />Learning Pace</CardTitle>
+                <CardTitle className="flex items-center gap-2 text-xl"><CalendarCheck className="w-5 h-5" />Learning Pace</CardTitle>
             </CardHeader>
              <CardContent>
                 <Badge variant="secondary" className="text-base">{userProfile.learningPace || 'Not specified'}</Badge>
@@ -112,7 +112,10 @@ export default function UserProfilePage({ params }: { params: { userId: string }
              cohorts && cohorts.length > 0 ? (
                 <ul className="space-y-2">
                     {cohorts.map(c => (
-                        <li key={c.id} className="font-medium p-2 rounded-md hover:bg-accent">{c.name} - <Badge>{c.topic}</Badge></li>
+                        <li key={c.id} className="font-medium p-2 rounded-md hover:bg-accent flex justify-between items-center">
+                          <span>{c.name}</span>
+                          <Badge variant="secondary">{c.topic}</Badge>
+                        </li>
                     ))}
                 </ul>
             ) : <p className="text-sm text-muted-foreground">Not a member of any cohorts yet.</p>}
@@ -128,7 +131,10 @@ export default function UserProfilePage({ params }: { params: { userId: string }
              studyGroups && studyGroups.length > 0 ? (
                 <ul className="space-y-2">
                     {studyGroups.map(g => (
-                        <li key={g.id} className="font-medium p-2 rounded-md hover:bg-accent">{g.name} - <Badge>{g.topic}</Badge></li>
+                        <li key={g.id} className="font-medium p-2 rounded-md hover:bg-accent flex justify-between items-center">
+                          <span>{g.name}</span>
+                          <Badge variant="secondary">{g.topic}</Badge>
+                        </li>
                     ))}
                 </ul>
             ) : <p className="text-sm text-muted-foreground">Not a member of any groups yet.</p>}

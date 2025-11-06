@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { StudyGroup } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { Users, Clock, Search, CalendarDays } from 'lucide-react';
+import { Users, Search, CalendarDays } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
@@ -114,7 +114,7 @@ export default function GroupsPage() {
                   <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
                   <div className="flex flex-col text-sm text-muted-foreground gap-2">
                     <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {group.memberIds.length} / 25 Members</div>
-                    <Badge variant="outline">{group.commitment}</Badge>
+                    <Badge variant="outline" className="w-fit">{group.commitment}</Badge>
                     <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(group.createdAt)}</div>
                   </div>
                 </CardContent>
@@ -139,7 +139,7 @@ export default function GroupsPage() {
                   <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
                   <div className="flex flex-col text-sm text-muted-foreground gap-2">
                     <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {group.memberIds.length} / 25 Members</div>
-                    <Badge variant="outline">{group.commitment}</Badge>
+                    <Badge variant="outline" className="w-fit">{group.commitment}</Badge>
                     <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(group.createdAt)}</div>
                   </div>
                 </CardContent>

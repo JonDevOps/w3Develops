@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Users, Clock, Code } from 'lucide-react';
+import { Users, Clock } from 'lucide-react';
 
 
 function SearchResults() {
@@ -23,6 +23,7 @@ function SearchResults() {
     const end = q.replace(/.$/, c => String.fromCharCode(c.charCodeAt(0) + 1));
     return query(
         collection(firestore, 'users'), 
+        orderBy('displayName'),
         where('displayName', '>=', q),
         where('displayName', '<', end),
         limit(10)
@@ -34,6 +35,7 @@ function SearchResults() {
      const end = q.replace(/.$/, c => String.fromCharCode(c.charCodeAt(0) + 1));
     return query(
         collection(firestore, 'studyGroups'), 
+        orderBy('name'),
         where('name', '>=', q),
         where('name', '<', end),
         limit(10)
@@ -45,6 +47,7 @@ function SearchResults() {
      const end = q.replace(/.$/, c => String.fromCharCode(c.charCodeAt(0) + 1));
     return query(
         collection(firestore, 'cohorts'), 
+        orderBy('name'),
         where('name', '>=', q),
         where('name', '<', end),
         limit(10)
@@ -114,8 +117,8 @@ function SearchResults() {
                 <CardContent className="space-y-3">
                     <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
                     <div className="flex items-center text-sm text-muted-foreground gap-4">
-                        <div className="flex items-center"><Users className="w-4 h-4 mr-1" />{group.memberIds.length} Member(s)</div>
-                        <div className="flex items-center"><Clock className="w-4 h-4 mr-1" />{group.commitment}</div>
+                        <div className="flex items-center"><Users className="w-4 h-4 mr-1" />{group.memberIds.length} / 25 Members</div>
+                        <Badge variant="outline" className="w-fit">{group.commitment}</Badge>
                     </div>
                 </CardContent>
               </Card>
@@ -139,8 +142,8 @@ function SearchResults() {
                 <CardContent className="space-y-3">
                     <p className="text-sm text-muted-foreground h-10 overflow-hidden">{cohort.description}</p>
                     <div className="flex items-center text-sm text-muted-foreground gap-4">
-                        <div className="flex items-center"><Users className="w-4 h-4 mr-1" />{cohort.memberIds.length} Member(s)</div>
-                        <div className="flex items-center"><Clock className="w-4 h-4 mr-1" />{cohort.commitment}</div>
+                        <div className="flex items-center"><Users className="w-4 h-4 mr-1" />{cohort.memberIds.length} / 25 Members</div>
+                        <Badge variant="outline" className="w-fit">{cohort.commitment}</Badge>
                     </div>
                 </CardContent>
               </Card>

@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Cohort } from '@/lib/types';
-import { Github, Clock, Users, Search, CalendarDays } from 'lucide-react';
+import { Github, Users, Search, CalendarDays } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 
@@ -113,7 +113,7 @@ export default function CohortsPage() {
                   <p className="text-sm text-muted-foreground h-10 overflow-hidden">{cohort.description}</p>
                    <div className="flex flex-col text-sm text-muted-foreground gap-2">
                     <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {cohort.memberIds.length} / 25 Members</div>
-                    <Badge variant="outline">{cohort.commitment}</Badge>
+                    <Badge variant="outline" className="w-fit">{cohort.commitment}</Badge>
                     <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(cohort.createdAt)}</div>
                   </div>
                   {cohort.githubUrl && (
@@ -139,16 +139,14 @@ export default function CohortsPage() {
             {inProgressCohorts.map(cohort => (
               <Card key={cohort.id}>
                 <CardHeader>
-                  <div className='flex justify-between items-start'>
                     <CardTitle>{cohort.name}</CardTitle>
                     <Badge variant="secondary" className="w-fit text-center">{cohort.topic}</Badge>
-                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground h-10 overflow-hidden">{cohort.description}</p>
                   <div className="flex flex-col text-sm text-muted-foreground gap-2">
                         <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {cohort.memberIds.length} / 25 Members</div>
-                        <Badge variant="outline">{cohort.commitment}</Badge>
+                        <Badge variant="outline" className="w-fit">{cohort.commitment}</Badge>
                         <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(cohort.createdAt)}</div>
                   </div>
                   {cohort.githubUrl && (
