@@ -1,19 +1,11 @@
 'use server';
 
 import { 
-    collection, 
-    query, 
-    where, 
-    runTransaction, 
-    doc,
-    serverTimestamp,
-    arrayUnion,
-    getDocs,
-    limit,
+    FieldValue,
     Timestamp,
-    Firestore
-} from 'firebase/firestore';
-import { getSdks } from '@/firebase';
+} from 'firebase-admin/firestore';
+import { initializeAdminApp } from '@/firebase/admin';
+import { getFirestore } from 'firebase-admin/firestore';
 
 const MAX_MEMBERS = 25;
 const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
@@ -24,29 +16,27 @@ interface MatchmakingParams {
     userId: string;
 }
 
-// This function now runs on the server but uses the client-side SDK via getSdks
+// This function now correctly uses the Firebase Admin SDK on the server.
 async function findAndJoin(collectionName: 'studyGroups' | 'cohorts', params: MatchmakingParams) {
-    // We need to initialize the SDKs on the server.
-    // This is safe because server actions are isolated.
-    const { firestore } = getSdks();
+    // Initialize the Admin SDK on the server.
+    initializeAdminApp();
+    const firestore = getFirestore();
     
     try {
         const { topic, commitment, userId } = params;
 
         const oneWeekAgo = Timestamp.fromMillis(Date.now() - ONE_WEEK_IN_MS);
         
-        const collectionRef = collection(firestore, collectionName);
+        const collectionRef = firestore.collection(collectionName);
 
-        const result = await runTransaction(firestore, async (transaction) => {
+        const result = await firestore.runTransaction(async (transaction) => {
             // Query for a suitable group/cohort
-            const q = query(
-                collectionRef,
-                where('topic', '==', topic),
-                where('commitment', '==', commitment),
-                where('createdAt', '>', oneWeekAgo)
-            );
+            const q = collectionRef
+                .where('topic', '==', topic)
+                .where('commitment', '==', commitment)
+                .where('createdAt', '>', oneWeekAgo);
 
-            const querySnapshot = await getDocs(q);
+            const querySnapshot = await transaction.get(q);
             
             let suitableGroup = null;
             for (const doc of querySnapshot.docs) {
@@ -58,29 +48,24 @@ async function findAndJoin(collectionName: 'studyGroups' | 'cohorts', params: Ma
             
             if (suitableGroup) {
                 // Join existing group
-                const groupRef = doc(firestore, collectionName, suitableGroup.id);
-                transaction.update(groupRef, {
-                    memberIds: arrayUnion(userId)
+                transaction.update(suitableGroup.ref, {
+                    memberIds: FieldValue.arrayUnion(userId)
                 });
                 return { action: 'joined', name: suitableGroup.data().name, id: suitableGroup.id };
             } else {
                 // Create a new group
                 const newGroupName = `${topic} ${collectionName === 'studyGroups' ? 'Group' : 'Cohort'} - ${Date.now()}`; 
+                const newGroupRef = collectionRef.doc(); // Create a new doc reference
                 const newGroupData = {
                     name: newGroupName,
                     topic: topic,
                     commitment: commitment,
                     memberIds: [userId],
-                    createdAt: serverTimestamp(),
+                    createdAt: FieldValue.serverTimestamp(),
                     description: `A new ${collectionName === 'studyGroups' ? 'group' : 'cohort'} for ${topic}.`
                 };
-
-                // In a transaction with the client SDK, we can't get the ref beforehand.
-                // We add it and then the transaction ensures atomicity. The server action
-                // context does not easily give us back the ID, so we return the name.
-                const newGroupRef = doc(collection(firestore, collectionName));
+                
                 transaction.set(newGroupRef, newGroupData);
-
 
                 return { action: 'created', name: newGroupName, id: newGroupRef.id };
             }
