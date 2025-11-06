@@ -49,7 +49,8 @@ export default function GroupsPage() {
       
     const inProgressGroups = allFilteredGroups
       .filter(g => !g.createdAt || (now - g.createdAt.toMillis()) >= ONE_WEEK_IN_MS)
-      .sort((a, b) => {
+       .sort((a, b) => {
+        if (!a.createdAt && !b.createdAt) return 0;
         if (!a.createdAt) return 1;
         if (!b.createdAt) return -1;
         return b.createdAt.toMillis() - a.createdAt.toMillis();
@@ -113,7 +114,7 @@ export default function GroupsPage() {
                   <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
                   <div className="flex flex-col text-sm text-muted-foreground gap-2">
                     <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {group.memberIds.length} / 25 Members</div>
-                    <div className="flex items-center"><Clock className="w-4 h-4 mr-2" /> {group.commitment}</div>
+                    <Badge variant="outline">{group.commitment}</Badge>
                     <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(group.createdAt)}</div>
                   </div>
                 </CardContent>
@@ -138,7 +139,7 @@ export default function GroupsPage() {
                   <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
                   <div className="flex flex-col text-sm text-muted-foreground gap-2">
                     <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {group.memberIds.length} / 25 Members</div>
-                    <div className="flex items-center"><Clock className="w-4 h-4 mr-2" /> {group.commitment}</div>
+                    <Badge variant="outline">{group.commitment}</Badge>
                     <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(group.createdAt)}</div>
                   </div>
                 </CardContent>

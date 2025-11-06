@@ -50,6 +50,7 @@ export default function CohortsPage() {
     const inProgressCohorts = allFilteredCohorts
       .filter(c => !c.createdAt || (now - c.createdAt.toMillis()) >= ONE_WEEK_IN_MS)
       .sort((a, b) => {
+        if (!a.createdAt && !b.createdAt) return 0;
         if (!a.createdAt) return 1;
         if (!b.createdAt) return -1;
         return b.createdAt.toMillis() - a.createdAt.toMillis();
@@ -112,7 +113,7 @@ export default function CohortsPage() {
                   <p className="text-sm text-muted-foreground h-10 overflow-hidden">{cohort.description}</p>
                    <div className="flex flex-col text-sm text-muted-foreground gap-2">
                     <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {cohort.memberIds.length} / 25 Members</div>
-                    <div className="flex items-center"><Clock className="w-4 h-4 mr-2" /> {cohort.commitment}</div>
+                    <Badge variant="outline">{cohort.commitment}</Badge>
                     <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(cohort.createdAt)}</div>
                   </div>
                   {cohort.githubUrl && (
@@ -147,7 +148,7 @@ export default function CohortsPage() {
                   <p className="text-sm text-muted-foreground h-10 overflow-hidden">{cohort.description}</p>
                   <div className="flex flex-col text-sm text-muted-foreground gap-2">
                         <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {cohort.memberIds.length} / 25 Members</div>
-                        <div className="flex items-center"><Clock className="w-4 h-4 mr-2" /> {cohort.commitment}</div>
+                        <Badge variant="outline">{cohort.commitment}</Badge>
                         <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(cohort.createdAt)}</div>
                   </div>
                   {cohort.githubUrl && (
