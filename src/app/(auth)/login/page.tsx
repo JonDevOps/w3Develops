@@ -23,9 +23,10 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
-import { useAuth } from '@/firebase'
+import { useAuth, useUser } from '@/firebase'
 import { initiateEmailSignIn } from '@/firebase/non-blocking-login'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
@@ -35,6 +36,7 @@ const formSchema = z.object({
 export default function LoginPage() {
   const { toast } = useToast()
   const auth = useAuth()
+  const { user, isUserLoading } = useUser()
   const router = useRouter()
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -45,13 +47,23 @@ export default function LoginPage() {
     },
   })
 
+  useEffect(() => {
+    if (!isUserLoading && user) {
+      toast({
+        title: 'Login Successful',
+        description: 'Redirecting to your dashboard...',
+      })
+      router.push('/dashboard')
+    }
+  }, [user, isUserLoading, router, toast])
+
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     initiateEmailSignIn(auth, values.email, values.password)
     toast({
       title: 'Login Attempted',
       description: 'You will be redirected upon successful login.',
     })
-    router.push('/dashboard')
   }
 
   return (

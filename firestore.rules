@@ -5,7 +5,7 @@
  * This ruleset enforces a strict user-ownership model for user profiles and a shared-access model for learning groups.
  *
  * Data Structure:
- * - User profiles are nested under /users/{userId}/profile, ensuring only the authenticated user can access their own profile.
+ * - User profiles are a single document located at /users/{userId}/profile/data, ensuring only the authenticated user can access their own profile.
  * - Learning groups are stored in a top-level /learning_groups/{learningGroupId} collection. Access is controlled by a list of member IDs stored directly in the document.
  *
  * Key Security Decisions:
@@ -22,13 +22,13 @@ service cloud.firestore {
 
     /**
      * @description Controls access to user profile information.
-     * @path /users/{userId}/profile/{document}
+     * @path /users/{userId}/profile/data
      * @allow (create) User with UID 'user_abc' can create their own profile with userId: 'user_abc'.
      * @allow (get, update, delete) User with UID 'user_abc' can get, update, and delete their own profile.
      * @deny (create, update, delete) User with UID 'user_xyz' cannot create, update, or delete 'user_abc' profile.
      * @principle Enforces document ownership for writes, restricts access to a user's own data tree, and validates relational integrity between documents.
      */
-    match /users/{userId}/profile/{document} {
+    match /users/{userId}/profile/data {
       function isOwner(userId) {
         return request.auth != null && request.auth.uid == userId;
       }

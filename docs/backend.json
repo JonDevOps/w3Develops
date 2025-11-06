@@ -6,10 +6,6 @@
       "type": "object",
       "description": "Represents a user's profile information.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the UserProfile entity."
-        },
         "userId": {
           "type": "string",
           "description": "Reference to the user's ID in the authentication system. (Relationship: User 1:1 UserProfile)"
@@ -37,10 +33,13 @@
         "learningPace": {
           "type": "string",
           "description": "The user's learning pace (e.g., beginner, intermediate, advanced)."
+        },
+        "bio": {
+            "type": "string",
+            "description": "A short biography of the user."
         }
       },
       "required": [
-        "id",
         "userId",
         "displayName",
         "primarySkill",
@@ -53,10 +52,6 @@
       "type": "object",
       "description": "Represents a learning group.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the LearningGroup entity."
-        },
         "name": {
           "type": "string",
           "description": "Name of the learning group."
@@ -75,10 +70,13 @@
         "groupSizeLimit": {
           "type": "number",
           "description": "The maximum number of members allowed in the group."
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the learning group."
         }
       },
       "required": [
-        "id",
         "name",
         "primarySkill",
         "memberIds",
@@ -95,13 +93,13 @@
   "firestore": {
     "structure": [
       {
-        "path": "/users/{userId}/profile",
+        "path": "/users/{userId}/profile/data",
         "definition": {
           "entityName": "UserProfile",
           "schema": {
             "$ref": "#/backend/entities/UserProfile"
           },
-          "description": "Stores user profile information. The `userId` parameter ensures path-based ownership, allowing only the authenticated user to access their own profile. Includes denormalized 'userId' field for authorization independence.",
+          "description": "Stores a single user profile information document. The `userId` parameter ensures path-based ownership, allowing only the authenticated user to access their own profile data.",
           "params": [
             {
               "name": "userId",
@@ -127,6 +125,6 @@
         }
       }
     ],
-    "reasoning": "The Firestore structure is designed to provide a secure and scalable solution for the w3Develops application. It incorporates key principles like Authorization Independence (CRITICAL), DBAC (Database-based Access Control), and clear data segregation to ensure robust security rules and easy debuggability.  \n\nUserProfile data is stored under `/users/{userId}/profile`. Path-based ownership simplifies security rules ensuring only the authenticated user can access their profile.\n\nLearning Groups are stored under `/learning_groups/{learningGroupId}`. Access is managed via a `memberIds` array (denormalized for Authorization Independence) within each learning group document.  This approach supports QAPs by enabling secure listing and filtering of groups without relying on complex rule logic.\n\nAuthorization Independence: The `memberIds` array within the `LearningGroup` collection provides Authorization Independence. Security rules can check if `request.auth.uid` is in the `memberIds` array to grant access, avoiding potentially insecure `get()` calls to other documents.\n\nQAPs: Public Group List: The structure supports QAPs for the Public Group List feature. The `learning_groups` collection can be queried securely, and the security rules can ensure that list operations are only permitted if, for example, the user is authenticated. Because the authorization data lives on the documents themselves, rules can be written such as `request.auth.uid in resource.data.memberIds`."
+    "reasoning": "The Firestore structure is designed to provide a secure and scalable solution for the w3Develops application. It incorporates key principles like Authorization Independence (CRITICAL), DBAC (Database-based Access Control), and clear data segregation to ensure robust security rules and easy debuggability.  \n\nUserProfile data is stored as a single document at `/users/{userId}/profile/data`. Path-based ownership simplifies security rules ensuring only the authenticated user can access their profile.\n\nLearning Groups are stored under `/learning_groups/{learningGroupId}`. Access is managed via a `memberIds` array (denormalized for Authorization Independence) within each learning group document.  This approach supports QAPs by enabling secure listing and filtering of groups without relying on complex rule logic.\n\nAuthorization Independence: The `memberIds` array within the `LearningGroup` collection provides Authorization Independence. Security rules can check if `request.auth.uid` is in the `memberIds` array to grant access, avoiding potentially insecure `get()` calls to other documents.\n\nQAPs: Public Group List: The structure supports QAPs for the Public Group List feature. The `learning_groups` collection can be queried securely, and the security rules can ensure that list operations are only permitted if, for example, the user is authenticated. Because the authorization data lives on the documents themselves, rules can be written such as `request.auth.uid in resource.data.memberIds`."
   }
 }
