@@ -100,7 +100,7 @@ export default function CreateGroupPage() {
     <div className="max-w-2xl mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle>Create a Study Group</CardTitle>
+          <CardTitle>Create a New Study Group</CardTitle>
           <CardDescription>
             Start a new group to collaborate with other developers.
           </CardDescription>
@@ -151,8 +151,7 @@ export default function CreateGroupPage() {
             </div>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? 'Creating...' : 'Create Group'}
-            </Button>
-          </form>
+            </Button>          </form>
         </CardContent>
       </Card>
     </div>

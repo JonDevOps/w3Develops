@@ -208,7 +208,7 @@ export default function CohortsPage() {
                       <Link href={`/cohorts/${cohort.id}`} className="hover:underline">
                         <CardTitle>{cohort.name}</CardTitle>
                       </Link>
-                      <Badge variant="destructive">In Progress</Badge>
+                      <Badge variant="secondary">In Progress</Badge>
                     </div>
                     <Badge variant="secondary" className="w-fit text-center">{cohort.topic}</Badge>
                   </CardHeader>

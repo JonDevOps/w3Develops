@@ -197,7 +197,7 @@ export default function GroupsPage() {
                       <Link href={`/groups/${group.id}`} className="hover:underline">
                           <CardTitle>{group.name}</CardTitle>
                       </Link>
-                      <Badge variant="destructive">In Progress</Badge>
+                      <Badge variant="secondary">In Progress</Badge>
                     </div>
                     <Badge variant="secondary" className="w-fit">{group.topic}</Badge>
                   </CardHeader>

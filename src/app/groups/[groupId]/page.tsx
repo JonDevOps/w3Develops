@@ -6,7 +6,7 @@ import { doc, DocumentReference, collection, query, where, Query, getDocs } from
 import { useFirestore } from '@/firebase/provider';
 import { StudyGroup, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/componentsui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Users, CalendarDays, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -47,7 +47,7 @@ function MemberList({ memberIds }: { memberIds: string[] }) {
     }
 
     if (!members || members.length === 0) {
-        return <p className="text-muted-foreground text-sm">No members found.</p>;
+        return <p className="text-muted-foreground text-sm">This group doesn't have any members yet.</p>;
     }
 
     return (
@@ -109,7 +109,7 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
                      {isNew ? (
                         <Badge>New</Badge>
                     ) : (
-                        <Badge variant="destructive">In Progress</Badge>
+                        <Badge variant="secondary">In Progress</Badge>
                     )}
                 </div>
                 <CardDescription>{group.description}</CardDescription>

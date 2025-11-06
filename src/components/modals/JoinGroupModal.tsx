@@ -65,6 +65,8 @@ export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
     return matchingGroups?.filter(g => g.memberIds.length < 25 && !g.memberIds.includes(user?.uid || '')) || [];
   }, [matchingGroups, user]);
 
+  const findButtonDisabled = !finalTopic || !finalCommitment || (topic === 'Other' && !customTopic);
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
@@ -95,7 +97,7 @@ export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
             {topic === 'Other' && (
               <div className="grid gap-2">
                 <Label htmlFor="customTopic">Custom Topic</Label>
-                <Input id="customTopic" placeholder="e.g., Svelte" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} />
+                <Input id="customTopic" placeholder="e.g., Svelte" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} required />
               </div>
             )}
             <div className="grid gap-2">
@@ -111,7 +113,7 @@ export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
                 </div>
               </RadioGroup>
             </div>
-            <Button onClick={handleFindGroups} disabled={!finalTopic || !finalCommitment}>
+            <Button onClick={handleFindGroups} disabled={findButtonDisabled}>
               Find Groups
             </Button>
           </div>

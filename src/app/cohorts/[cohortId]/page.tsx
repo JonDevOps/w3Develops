@@ -49,7 +49,7 @@ function MemberList({ memberIds }: { memberIds: string[] }) {
     }
     
     if (!members || members.length === 0) {
-        return <p className="text-muted-foreground text-sm">No members found.</p>;
+        return <p className="text-muted-foreground text-sm">This cohort doesn't have any members yet.</p>;
     }
 
     return (
@@ -110,7 +110,7 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
                     {isNew ? (
                         <Badge>New</Badge>
                     ) : (
-                        <Badge variant="destructive">In Progress</Badge>
+                        <Badge variant="secondary">In Progress</Badge>
                     )}
                 </div>
                 <CardDescription>{cohort.description}</CardDescription>

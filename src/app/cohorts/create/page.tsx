@@ -103,7 +103,7 @@ export default function CreateCohortPage() {
     <div className="max-w-2xl mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle>Create a Build Cohort</CardTitle>
+          <CardTitle>Create a New Build Cohort</CardTitle>
           <CardDescription>
             Start a new cohort to build a project with other developers.
           </CardDescription>

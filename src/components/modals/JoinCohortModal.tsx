@@ -64,6 +64,8 @@ export function JoinCohortModal({ isOpen, onClose }: JoinCohortModalProps) {
   const availableCohorts = useMemo(() => {
     return matchingCohorts?.filter(c => c.memberIds.length < 25 && !c.memberIds.includes(user?.uid || '')) || [];
   }, [matchingCohorts, user]);
+  
+  const findButtonDisabled = !finalTopic || !finalCommitment || (topic === 'Other' && !customTopic);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -94,7 +96,7 @@ export function JoinCohortModal({ isOpen, onClose }: JoinCohortModalProps) {
             {topic === 'Other' && (
               <div className="grid gap-2">
                 <Label htmlFor="customTopic">Custom Topic</Label>
-                <Input id="customTopic" placeholder="e.g., Svelte" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} />
+                <Input id="customTopic" placeholder="e.g., Svelte" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} required />
               </div>
             )}
             <div className="grid gap-2">
@@ -110,7 +112,7 @@ export function JoinCohortModal({ isOpen, onClose }: JoinCohortModalProps) {
                 </div>
               </RadioGroup>
             </div>
-            <Button onClick={handleFindCohorts} disabled={!finalTopic || !finalCommitment}>
+            <Button onClick={handleFindCohorts} disabled={findButtonDisabled}>
               Find Cohorts
             </Button>
           </div>
