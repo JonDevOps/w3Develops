@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Code2 } from 'lucide-react';
-import { useUser } from '@/firebase';
+import { useUser, useAuth } from '@/firebase';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,10 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Header() {
   const { user, isUserLoading } = useUser();
-
-  const handleSignOut = async () => {
-    // Implement Firebase sign out
-  };
+  const auth = useAuth();
 
   return (
     <header className="bg-card border-b sticky top-0 z-50">
@@ -81,5 +78,3 @@ export default function Header() {
     </header>
   );
 }
-
-    
