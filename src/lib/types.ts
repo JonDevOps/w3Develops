@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface UserProfile {
   id: string;
   email: string;
@@ -20,14 +22,16 @@ export interface StudyGroup {
   memberIds: string[];
   topic: string;
   commitment: string;
+  createdAt: Timestamp;
 }
 
-export interface Project {
+export interface Cohort {
   id: string;
   name: string;
   description?: string;
-  ownerId: string;
+  memberIds: string[];
   githubUrl?: string;
   topic: string;
   commitment: string;
+  createdAt: Timestamp;
 }

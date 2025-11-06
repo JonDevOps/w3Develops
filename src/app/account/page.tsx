@@ -6,7 +6,7 @@ import { useFirestore } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { UserProfile, StudyGroup, Project } from '@/lib/types';
+import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -16,7 +16,6 @@ export default function AccountPage() {
   const firestore = useFirestore();
   const router = useRouter();
 
-  // Redirect to login if user is not loaded or not logged in
   useEffect(() => {
     if (!isUserLoading && !user) {
       router.push('/login');
@@ -30,12 +29,12 @@ export default function AccountPage() {
 
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
 
-  const userProjectsQuery = useMemoFirebase(() => {
+  const userCohortsQuery = useMemoFirebase(() => {
     if (!user) return null;
-    return query(collection(firestore, 'projects'), where('ownerId', '==', user.uid)) as Query;
+    return query(collection(firestore, 'cohorts'), where('memberIds', 'array-contains', user.uid)) as Query;
   }, [user, firestore]);
 
-  const { data: projects, isLoading: isProjectsLoading } = useCollection<Project>(userProjectsQuery);
+  const { data: cohorts, isLoading: isCohortsLoading } = useCollection<Cohort>(userCohortsQuery);
 
   const userGroupsQuery = useMemoFirebase(() => {
     if (!user) return null;
@@ -50,7 +49,6 @@ export default function AccountPage() {
   }
 
   if (!user || !userProfile) {
-    // This state should be brief as the useEffect will redirect.
     return <div>Loading...</div>;
   }
 
@@ -76,21 +74,21 @@ export default function AccountPage() {
         
         <Card>
           <CardHeader>
-            <CardTitle>Your Projects</CardTitle>
-            <CardDescription>Projects you have created.</CardDescription>
+            <CardTitle>Your Cohorts</CardTitle>
+            <CardDescription>Cohorts you have created or joined.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {isProjectsLoading ? <p>Loading projects...</p> : 
-              (projects && projects.length > 0) ? (
+            {isCohortsLoading ? <p>Loading cohorts...</p> : 
+              (cohorts && cohorts.length > 0) ? (
                 <ul className="space-y-2">
-                  {projects.map(p => <li key={p.id} className="text-sm font-medium">{p.name}</li>)}
+                  {cohorts.map(c => <li key={c.id} className="text-sm font-medium">{c.name}</li>)}
                 </ul>
               ) : (
-                <p className="text-sm text-muted-foreground">You haven't added any projects yet.</p>
+                <p className="text-sm text-muted-foreground">You haven't joined any cohorts yet.</p>
               )
             }
              <Button asChild size="sm" variant="secondary">
-              <Link href="/projects/create">Add a Project</Link>
+              <Link href="/cohorts/create">Create a Cohort</Link>
             </Button>
           </CardContent>
         </Card>

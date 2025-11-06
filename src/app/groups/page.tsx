@@ -21,14 +21,19 @@ export default function GroupsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-headline">Explore Study Groups</h1>
           <p className="text-muted-foreground">Find a group to learn and grow with.</p>
         </div>
-        <Button asChild>
-          <Link href="/groups/create">Create a Group</Link>
-        </Button>
+        <div className="flex gap-2 flex-shrink-0">
+            <Button asChild>
+                <Link href="/groups/join">Join a Group</Link>
+            </Button>
+            <Button asChild variant="secondary">
+                <Link href="/groups/create">Create a Group</Link>
+            </Button>
+        </div>
       </div>
       
       {isLoading && <p>Loading groups...</p>}
@@ -36,7 +41,7 @@ export default function GroupsPage() {
       {!isLoading && studyGroups && studyGroups.length === 0 && (
         <div className="text-center py-12">
             <h3 className="text-xl font-semibold">No Groups Yet</h3>
-            <p className="text-muted-foreground mt-2">Be the first to create a study group!</p>
+            <p className="text-muted-foreground mt-2">Be the first to create or join a study group!</p>
         </div>
       )}
       
@@ -48,7 +53,7 @@ export default function GroupsPage() {
               <Badge variant="secondary" className="w-fit">{group.topic}</Badge>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">{group.description}</p>
+              <p className="text-sm text-muted-foreground mb-4 h-10 overflow-hidden">{group.description}</p>
               <div className="flex items-center text-sm text-muted-foreground gap-4">
                 <div className="flex items-center">
                     <Users className="w-4 h-4 mr-1" />

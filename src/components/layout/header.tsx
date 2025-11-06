@@ -29,8 +29,8 @@ export default function Header() {
           <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground">
             Study Groups
           </Link>
-          <Link href="/projects" className="text-muted-foreground transition-colors hover:text-foreground">
-            Build Projects
+          <Link href="/cohorts" className="text-muted-foreground transition-colors hover:text-foreground">
+            Build Cohorts
           </Link>
         </nav>
         <div className="flex items-center gap-4">

@@ -8,17 +8,17 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Any authenticated user can read study groups and projects.
+    // Any authenticated user can read study groups and cohorts.
     match /studyGroups/{groupId} {
       allow read: if request.auth != null;
-      // Only members can update a group, anyone can create
-      allow write: if request.auth != null && (request.auth.uid in resource.data.memberIds || request.resource.data.memberIds[0] == request.auth.uid);
+      // Anyone can create. Only members can update.
+      allow write: if request.auth != null && (request.resource.data.memberIds[0] == request.auth.uid || request.auth.uid in resource.data.memberIds);
     }
 
-    match /projects/{projectId} {
+    match /cohorts/{cohortId} {
       allow read: if request.auth != null;
-      // Only the owner can write to a project
-      allow write: if request.auth != null && request.auth.uid == request.resource.data.ownerId;
+      // Anyone can create. Only members can update.
+      allow write: if request.auth != null && (request.resource.data.memberIds[0] == request.auth.uid || request.auth.uid in resource.data.memberIds);
     }
   }
 }

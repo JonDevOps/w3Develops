@@ -93,22 +93,28 @@
           "description": "The primary topic associated with this study group."
         },
         "commitment": {
-            "type": "string",
-            "description": "The expected time commitment for the group."
+          "type": "string",
+          "description": "The expected time commitment for the group."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the group was created."
         }
       },
       "required": [
         "id",
         "name",
         "topic",
-        "commitment"
+        "commitment",
+        "createdAt"
       ]
     },
-    "Project": {
+    "Cohort": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Project",
+      "title": "Cohort",
       "type": "object",
-      "description": "Represents a project created by a user.",
+      "description": "Represents a project cohort created by a user.",
       "properties": {
         "id": {
           "type": "string"
@@ -119,8 +125,12 @@
         "description": {
           "type": "string"
         },
-        "ownerId": {
-          "type": "string"
+        "memberIds": {
+          "type": "array",
+          "description": "References to UserProfiles who are members of the cohort.",
+          "items": {
+            "type": "string"
+          }
         },
         "githubUrl": {
           "type": "string",
@@ -128,19 +138,24 @@
         },
         "topic": {
           "type": "string",
-          "description": "The primary topic associated with this project."
+          "description": "The primary topic associated with this cohort."
         },
         "commitment": {
           "type": "string",
-          "description": "The expected time commitment for the project."
+          "description": "The expected time commitment for the cohort."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the cohort was created."
         }
       },
       "required": [
         "id",
         "name",
-        "ownerId",
         "topic",
-        "commitment"
+        "commitment",
+        "createdAt"
       ]
     }
   },
@@ -162,11 +177,11 @@
       },
       "description": "Stores study group data."
     },
-    "/projects/{projectId}": {
+    "/cohorts/{cohortId}": {
       "schema": {
-        "$ref": "#/entities/Project"
+        "$ref": "#/entities/Cohort"
       },
-      "description": "Stores project data."
+      "description": "Stores project cohort data."
     }
   }
 }
