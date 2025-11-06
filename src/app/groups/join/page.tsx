@@ -23,7 +23,7 @@ const commitmentLevels = {
 }
 
 export default function JoinGroupPage() {
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,6 +48,7 @@ export default function JoinGroupPage() {
     const result = await findAndJoinGroup({
         topic,
         commitment: commitmentLevels[commitment as keyof typeof commitmentLevels],
+        userId: user.uid,
     });
 
     if (result.success) {
@@ -55,9 +56,13 @@ export default function JoinGroupPage() {
         router.push('/groups');
     } else {
         toast({ variant: "destructive", title: "Something went wrong", description: result.message });
-        setIsSubmitting(false);
     }
+    setIsSubmitting(false);
   };
+  
+  if (isUserLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="max-w-2xl mx-auto">

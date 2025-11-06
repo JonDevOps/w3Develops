@@ -49,7 +49,7 @@ export default function SignupPage() {
           learningPace: 'Intermediate',
         };
         // This is a non-blocking write.
-        setDocumentNonBlocking(userRef, userData, { merge: true });
+        setDocumentNonBlocking(userRef, userData);
         router.push('/account');
       }
     } catch (error: any) {
