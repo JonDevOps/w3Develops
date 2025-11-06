@@ -23,22 +23,27 @@ import { useCollection, useDoc, useFirebase, useMemoFirebase } from '@/firebase'
 import { collection, doc } from 'firebase/firestore'
 
 function MemberAvatar({ memberId }: { memberId: string }) {
-  const { firestore } = useFirebase()
+  const { firestore, isUserLoading } = useFirebase()
   
   const userProfileRef = useMemoFirebase(() => {
-    if (!firestore) return null
+    if (isUserLoading || !firestore) return null
     return doc(firestore, 'users', memberId, 'profile', 'data')
-  }, [firestore, memberId])
+  }, [firestore, memberId, isUserLoading])
 
-  const { data: member } = useDoc(userProfileRef)
+  const { data: member, isLoading } = useDoc(userProfileRef)
 
-  if (!member) {
+  if (isLoading || isUserLoading) {
     return (
       <Avatar className="border-2 border-background">
         <AvatarFallback>?</AvatarFallback>
       </Avatar>
     )
   }
+  
+  if (!member) {
+    return null; // Don't render if member not found or still loading
+  }
+
 
   return (
     <TooltipProvider>

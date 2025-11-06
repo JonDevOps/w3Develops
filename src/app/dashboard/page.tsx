@@ -4,15 +4,13 @@ import {
   useDoc,
   useFirebase,
   useMemoFirebase,
-  useUser,
 } from '@/firebase'
 import { doc } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 export default function DashboardPage() {
-  const { user, isUserLoading } = useUser()
-  const { firestore } = useFirebase()
+  const { user, isUserLoading, firestore } = useFirebase()
   const router = useRouter()
 
   const userProfileRef = useMemoFirebase(() => {

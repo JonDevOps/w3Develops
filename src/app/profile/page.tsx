@@ -23,6 +23,7 @@ import { useDoc, useFirebase, useMemoFirebase, setDocumentNonBlocking } from '@/
 import { doc } from 'firebase/firestore'
 import { useEffect } from 'react'
 import { Trash } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 const profileSchema = z.object({
   displayName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -37,6 +38,7 @@ const profileSchema = z.object({
 export default function ProfilePage() {
   const { toast } = useToast()
   const { user, firestore, isUserLoading } = useFirebase()
+  const router = useRouter()
   const userAvatar = PlaceHolderImages.find((p) => p.id === 'avatar-1')
 
   const userProfileRef = useMemoFirebase(() => {
@@ -44,7 +46,14 @@ export default function ProfilePage() {
     return doc(firestore, 'users', user.uid, 'profile', 'data')
   }, [user, firestore, isUserLoading])
 
-  const { data: userProfile, isLoading } = useDoc(userProfileRef)
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc(userProfileRef)
+  
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login')
+    }
+  }, [user, isUserLoading, router])
+
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -104,7 +113,7 @@ export default function ProfilePage() {
     })
   }
   
-  if (isLoading || isUserLoading) {
+  if (isProfileLoading || isUserLoading) {
     return <p>Loading profile...</p>
   }
 

@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useDoc, useFirebase, useMemoFirebase, updateDocumentNonBlocking, useUser } from '@/firebase'
+import { useDoc, useFirebase, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase'
 import { arrayRemove, doc } from 'firebase/firestore'
 import { notFound, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -14,22 +14,33 @@ import { useToast } from '@/hooks/use-toast'
 import React from 'react'
 
 function MemberPill({ memberId }: { memberId: string }) {
-  const { firestore } = useFirebase()
+  const { firestore, isUserLoading } = useFirebase()
   
   const userProfileRef = useMemoFirebase(() => {
-    if (!firestore) return null
+    if (isUserLoading || !firestore) return null
     return doc(firestore, 'users', memberId, 'profile', 'data')
-  }, [firestore, memberId])
+  }, [firestore, memberId, isUserLoading])
 
-  const { data: member } = useDoc(userProfileRef)
+  const { data: member, isLoading } = useDoc(userProfileRef)
 
-  if (!member) {
+  if (isLoading || isUserLoading) {
     return (
       <div className="flex items-center gap-2 rounded-full border bg-card p-1 pr-3">
         <Avatar className="h-8 w-8">
           <AvatarFallback>?</AvatarFallback>
         </Avatar>
         <span className="text-sm font-medium">Loading...</span>
+      </div>
+    )
+  }
+
+  if (!member) {
+      return (
+      <div className="flex items-center gap-2 rounded-full border bg-destructive/20 p-1 pr-3">
+        <Avatar className="h-8 w-8">
+          <AvatarFallback>!</AvatarFallback>
+        </Avatar>
+        <span className="text-sm font-medium text-destructive-foreground">User not found</span>
       </div>
     )
   }
