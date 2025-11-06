@@ -75,7 +75,6 @@ export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
           <DialogDescription>
             {step === 1 
               ? "Select your preferences to find matching groups."
-              // cspell:disable-next-line
               : "Here are groups that match your criteria. Join one or create a new one."
             }
           </DialogDescription>
