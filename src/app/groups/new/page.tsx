@@ -25,7 +25,7 @@ import { useRouter } from 'next/navigation'
 const technologies = ["html/css", "javascript", "python", "react", "django", "nodejs", "rust", "digital marketing", "web3", "cryptocurrency", "cybersecurity", "nfts", "sql", "artifical intelligence", "web design", "programming fundementals"] as const;
 
 const newGroupSchema = z.object({
-  name: z.string().min(5, { message: 'Group name must be at least 5 characters.' }),
+  name: z.string().optional(),
   description: z.string().max(200, { message: 'Description must not be longer than 200 characters.' }).min(10, { message: 'Description must be at least 10 characters.' }),
   primarySkill: z.enum(technologies),
   timeCommitment: z.enum(['part-time', 'full-time']),
@@ -63,26 +63,29 @@ export default function NewGroupPage() {
       const newGroupRef = doc(groupsCollectionRef); // Auto-generate ID
 
       await runTransaction(firestore, async (transaction) => {
-        const counterDoc = await transaction.get(counterRef);
-        const newCount = counterDoc.exists() ? counterDoc.data().count + 1 : 1;
+        let groupName = values.name;
+        
+        if (!groupName) {
+            const counterDoc = await transaction.get(counterRef);
+            const newCount = counterDoc.exists() ? counterDoc.data().count + 1 : 1;
+            const skillLabel = values.primarySkill.charAt(0).toUpperCase() + values.primarySkill.slice(1);
+            const commitmentLabel = values.timeCommitment;
+            groupName = `${skillLabel} ${commitmentLabel} #${newCount}`;
 
-        const skillLabel = values.primarySkill.charAt(0).toUpperCase() + values.primarySkill.slice(1);
-        const commitmentLabel = values.timeCommitment;
-        const groupName = `${skillLabel} ${commitmentLabel} #${newCount}`;
+            if (counterDoc.exists()) {
+                transaction.update(counterRef, { count: increment(1) });
+            } else {
+                transaction.set(counterRef, { count: 1 });
+            }
+        }
 
         transaction.set(newGroupRef, {
             ...values,
-            name: groupName, // Use the generated name
+            name: groupName, // Use the custom or generated name
             memberIds: [user.uid],
             groupSizeLimit: 25,
             createdAt: serverTimestamp(),
         });
-
-         if (counterDoc.exists()) {
-          transaction.update(counterRef, { count: increment(1) });
-        } else {
-          transaction.set(counterRef, { count: 1 });
-        }
 
         toast({
             title: 'Group Created!',
@@ -125,7 +128,7 @@ export default function NewGroupPage() {
                       <Input placeholder="e.g., React Rangers" {...field} />
                     </FormControl>
                      <FormDescription>
-                      A standardized name will be generated (e.g. JavaScript Part-time #1), but you can provide a custom name here that will be used instead.
+                      If you leave this blank, a standardized name will be generated for you.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

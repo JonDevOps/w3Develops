@@ -29,7 +29,6 @@ import {
 } from 'firebase/auth'
 import { doc, getDoc, writeBatch } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
 import { FirestorePermissionError } from '@/firebase/errors'
 
 const formSchema = z.object({
@@ -45,7 +44,6 @@ export default function SignupPage() {
   const firestore = useFirestore()
   const { user, isUserLoading } = useUser();
   const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,6 +55,8 @@ export default function SignupPage() {
     },
   })
 
+  const { isSubmitting } = form.formState;
+
   // Redirect if user is already logged in
   if (!isUserLoading && user) {
     router.push('/dashboard');
@@ -66,14 +66,13 @@ export default function SignupPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!firestore || !auth) return;
-    setIsSubmitting(true);
-
+    
+    form.clearErrors();
     const usernameRef = doc(firestore, 'usernames', values.username);
     const usernameDoc = await getDoc(usernameRef);
 
     if (usernameDoc.exists()) {
       form.setError('username', { type: 'manual', message: 'This username is already taken.' });
-      setIsSubmitting(false);
       return;
     }
 
@@ -98,25 +97,22 @@ export default function SignupPage() {
         batch.set(userProfileRef, userProfileData);
         batch.set(usernameDocRef, { userId: user.uid });
         
-        await batch.commit();
+        batch.commit().catch((e) => {
+           errorEmitter.emit(
+              'permission-error',
+              new FirestorePermissionError({
+                path: `users/${user.uid}/profile/data` ,
+                operation: 'create',
+                requestResourceData: userProfileData,
+              })
+            )
+        })
 
         router.push('/dashboard');
       })
       .catch((e: any) => {
-        setIsSubmitting(false);
-        if (e.code && e.code.includes('permission-denied')) {
-             errorEmitter.emit(
-              'permission-error',
-              new FirestorePermissionError({
-                path: `users/${auth.currentUser?.uid}/profile/data` ,
-                operation: 'create',
-                requestResourceData: {
-                  userId: auth.currentUser?.uid,
-                  username: values.username,
-                  displayName: values.fullName,
-                },
-              })
-            )
+        if (e.code === 'auth/email-already-in-use') {
+            form.setError('email', { type: 'manual', message: 'This email is already in use.' });
         } else {
            toast({
             variant: "destructive",

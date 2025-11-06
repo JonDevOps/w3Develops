@@ -23,9 +23,9 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useAuth, useUser } from '@/firebase'
-import { initiateEmailSignIn } from '@/firebase/non-blocking-login'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { useToast } from '@/hooks/use-toast'
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
@@ -36,6 +36,7 @@ export default function LoginPage() {
   const auth = useAuth()
   const { user, isUserLoading } = useUser()
   const router = useRouter()
+  const { toast } = useToast()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,8 +54,25 @@ export default function LoginPage() {
     return null; // Render nothing while redirecting
   }
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    initiateEmailSignIn(auth, values.email, values.password)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!auth) return;
+
+    signInWithEmailAndPassword(auth, values.email, values.password)
+    .then(() => {
+        router.push('/dashboard');
+    })
+    .catch((error) => {
+        let description = "An unexpected error occurred. Please try again.";
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+            description = "Invalid email or password. Please check your credentials and try again.";
+        }
+        toast({
+            variant: "destructive",
+            title: "Authentication Failed",
+            description,
+        });
+        form.reset(); // Reset form to allow user to retry
+    });
   }
 
   if (isUserLoading) {

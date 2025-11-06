@@ -42,6 +42,8 @@ export default function FindGroupPage() {
     },
   })
 
+  const { isSubmitting } = form.formState
+
   async function onSubmit(values: z.infer<typeof findGroupSchema>) {
     if (!user || !firestore) {
         toast({
@@ -210,7 +212,9 @@ export default function FindGroupPage() {
                 )}
               />
 
-              <Button type="submit">Find My Group</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Finding Group...' : 'Find My Group'}
+              </Button>
             </form>
           </Form>
         </CardContent>
