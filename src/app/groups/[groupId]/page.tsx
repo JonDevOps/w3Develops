@@ -124,7 +124,7 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
             <div className='space-y-2'>
                 <div className="flex flex-wrap items-center gap-4">
                     <CardTitle className="font-headline text-3xl">{group.name}</CardTitle>
-                    {isNew ? (
+                     {isNew ? (
                         <Badge>New</Badge>
                     ) : (
                         <Badge variant="destructive">In Progress</Badge>

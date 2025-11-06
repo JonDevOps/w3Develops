@@ -11,12 +11,12 @@ service cloud.firestore {
     }
 
     // Allow public read on study groups for browsing.
-    // Write rules remain protected.
+    // Write rules are protected.
     match /studyGroups/{groupId} {
       allow read: if true;
-      // Allow create if user is first member.
-      // Allow update for joining/leaving.
+      // Allow create if user is the first member.
       allow create: if request.auth != null && request.resource.data.memberIds[0] == request.auth.uid;
+      // Allow updates for joining or leaving.
       allow update: if request.auth != null && (
         ( // Joining: user adds themselves, group not full
           request.resource.data.memberIds == resource.data.memberIds.concat([request.auth.uid]) &&
@@ -25,20 +25,20 @@ service cloud.firestore {
         ( // Leaving: user removes themselves
           request.resource.data.memberIds == resource.data.memberIds.diff([request.auth.uid])
         ) ||
-        ( // Other updates by members (e.g., description)
+        ( // Other updates by members (e.g., description) - cannot change member list
           request.auth.uid in resource.data.memberIds &&
-          !('memberIds' in request.resource.data) // Prevent members from editing the member list itself
+          !(request.resource.data.keys().hasAny(['memberIds']))
         )
       );
     }
 
     // Allow public read on cohorts for browsing.
-    // Write rules remain protected.
+    // Write rules are protected.
     match /cohorts/{cohortId} {
       allow read: if true;
-       // Allow create if user is first member.
-      // Allow update for joining/leaving.
+       // Allow create if user is the first member.
       allow create: if request.auth != null && request.resource.data.memberIds[0] == request.auth.uid;
+      // Allow updates for joining or leaving.
       allow update: if request.auth != null && (
         ( // Joining: user adds themselves, cohort not full
           request.resource.data.memberIds == resource.data.memberIds.concat([request.auth.uid]) &&
@@ -47,9 +47,9 @@ service cloud.firestore {
         ( // Leaving: user removes themselves
           request.resource.data.memberIds == resource.data.memberIds.diff([request.auth.uid])
         ) ||
-        ( // Other updates by members (e.g., description)
+        ( // Other updates by members (e.g., description) - cannot change member list
           request.auth.uid in resource.data.memberIds &&
-          !('memberIds' in request.resource.data) // Prevent members from editing the member list itself
+          !(request.resource.data.keys().hasAny(['memberIds']))
         )
       );
     }
