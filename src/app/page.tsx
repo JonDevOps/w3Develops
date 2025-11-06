@@ -1,3 +1,4 @@
+
 'use client'
 
 import Link from 'next/link'
@@ -60,7 +61,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!isUserLoading && user) {
-      router.push('/dashboard')
+      router.push('/account')
     }
   }, [user, isUserLoading, router])
 
@@ -86,11 +87,8 @@ export default function Home() {
           <div className="mt-8 flex justify-center gap-4">
             <Button asChild size="lg">
               <Link href="/signup">
-                Join a Group <ArrowRight className="ml-2 h-5 w-5" />
+                Get Started <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
-            </Button>
-            <Button asChild size="lg" variant="secondary">
-              <Link href="/groups">See All Study Groups</Link>
             </Button>
           </div>
         </div>

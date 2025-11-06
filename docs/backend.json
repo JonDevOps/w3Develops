@@ -73,71 +73,6 @@
       "required": [
         "userId"
       ]
-    },
-    "LearningGroup": {
-      "title": "LearningGroup",
-      "type": "object",
-      "description": "Represents a learning group.",
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "Name of the learning group."
-        },
-        "primarySkill": {
-          "type": "string",
-          "description": "The primary skill focus of the group."
-        },
-        "timeCommitment": {
-          "type": "string",
-          "enum": [
-            "part-time",
-            "full-time"
-          ],
-          "description": "The expected time commitment for the group."
-        },
-        "members": {
-          "type": "array",
-          "description": "An array of user IDs who are members of this group.",
-          "items": {
-            "type": "string"
-          }
-        },
-        "groupSizeLimit": {
-          "type": "number",
-          "description": "The maximum number of members allowed in the group.",
-          "default": 25
-        },
-        "description": {
-          "type": "string",
-          "description": "A description of the learning group."
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "The timestamp when the group was created."
-        }
-      },
-      "required": [
-        "name",
-        "primarySkill",
-        "members",
-        "createdAt",
-        "groupSizeLimit",
-        "timeCommitment",
-        "description"
-      ]
-    },
-     "GroupCounter": {
-      "title": "Group Counter",
-      "type": "object",
-      "description": "A document to store the count for a specific type of group.",
-      "properties": {
-        "count": {
-          "type": "number",
-          "description": "The current number of groups of this type."
-        }
-      },
-      "required": ["count"]
     }
   },
   "auth": {
@@ -154,16 +89,6 @@
     "/usernames/{username}": {
       "schema": { "$ref": "#/entities/Username" },
       "description": "A collection to enforce unique usernames. The document ID is the username itself."
-    },
-    "/learning_groups/{learningGroupId}": {
-      "schema": { "$ref": "#/entities/LearningGroup" },
-      "description": "Stores learning group data."
-    },
-    "/counters/{counterId}": {
-      "schema": { "$ref": "#/entities/GroupCounter" },
-      "description": "Stores counters for naming learning groups uniquely."
     }
   }
 }
-
-    
