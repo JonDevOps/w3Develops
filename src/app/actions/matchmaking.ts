@@ -55,9 +55,11 @@ async function findAndJoin(collectionName: 'studyGroups' | 'cohorts', params: Ma
             } else {
                 // Create a new group
                 const newGroupName = `${topic} ${collectionName === 'studyGroups' ? 'Group' : 'Cohort'} - ${Date.now()}`; 
+                const name_lowercase = newGroupName.toLowerCase();
                 const newGroupRef = collectionRef.doc(); // Create a new doc reference
                 const newGroupData = {
                     name: newGroupName,
+                    name_lowercase: name_lowercase,
                     topic: topic,
                     commitment: commitment,
                     memberIds: [userId],
