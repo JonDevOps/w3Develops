@@ -24,11 +24,17 @@
           "format": "uri"
         },
         "socialLinks": {
-          "type": "array",
-          "description": "An array of social media links.",
-          "items": {
-            "type": "string",
-            "format": "uri"
+          "type": "object",
+          "description": "An object containing social media profile URLs.",
+          "properties": {
+            "github": {
+              "type": "string",
+              "format": "uri"
+            },
+            "linkedin": {
+              "type": "string",
+              "format": "uri"
+            }
           }
         },
         "bio": {
@@ -98,9 +104,10 @@
             "properties": {
               "userId": { "type": "string" },
               "username": { "type": "string" },
+              "displayName": { "type": "string" },
               "profilePictureUrl": { "type": "string", "format": "uri" }
             },
-            "required": ["userId", "username"]
+            "required": ["userId", "username", "displayName"]
           }
         },
         "groupSizeLimit": {
@@ -124,7 +131,8 @@
         "members",
         "createdAt",
         "groupSizeLimit",
-        "timeCommitment"
+        "timeCommitment",
+        "description"
       ]
     },
      "GroupCounter": {
@@ -147,43 +155,21 @@
     ]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/users/{userId}/profile/data",
-        "definition": {
-          "schema": {
-            "$ref": "#/entities/UserProfile"
-          },
-          "description": "Stores a single user profile information document."
-        }
-      },
-      {
-        "path": "/usernames/{username}",
-        "definition": {
-          "schema": {
-            "$ref": "#/entities/Username"
-          },
-          "description": "A collection to enforce unique usernames. The document ID is the username itself."
-        }
-      },
-      {
-        "path": "/learning_groups/{learningGroupId}",
-        "definition": {
-          "schema": {
-            "$ref": "#/entities/LearningGroup"
-          },
-          "description": "Stores learning group data."
-        }
-      },
-      {
-        "path": "/counters/{counterId}",
-        "definition": {
-          "schema": {
-            "$ref": "#/entities/GroupCounter"
-          },
-          "description": "Stores counters for naming learning groups uniquely."
-        }
-      }
-    ]
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Stores a single user profile information document."
+    },
+    "/usernames/{username}": {
+      "schema": { "$ref": "#/entities/Username" },
+      "description": "A collection to enforce unique usernames. The document ID is the username itself."
+    },
+    "/learning_groups/{learningGroupId}": {
+      "schema": { "$ref": "#/entities/LearningGroup" },
+      "description": "Stores learning group data."
+    },
+    "/counters/{counterId}": {
+      "schema": { "$ref": "#/entities/GroupCounter" },
+      "description": "Stores counters for naming learning groups uniquely."
+    }
   }
 }

@@ -1,104 +1,125 @@
-/**
- * @fileOverview Firestore Security Rules for w3Develops application.
- *
- * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for user profiles and a shared-access model for learning groups.
- *
- * Data Structure:
- * - User profiles are a single document located at /users/{userId}/profile/data, ensuring only the authenticated user can access their own profile.
- * - Learning groups are stored in a top-level /learning_groups/{learningGroupId} collection. Access is controlled by a list of member objects stored directly in the document.
- * - Counters for group naming are stored in a top-level /counters collection.
- *
- * Key Security Decisions:
- * - Users can only manage their own profiles.
- * - Learning groups are accessible to members listed in the 'members' array.
- * - Data validation is limited to authorization-critical fields to enable rapid prototyping.
- *
- * Denormalization for Authorization:
- * - The 'members' array in the 'LearningGroup' document contains denormalized user data to avoid costly 'get()' calls when checking group membership.
- */
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // --- Helper Functions ---
     function isSignedIn() {
       return request.auth != null;
     }
     
-    function getMember(memberList, userId) {
-      return memberList.filter(member -> member.userId == userId)[0];
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function getIncomingData() {
+      return request.resource.data;
     }
     
-    function isMember(userId) {
-      return resource.data.members.filter(member -> member.userId == userId).size() > 0;
+    function getExistingData() {
+      return resource.data;
+    }
+    
+    // --- User Profile Rules (/users/{userId}) ---
+    match /users/{userId} {
+      // READ: Any signed-in user can view a profile.
+      allow get: if isSignedIn();
+      
+      // CREATE: A user can only create their own profile.
+      // - The new document's userId must match their auth uid.
+      allow create: if isOwner(userId) && getIncomingData().userId == userId;
+      
+      // UPDATE: A user can only update their own profile.
+      // - Critical fields like userId and username must not be changed.
+      allow update: if isOwner(userId) 
+                      && getIncomingData().userId == getExistingData().userId
+                      && getIncomingData().username == getExistingData().username;
+
+      // DELETE: A user can delete their own profile.
+      allow delete: if isOwner(userId);
+
+      // LIST: Listing all user profiles is disallowed for security.
+      allow list: if false;
     }
 
-    match /users/{userId}/profile/data {
-      function isOwner() {
-        return request.auth != null && request.auth.uid == userId;
-      }
-
-      allow get: if isOwner() || isSignedIn(); // Allow other signed in users to view profiles
-      allow list: if false; 
-
-      allow create: if isOwner(); // User can only create their own profile doc
-      allow update: if isOwner() && request.resource.data.userId == resource.data.userId && request.resource.data.username == resource.data.username;
-      allow delete: if isOwner();
-    }
-
+    // --- Username Uniqueness Rules (/usernames/{username}) ---
     match /usernames/{username} {
-      allow get;
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      // READ: Anyone can check if a username exists.
+      allow get: if true;
+      
+      // CREATE: A user can claim a username if it's not taken.
+      // - The new document's userId must match their auth uid.
+      allow create: if isSignedIn() && getIncomingData().userId == request.auth.uid;
+      
+      // UPDATE/DELETE: Not allowed to prevent tampering.
       allow update, delete: if false;
     }
     
+    // --- Counter Rules (/counters/{counterId}) ---
     match /counters/{counterId} {
-      allow read, write: if isSignedIn(); // Allow any signed-in user to read/write counters for group creation
+      // Any signed-in user can read or write to counters for group creation purposes.
+      allow read, write: if isSignedIn();
     }
 
+    // --- Learning Group Rules (/learning_groups/{learningGroupId}) ---
     match /learning_groups/{learningGroupId} {
       
-      function incomingMembers() {
-        return request.resource.data.members;
+      // --- Helper Functions for Groups ---
+      function isGroupMember(userId) {
+        return userId in getExistingData().members.map(member => member.userId);
       }
       
-      function currentMembers() {
-        return resource.data.members;
-      }
-
-      function isJoining() {
-        let isNotMember = isSignedIn() && !isMember(request.auth.uid);
-        let groupNotFull = currentMembers().size() < resource.data.groupSizeLimit;
-
-        // Ensure incoming list has exactly one new member: the current user.
-        let isAddingSelf = incomingMembers().size() == currentMembers().size() + 1
-                           && incomingMembers().hasAny([getMember(incomingMembers(), request.auth.uid)])
-                           && currentMembers().hasAll(incomingMembers().removeAll([getMember(incomingMembers(), request.auth.uid)]));
-                           
-        return isNotMember && groupNotFull && isAddingSelf;
-      }
-
-       function isLeaving() {
-        let wasMember = isSignedIn() && isMember(request.auth.uid);
-        
-        // Ensure incoming list is the current list minus the current user.
-        let isRemovingSelf = incomingMembers().size() == currentMembers().size() - 1
-                             && !incomingMembers().hasAny([getMember(currentMembers(), request.auth.uid)])
-                             && incomingMembers().hasAll(currentMembers().removeAll([getMember(currentMembers(), request.auth.uid)]));
-
-        return wasMember && isRemovingSelf;
-      }
-
-      function canUpdate() {
-        // Allow members to update, but not change critical fields like members (except for leaving/joining)
-        let isMemberUpdate = isMember(request.auth.uid) && request.resource.data.keys().diff(['members']).size() > 0 && incomingMembers() == currentMembers();
-        return isMemberUpdate;
+      function isNewMemberListValid(currentMembers, newMembers) {
+          return newMembers.size() == currentMembers.size() + 1
+                 && newMembers.hasAny(currentMembers) == false;
       }
       
+      function isLeaving(currentMembers, newMembers) {
+         return newMembers.size() == currentMembers.size() - 1 &&
+                currentMembers.hasAll(newMembers);
+      }
+      
+      function didJoin(currentMembers, newMembers) {
+        let joinedUser = newMembers.diff(currentMembers).added().get(
+            currentMembers.diff(newMembers).removed().keys()[0]
+        );
+        return newMembers.size() == currentMembers.size() + 1 &&
+               currentMembers.hasAll(newMembers.removeAll([joinedUser])) &&
+               joinedUser.userId == request.auth.uid;
+      }
+
+      // READ: Any user can view or list groups.
       allow get, list: if true;
-      allow create: if isSignedIn() && getMember(incomingMembers(), request.auth.uid) != null && incomingMembers().size() == 1;
-      allow update: if canUpdate() || isJoining() || isLeaving();
-      allow delete: if isMember(request.auth.uid);
+      
+      // CREATE: A signed-in user can create a group.
+      // - They must be the first and only member upon creation.
+      allow create: if isSignedIn() 
+                      && getIncomingData().members.size() == 1
+                      && getIncomingData().members[0].userId == request.auth.uid;
+      
+      // UPDATE: Logic for joining, leaving, or updating group info.
+      allow update: if isSignedIn() && (
+        // Case 1: A user is joining the group.
+        (
+          !isGroupMember(request.auth.uid) && // User is not already a member
+          getExistingData().members.size() < getExistingData().groupSizeLimit && // Group is not full
+          didJoin(getExistingData().members, getIncomingData().members)
+        ) ||
+        // Case 2: A user is leaving the group.
+        (
+          isGroupMember(request.auth.uid) &&
+          isLeaving(getExistingData().members, getIncomingData().members)
+        ) ||
+        // Case 3: A current member is updating other fields (NOT members list).
+        (
+          isGroupMember(request.auth.uid) &&
+          getIncomingData().members == getExistingData().members // Member list is unchanged
+        )
+      );
+      
+      // DELETE: Not allowed for now to prevent accidental data loss.
+      // Can be changed to `if isGroupMember(request.auth.uid)` to allow members to delete.
+      allow delete: if false;
     }
   }
 }

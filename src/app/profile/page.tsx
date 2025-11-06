@@ -43,7 +43,7 @@ export default function ProfilePage() {
 
   const userProfileRef = useMemoFirebase(() => {
     if (isUserLoading || !user || !firestore) return null
-    return doc(firestore, 'users', user.uid, 'profile', 'data')
+    return doc(firestore, 'users', user.uid)
   }, [user, firestore, isUserLoading])
 
   const { data: userProfile, isLoading: isProfileLoading } = useDoc(userProfileRef)
@@ -81,8 +81,8 @@ export default function ProfilePage() {
         displayName: userProfile.displayName || '',
         username: userProfile.username || '',
         bio: userProfile.bio || '',
-        github: userProfile.socialLinks?.find((l: string) => l.includes('github')) || '',
-        linkedin: userProfile.socialLinks?.find((l: string) => l.includes('linkedin')) || '',
+        github: userProfile.socialLinks?.github || '',
+        linkedin: userProfile.socialLinks?.linkedin || '',
         portfolioUrl: userProfile.portfolioUrl || '',
         projects: userProfile.projects?.map((p: string) => ({ value: p })) || [],
       })
@@ -91,18 +91,21 @@ export default function ProfilePage() {
 
   function onSubmit(values: z.infer<typeof profileSchema>) {
     if (!userProfileRef || !user) return
-    const socialLinks = [];
-    if (values.github) socialLinks.push(values.github);
-    if (values.linkedin) socialLinks.push(values.linkedin);
+    const socialLinks = {
+      github: values.github || '',
+      linkedin: values.linkedin || '',
+    };
 
     const updatedProfile = {
         userId: user.uid,
-        username: values.username,
+        username: values.username, // Username is disabled, so this is safe
         displayName: values.displayName,
         bio: values.bio || '',
         socialLinks,
         portfolioUrl: values.portfolioUrl || '',
         projects: values.projects?.map(p => p.value) || [],
+        // Preserve existing profile picture if it exists
+        profilePictureUrl: userProfile?.profilePictureUrl || ''
     }
     
     setDocumentNonBlocking(userProfileRef, updatedProfile, { merge: true })
@@ -135,7 +138,7 @@ export default function ProfilePage() {
               <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
                   <AvatarImage src={userProfile?.profilePictureUrl || userAvatar?.imageUrl} />
-                  <AvatarFallback>{userProfile?.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                  <AvatarFallback>{userProfile?.displayName?.charAt(0) || user?.email?.charAt(0) || 'U'}</AvatarFallback>
                 </Avatar>
                 <Button type="button" variant="outline">Change Photo</Button>
               </div>

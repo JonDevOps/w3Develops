@@ -1,3 +1,4 @@
+
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -75,7 +76,7 @@ export default function FindGroupPage() {
         await runTransaction(firestore, async (transaction) => {
           const [groupDoc, userProfileDoc] = await Promise.all([
             transaction.get(groupToJoinRef),
-            getDoc(doc(firestore, 'users', user.uid, 'profile', 'data'))
+            getDoc(doc(firestore, 'users', user.uid))
           ]);
           
           if (!groupDoc.exists()) {
@@ -111,7 +112,7 @@ export default function FindGroupPage() {
         // No available group, create a new one within a transaction
         const counterRef = doc(firestore, 'counters', `group--${values.primarySkill}--${values.timeCommitment}`);
         const newGroupRef = doc(groupsRef); // Auto-generate ID for the new group
-        const userProfileRef = doc(firestore, 'users', user.uid, 'profile', 'data');
+        const userProfileRef = doc(firestore, 'users', user.uid);
 
 
         await runTransaction(firestore, async (transaction) => {

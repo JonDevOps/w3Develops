@@ -80,7 +80,7 @@ export default function SignupPage() {
     createUserWithEmailAndPassword(auth, values.email, values.password)
       .then(async (userCredential) => {
         const user = userCredential.user;
-        const userProfileRef = doc(firestore, 'users', user.uid, 'profile', 'data');
+        const userProfileRef = doc(firestore, 'users', user.uid);
         const usernameDocRef = doc(firestore, 'usernames', values.username);
 
         const userProfileData = {
@@ -88,7 +88,7 @@ export default function SignupPage() {
           username: values.username,
           displayName: values.fullName,
           profilePictureUrl: '',
-          socialLinks: [],
+          socialLinks: {},
           bio: '',
           portfolioUrl: '',
           projects: [],
@@ -102,7 +102,7 @@ export default function SignupPage() {
            errorEmitter.emit(
               'permission-error',
               new FirestorePermissionError({
-                path: `users/${user.uid}/profile/data` ,
+                path: `users/${user.uid}` ,
                 operation: 'create',
                 requestResourceData: userProfileData,
               })

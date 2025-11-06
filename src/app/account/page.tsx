@@ -13,9 +13,9 @@ import { ArrowRight } from 'lucide-react';
 function DashboardLoading() {
     return (
       <div className="container mx-auto px-4 py-12">
-        <div className="mb-12">
-          <div className="h-12 w-1/2 animate-pulse rounded-md bg-muted mb-4"></div>
-          <div className="h-6 w-3/4 animate-pulse rounded-md bg-muted"></div>
+        <div className="animate-pulse">
+          <div className="h-12 w-1/2 rounded-md bg-muted mb-4"></div>
+          <div className="h-6 w-3/4 rounded-md bg-muted"></div>
         </div>
       </div>
     );
@@ -35,7 +35,7 @@ export default function AccountPage() {
 
   const userProfileRef = useMemoFirebase(() => {
     if (!user || !firestore) return null;
-    return doc(firestore, 'users', user.uid, 'profile', 'data');
+    return doc(firestore, 'users', user.uid);
   }, [user, firestore]);
 
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileRef);
@@ -43,12 +43,28 @@ export default function AccountPage() {
   if (isUserLoading || isProfileLoading || !user) {
     return <DashboardLoading />;
   }
+  
+  if (!userProfile) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <h1 className="font-headline text-4xl font-bold tracking-tight md:text-5xl">
+          Welcome, {user.email || 'developer'}!
+        </h1>
+        <p className="mt-4 max-w-2xl text-lg text-foreground/80">
+          It looks like your profile hasn't been created yet. Let's fix that.
+        </p>
+         <Button asChild className="mt-4">
+            <Link href="/profile">Create Your Profile <ArrowRight className="ml-2"/></Link>
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="mb-12">
         <h1 className="font-headline text-4xl font-bold tracking-tight md:text-5xl">
-          Welcome back, {userProfile?.displayName || user.email || 'developer'}!
+          Welcome back, {userProfile?.displayName || user.email}!
         </h1>
         <p className="mt-4 max-w-2xl text-lg text-foreground/80">
           This is your account dashboard. You can manage your profile and find study groups.

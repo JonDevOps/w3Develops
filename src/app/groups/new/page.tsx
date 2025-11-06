@@ -1,3 +1,4 @@
+
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -62,7 +63,7 @@ export default function NewGroupPage() {
       const groupsCollectionRef = collection(firestore, 'learning_groups');
       const counterRef = doc(firestore, 'counters', `group--${values.primarySkill}--${values.timeCommitment}`);
       const newGroupRef = doc(groupsCollectionRef); // Auto-generate ID
-      const userProfileRef = doc(firestore, 'users', user.uid, 'profile', 'data');
+      const userProfileRef = doc(firestore, 'users', user.uid);
 
       await runTransaction(firestore, async (transaction) => {
         let groupName = values.name;

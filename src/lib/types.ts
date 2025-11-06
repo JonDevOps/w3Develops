@@ -3,7 +3,10 @@ export type UserProfile = {
     username: string;
     displayName: string;
     profilePictureUrl: string;
-    socialLinks: string[];
+    socialLinks: {
+        github?: string;
+        linkedin?: string;
+    };
     bio: string;
     portfolioUrl: string;
     projects: string[];

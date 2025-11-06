@@ -28,7 +28,7 @@ function MemberPill({ member }: { member: GroupMember }) {
         <div className="flex items-center gap-2 rounded-full border bg-card p-1 pr-3 hover:bg-muted">
         <Avatar className="h-8 w-8">
             <AvatarImage src={member.profilePictureUrl} alt={member.displayName} />
-            <AvatarFallback>{member.username?.charAt(0) || '?'}</AvatarFallback>
+            <AvatarFallback>{member.displayName?.charAt(0) || member.username?.charAt(0) || '?'}</AvatarFallback>
         </Avatar>
         <span className="text-sm font-medium">{member.displayName || member.username}</span>
         </div>
@@ -52,7 +52,7 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
 
   const userProfileRef = useMemoFirebase(() => {
       if (isUserLoading || !user || !firestore) return null;
-      return doc(firestore, 'users', user.uid, 'profile', 'data')
+      return doc(firestore, 'users', user.uid)
   }, [user, firestore, isUserLoading])
 
   const { data: group, isLoading: isGroupLoading } = useDoc(groupRef)
@@ -75,7 +75,14 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
   }
   
   const handleJoinGroup = async () => {
-      if (!user || !groupRef || !userProfile) return;
+      if (!user || !groupRef || !userProfile) {
+        toast({
+            variant: "destructive",
+            title: "Could not join group",
+            description: "Your user profile is not available. Please try again.",
+        });
+        return
+      };
 
       const newMember = {
           userId: user.uid,
@@ -130,7 +137,7 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
                         <LogOut className="mr-2"/> Leave Group
                     </Button>
                 ) : (
-                    <Button onClick={handleJoinGroup} disabled={isFull}>
+                    <Button onClick={handleJoinGroup} disabled={isFull || !userProfile}>
                         <UserPlus className="mr-2"/> {isFull ? "Group Full" : "Join Group"}
                     </Button>
                 )}

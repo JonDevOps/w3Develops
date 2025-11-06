@@ -1,11 +1,6 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
-  experimental: {
-    allowedDevOrigins: [
-      'https://6000-firebase-studio-1762091182014.cluster-rhptpnrfenhe4qarq36djxjqmg.cloudworkstations.dev',
-    ],
-  },
   async redirects() {
     return [
       {
