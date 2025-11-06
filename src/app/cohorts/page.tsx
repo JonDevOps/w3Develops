@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { useCollection, useMemoFirebase } from '@/firebase';
+import { useState, useMemo, useEffect } from 'react';
+import { useCollection, useMemoFirebase, useUser } from '@/firebase';
 import { collection, Query, orderBy, where, limit, query } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,30 +13,41 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { formatTimestamp } from '@/lib/utils';
 import { ONE_WEEK_IN_MS } from '@/lib/constants';
+import { useRouter } from 'next/navigation';
 
 export default function CohortsPage() {
   const firestore = useFirestore();
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isUserLoading, router]);
 
   const oneWeekAgo = useMemo(() => new Date(Date.now() - ONE_WEEK_IN_MS), []);
 
   const newCohortsQuery = useMemoFirebase(() => {
+    if (!user) return null;
     return query(
       collection(firestore, 'cohorts'),
       orderBy('createdAt', 'desc'),
       where('createdAt', '>', oneWeekAgo),
       limit(25)
     ) as Query;
-  }, [firestore, oneWeekAgo]);
+  }, [firestore, oneWeekAgo, user]);
 
   const inProgressCohortsQuery = useMemoFirebase(() => {
+    if (!user) return null;
     return query(
       collection(firestore, 'cohorts'),
       orderBy('createdAt', 'desc'),
       where('createdAt', '<=', oneWeekAgo),
       limit(50)
     ) as Query;
-  }, [firestore, oneWeekAgo]);
+  }, [firestore, oneWeekAgo, user]);
 
   const { data: newCohorts, isLoading: isLoadingNew } = useCollection<Cohort>(newCohortsQuery);
   const { data: inProgressCohorts, isLoading: isLoadingInProgress } = useCollection<Cohort>(inProgressCohortsQuery);
@@ -52,6 +63,10 @@ export default function CohortsPage() {
   }, [searchTerm, newCohorts, inProgressCohorts]);
 
   const isLoading = isLoadingNew || isLoadingInProgress;
+
+  if (isUserLoading || !user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="space-y-8">

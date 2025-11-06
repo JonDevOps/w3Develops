@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { useCollection, useMemoFirebase } from '@/firebase';
+import { useMemo, useState, useEffect } from 'react';
+import { useCollection, useMemoFirebase, useUser } from '@/firebase';
 import { collection, Query, orderBy, where, limit, query } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,30 +13,41 @@ import { Users, Search, CalendarDays } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { formatTimestamp } from '@/lib/utils';
 import { ONE_WEEK_IN_MS } from '@/lib/constants';
+import { useRouter } from 'next/navigation';
 
 export default function GroupsPage() {
   const firestore = useFirestore();
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isUserLoading, router]);
 
   const oneWeekAgo = useMemo(() => new Date(Date.now() - ONE_WEEK_IN_MS), []);
 
   const newGroupsQuery = useMemoFirebase(() => {
+    if (!user) return null;
     return query(
         collection(firestore, 'studyGroups'), 
         orderBy('createdAt', 'desc'),
         where('createdAt', '>', oneWeekAgo),
         limit(25)
     ) as Query;
-  }, [firestore, oneWeekAgo]);
+  }, [firestore, oneWeekAgo, user]);
 
   const inProgressGroupsQuery = useMemoFirebase(() => {
+    if (!user) return null;
     return query(
         collection(firestore, 'studyGroups'),
         orderBy('createdAt', 'desc'),
         where('createdAt', '<=', oneWeekAgo),
         limit(50)
     ) as Query;
-  }, [firestore, oneWeekAgo]);
+  }, [firestore, oneWeekAgo, user]);
 
   const { data: newGroups, isLoading: isLoadingNew } = useCollection<StudyGroup>(newGroupsQuery);
   const { data: inProgressGroups, isLoading: isLoadingInProgress } = useCollection<StudyGroup>(inProgressGroupsQuery);
@@ -52,6 +63,10 @@ export default function GroupsPage() {
   }, [searchTerm, newGroups, inProgressGroups]);
 
   const isLoading = isLoadingNew || isLoadingInProgress;
+
+  if (isUserLoading || !user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="space-y-8">
