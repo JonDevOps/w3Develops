@@ -41,11 +41,19 @@ export default function CohortsPage() {
 
     const newCohorts = allFilteredCohorts
       .filter(c => c.createdAt && (now - c.createdAt.toMillis()) < ONE_WEEK_IN_MS)
-      .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+      .sort((a, b) => {
+        if (!a.createdAt) return 1;
+        if (!b.createdAt) return -1;
+        return b.createdAt.toMillis() - a.createdAt.toMillis();
+      });
       
     const inProgressCohorts = allFilteredCohorts
       .filter(c => !c.createdAt || (now - c.createdAt.toMillis()) >= ONE_WEEK_IN_MS)
-      .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+      .sort((a, b) => {
+        if (!a.createdAt) return 1;
+        if (!b.createdAt) return -1;
+        return b.createdAt.toMillis() - a.createdAt.toMillis();
+      });
 
     return { newCohorts, inProgressCohorts };
   }, [cohorts, searchTerm]);

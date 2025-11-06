@@ -41,11 +41,19 @@ export default function GroupsPage() {
 
     const newGroups = allFilteredGroups
       .filter(g => g.createdAt && (now - g.createdAt.toMillis()) < ONE_WEEK_IN_MS)
-      .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+      .sort((a, b) => {
+        if (!a.createdAt) return 1;
+        if (!b.createdAt) return -1;
+        return b.createdAt.toMillis() - a.createdAt.toMillis();
+      });
       
     const inProgressGroups = allFilteredGroups
       .filter(g => !g.createdAt || (now - g.createdAt.toMillis()) >= ONE_WEEK_IN_MS)
-      .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+      .sort((a, b) => {
+        if (!a.createdAt) return 1;
+        if (!b.createdAt) return -1;
+        return b.createdAt.toMillis() - a.createdAt.toMillis();
+      });
 
     return { newGroups, inProgressGroups };
   }, [studyGroups, searchTerm]);
