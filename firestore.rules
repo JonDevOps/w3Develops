@@ -18,6 +18,7 @@ service cloud.firestore {
                     && request.resource.data.name_lowercase is string
                     && request.resource.data.topic is string
                     && request.resource.data.commitment is string
+                    && (!('description' in request.resource.data) || request.resource.data.description is string)
                     && request.resource.data.createdAt == request.time
                     && request.resource.data.memberIds is list
                     && request.resource.data.memberIds.size() == 1
@@ -40,6 +41,8 @@ service cloud.firestore {
                     && request.resource.data.name_lowercase is string
                     && request.resource.data.topic is string
                     && request.resource.data.commitment is string
+                    && (!('githubUrl' in request.resource.data) || request.resource.data.githubUrl is string)
+                    && (!('description' in request.resource.data) || request.resource.data.description is string)
                     && request.resource.data.createdAt == request.time
                     && request.resource.data.memberIds is list
                     && request.resource.data.memberIds.size() == 1

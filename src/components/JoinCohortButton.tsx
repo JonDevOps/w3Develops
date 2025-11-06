@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useUser, useFirestore } from '@/firebase';
-import { arrayUnion, doc, runTransaction } from 'firebase/firestore';
+import { useUser, useFirestore, updateDocumentNonBlocking } from '@/firebase';
+import { arrayUnion, doc } from 'firebase/firestore';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -37,25 +37,17 @@ export default function JoinCohortButton({ cohort }: { cohort: Cohort }) {
             toast({ variant: 'destructive', title: 'Not Logged In', description: 'You must be logged in to join a cohort.' });
             return;
         }
+        if(isMember) {
+            toast({ variant: 'destructive', title: 'Already a Member', description: 'You are already a member of this cohort.' });
+            return;
+        }
         setIsJoining(true);
         
         try {
             const cohortRef = doc(firestore, 'cohorts', cohort.id);
-            await runTransaction(firestore, async (transaction) => {
-                const cohortDoc = await transaction.get(cohortRef);
-                if (!cohortDoc.exists()) {
-                    throw new Error("Cohort does not exist!");
-                }
-                const currentData = cohortDoc.data();
-                if (currentData.memberIds.length >= 25) {
-                    throw new Error("This cohort is already full.");
-                }
-                if (currentData.memberIds.includes(user.uid)) {
-                     throw new Error("You are already a member of this cohort.");
-                }
-                transaction.update(cohortRef, { memberIds: arrayUnion(user.uid) });
-            });
-
+            // Use a non-blocking update which plays well with the real-time listener
+            updateDocumentNonBlocking(cohortRef, { memberIds: arrayUnion(user.uid) });
+            
             toast({ title: 'Success!', description: `You've joined the cohort: ${cohort.name}`});
 
         } catch (error: any) {
