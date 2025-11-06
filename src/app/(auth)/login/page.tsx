@@ -26,6 +26,7 @@ import { useAuth, useUser } from '@/firebase'
 import { useRouter } from 'next/navigation'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useToast } from '@/hooks/use-toast'
+import { useEffect } from 'react'
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
@@ -48,18 +49,20 @@ export default function LoginPage() {
 
   const { isSubmitting } = form.formState
 
-  // Redirect if user is already logged in
-  if (!isUserLoading && user) {
-    router.push('/dashboard')
-    return null; // Render nothing while redirecting
-  }
+  useEffect(() => {
+    if (!isUserLoading && user) {
+      router.push('/dashboard')
+    }
+  }, [user, isUserLoading, router])
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!auth) return;
 
     signInWithEmailAndPassword(auth, values.email, values.password)
     .then(() => {
-        router.push('/dashboard');
+        // Successful login is handled by the onAuthStateChanged listener
+        // which will trigger the redirect in the useEffect hook.
+        // No need to call router.push here.
     })
     .catch((error) => {
         let description = "An unexpected error occurred. Please try again.";
@@ -75,7 +78,7 @@ export default function LoginPage() {
     });
   }
 
-  if (isUserLoading) {
+  if (isUserLoading || user) {
     return (
       <div className="flex h-screen items-center justify-center">
         <p>Loading...</p>

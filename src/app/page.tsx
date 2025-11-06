@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { PlaceHolderImages } from '@/lib/placeholder-images'
 import { useUser } from '@/firebase'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1')
 
@@ -57,12 +58,13 @@ export default function Home() {
   const { user, isUserLoading } = useUser()
   const router = useRouter()
 
-  if (!isUserLoading && user) {
-    router.push('/dashboard')
-    return null; // Render nothing while redirecting
-  }
+  useEffect(() => {
+    if (!isUserLoading && user) {
+      router.push('/dashboard')
+    }
+  }, [user, isUserLoading, router])
 
-  if (isUserLoading) {
+  if (isUserLoading || user) {
     return (
       <div className="flex h-screen items-center justify-center">
         <p>Loading...</p>

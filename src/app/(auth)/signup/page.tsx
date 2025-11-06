@@ -30,6 +30,7 @@ import {
 import { doc, getDoc, writeBatch } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 import { FirestorePermissionError } from '@/firebase/errors'
+import { useEffect } from 'react'
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -57,12 +58,11 @@ export default function SignupPage() {
 
   const { isSubmitting } = form.formState;
 
-  // Redirect if user is already logged in
-  if (!isUserLoading && user) {
-    router.push('/dashboard');
-    return null; // Render nothing while redirecting
-  }
-
+  useEffect(() => {
+    if (!isUserLoading && user) {
+      router.push('/dashboard')
+    }
+  }, [user, isUserLoading, router])
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!firestore || !auth) return;
@@ -108,7 +108,7 @@ export default function SignupPage() {
             )
         })
 
-        router.push('/dashboard');
+        // Redirect is handled by the useEffect
       })
       .catch((e: any) => {
         if (e.code === 'auth/email-already-in-use') {
@@ -123,7 +123,7 @@ export default function SignupPage() {
       });
   }
 
-  if (isUserLoading) {
+  if (isUserLoading || user) {
     return (
       <div className="flex h-screen items-center justify-center">
         <p>Loading...</p>
