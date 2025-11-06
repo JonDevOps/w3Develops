@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import {
@@ -10,6 +12,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { PlaceHolderImages } from '@/lib/placeholder-images'
+import { useUser } from '@/firebase'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1')
 
@@ -50,6 +55,23 @@ const steps = [
 ]
 
 export default function Home() {
+  const { user, isUserLoading } = useUser()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isUserLoading && user) {
+      router.push('/dashboard')
+    }
+  }, [user, isUserLoading, router])
+
+  if (isUserLoading || user) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col">
       <section className="relative py-20 md:py-32 bg-primary/20">
