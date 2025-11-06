@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,6 +31,12 @@ export default function JoinGroupPage() {
   const [topic, setTopic] = useState('');
   const [commitment, setCommitment] = useState('part-time');
 
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isUserLoading, router]);
+
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
@@ -60,7 +66,7 @@ export default function JoinGroupPage() {
     setIsSubmitting(false);
   };
   
-  if (isUserLoading) {
+  if (isUserLoading || !user) {
     return <div>Loading...</div>;
   }
 
