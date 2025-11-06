@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
         has: [
           {
             type: 'cookie',
-            key: 'firebaseIdToken',
+            key: 'idToken',
           },
         ],
       },
@@ -21,7 +21,7 @@ const nextConfig: NextConfig = {
         missing: [
           {
             type: 'cookie',
-            key: 'firebaseIdToken',
+            key: 'idToken',
           },
         ],
       },
