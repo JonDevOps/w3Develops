@@ -122,8 +122,7 @@ export default function Header() {
               <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
                   <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground">
                       Study Groups
-                  </Link>
-                  <Link href="/cohorts" className="text-muted-foreground transition-colors hover:text-foreground">
+                  </Link>                  <Link href="/cohorts" className="text-muted-foreground transition-colors hover:text-foreground">
                       Build Cohorts
                   </Link>
               </nav>

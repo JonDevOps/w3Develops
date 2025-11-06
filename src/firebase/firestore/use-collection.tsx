@@ -69,13 +69,13 @@ export function useCollection<T = any>(
       (error: FirestoreError) => {
         let path: string;
         // This logic extracts the path from either a ref or a query
-        if (targetRefOrQuery.type === 'collection') {
+        if ('path' in targetRefOrQuery) {
           path = (targetRefOrQuery as CollectionReference).path;
         } else {
-          // The public API for Query doesn't expose the path directly in a simple way.
-          // This is a pragmatic way to get a representation of it for debugging.
-          // In a real app, you might pass the path string down for better error reporting.
-          path = `query on collection`; 
+          // This is a query, getting the path is more complex. 
+          // For this app, we know queries are simple.
+          // A more robust solution might involve inspecting the query object.
+          path = `a query on a collection`;
         }
 
         const contextualError = new FirestorePermissionError({

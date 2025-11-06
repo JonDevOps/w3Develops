@@ -40,7 +40,8 @@ function MemberList({ memberIds }: { memberIds: string[] }) {
         };
 
         fetchMembers();
-    }, [firestore, memberIds]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [firestore, JSON.stringify(memberIds)]);
 
 
     if (isLoading) {

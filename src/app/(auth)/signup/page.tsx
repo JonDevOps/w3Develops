@@ -10,9 +10,10 @@ import Link from "next/link";
 import { useAuth, useUser, useFirestore } from '@/firebase/provider';
 import { initiateEmailSignUp } from '@/firebase/non-blocking-login';
 import { useToast } from "@/components/ui/use-toast";
-import { doc, collection, query, where, getDocs, runTransaction } from 'firebase/firestore';
+import { doc, collection, query, where, getDocs, runTransaction, deleteDoc } from 'firebase/firestore';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 import { UserProfile } from '@/lib/types';
+import { deleteUser } from 'firebase/auth';
 
 export default function SignupPage() {
   const auth = useAuth();
@@ -46,18 +47,16 @@ export default function SignupPage() {
     try {
       // 1. Create user with email and password first
       const userCredential = await initiateEmailSignUp(auth, email, password);
-      if (userCredential && userCredential.user) {
-        const newUser = userCredential.user;
-        const usernameLower = username.toLowerCase();
-        
-        // 2. Use a transaction to guarantee username uniqueness and create the profile
-        const userDocRef = doc(firestore, "users", newUser.uid);
-        
+      const newUser = userCredential.user;
+      const usernameLower = username.toLowerCase();
+      
+      // 2. Use a transaction to guarantee username uniqueness and create the profile
+      try {
         await runTransaction(firestore, async (transaction) => {
-          // Check for username uniqueness within the transaction
+          const userDocRef = doc(firestore, "users", newUser.uid);
           const usersRef = collection(firestore, 'users');
           const q = query(usersRef, where("username_lowercase", "==", usernameLower));
-          const querySnapshot = await transaction.get(q);
+          const querySnapshot = await getDocs(q); // Use getDocs, not transaction.get
 
           if (!querySnapshot.empty) {
             // This will abort the transaction
@@ -77,9 +76,15 @@ export default function SignupPage() {
           };
           transaction.set(userDocRef, userData);
         });
-
-        // If transaction is successful, the useEffect will handle the redirect.
+      } catch (transactionError: any) {
+        // If the transaction fails (e.g., username exists), we must delete the auth user
+        if (newUser) {
+          await deleteUser(newUser);
+        }
+        // Re-throw the error to be caught by the outer catch block
+        throw transactionError;
       }
+        // If transaction is successful, the useEffect will handle the redirect.
     } catch (error: any) {
       let description = "An unknown error occurred during sign up.";
       // Handle both auth errors and transaction errors
