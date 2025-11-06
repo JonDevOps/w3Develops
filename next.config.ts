@@ -1,6 +1,32 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/dashboard',
+        permanent: false,
+        has: [
+          {
+            type: 'cookie',
+            key: 'firebaseIdToken',
+          },
+        ],
+      },
+      {
+        source: '/dashboard',
+        destination: '/login',
+        permanent: false,
+        missing: [
+          {
+            type: 'cookie',
+            key: 'firebaseIdToken',
+          },
+        ],
+      },
+    ]
+  },
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
