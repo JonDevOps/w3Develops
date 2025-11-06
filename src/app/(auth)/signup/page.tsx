@@ -23,12 +23,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
-import { useAuth, useFirestore, setDocumentNonBlocking } from '@/firebase'
+import { useAuth, useFirestore } from '@/firebase'
 import {
   createUserWithEmailAndPassword,
 } from 'firebase/auth'
 import { doc, getDoc, writeBatch } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -42,6 +43,7 @@ export default function SignupPage() {
   const auth = useAuth()
   const firestore = useFirestore()
   const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -55,13 +57,14 @@ export default function SignupPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!firestore || !auth) return;
+    setIsSubmitting(true);
 
-    // Check for username uniqueness
     const usernameRef = doc(firestore, 'usernames', values.username);
     const usernameDoc = await getDoc(usernameRef);
 
     if (usernameDoc.exists()) {
       form.setError('username', { type: 'manual', message: 'This username is already taken.' });
+      setIsSubmitting(false);
       return;
     }
 
@@ -82,7 +85,7 @@ export default function SignupPage() {
       };
       
       const batch = writeBatch(firestore);
-      batch.set(userProfileRef, userProfileData);
+batch.set(userProfileRef, userProfileData);
       batch.set(usernameDocRef, { userId: user.uid });
       await batch.commit();
 
@@ -97,6 +100,8 @@ export default function SignupPage() {
         title: "Uh oh! Something went wrong.",
         description: e.message || "Could not create account.",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -118,7 +123,7 @@ export default function SignupPage() {
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field} />
+                    <Input placeholder="John Doe" {...field} disabled={isSubmitting} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -131,7 +136,7 @@ export default function SignupPage() {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="john_doe" {...field} />
+                    <Input placeholder="john_doe" {...field} disabled={isSubmitting} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -144,7 +149,7 @@ export default function SignupPage() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
+                    <Input placeholder="name@example.com" {...field} disabled={isSubmitting} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -157,14 +162,14 @@ export default function SignupPage() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input type="password" placeholder="••••••••" {...field} disabled={isSubmitting} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
-              Create Account
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? 'Creating Account...' : 'Create Account'}
             </Button>
           </form>
         </Form>

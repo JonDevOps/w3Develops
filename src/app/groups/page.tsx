@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { ArrowRight, PlusCircle, Users } from 'lucide-react'
+import { ArrowRight, PlusCircle, Users, Group } from 'lucide-react'
 import { useCollection, useDoc, useFirebase, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase'
 import { arrayUnion, collection, doc } from 'firebase/firestore'
 import { useToast } from '@/hooks/use-toast'
@@ -120,6 +120,23 @@ export default function GroupsPage() {
     });
   }
 
+  const renderEmptyState = () => (
+    <div className="text-center py-16 px-4 border-2 border-dashed rounded-lg">
+      <Group className="mx-auto h-16 w-16 text-muted-foreground" />
+      <h2 className="mt-6 text-xl font-semibold">No Groups Yet</h2>
+      <p className="mt-2 text-muted-foreground">
+        It looks like there are no active groups right now.
+      </p>
+      <div className="mt-6">
+        <Button asChild>
+          <Link href="/groups/new">
+            <PlusCircle className="mr-2 h-4 w-4" /> Be the First to Create One!
+          </Link>
+        </Button>
+      </div>
+    </div>
+  )
+
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -146,6 +163,9 @@ export default function GroupsPage() {
       </div>
 
       {isLoading && <p className='text-center'>Loading groups...</p>}
+
+      {!isLoading && groups && groups.length === 0 && renderEmptyState()}
+
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         {groups?.map((group) => (
           <Card key={group.id} className="flex flex-col">

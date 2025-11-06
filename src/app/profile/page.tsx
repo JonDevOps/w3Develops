@@ -18,9 +18,8 @@ import { useToast } from '@/hooks/use-toast'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PlaceHolderImages } from '@/lib/placeholder-images'
-import { useDoc, useFirebase, useMemoFirebase, useUser, setDocumentNonBlocking } from '@/firebase'
+import { useDoc, useFirebase, useMemoFirebase, setDocumentNonBlocking } from '@/firebase'
 import { doc } from 'firebase/firestore'
 import { useEffect } from 'react'
 
@@ -54,6 +53,8 @@ export default function ProfilePage() {
       linkedin: '',
     },
   })
+  
+  const { isSubmitting } = form.formState;
 
   useEffect(() => {
     if (userProfile) {
@@ -123,7 +124,7 @@ export default function ProfilePage() {
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="John Doe" {...field} />
+                      <Input placeholder="John Doe" {...field} disabled={isSubmitting}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -158,6 +159,7 @@ export default function ProfilePage() {
                         placeholder="Tell us a little bit about yourself"
                         className="resize-none"
                         {...field}
+                        disabled={isSubmitting}
                       />
                     </FormControl>
                     <FormMessage />
@@ -173,7 +175,7 @@ export default function ProfilePage() {
                     <FormItem>
                       <FormLabel>GitHub Profile</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://github.com/your-username" {...field} />
+                        <Input placeholder="https://github.com/your-username" {...field} disabled={isSubmitting} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -186,7 +188,7 @@ export default function ProfilePage() {
                     <FormItem>
                       <FormLabel>LinkedIn Profile</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://linkedin.com/in/your-username" {...field} />
+                        <Input placeholder="https://linkedin.com/in/your-username" {...field} disabled={isSubmitting} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -194,7 +196,9 @@ export default function ProfilePage() {
                 />
               </div>
 
-              <Button type="submit">Update Profile</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Updating Profile...' : 'Update Profile'}
+              </Button>
             </form>
           </Form>
         </CardContent>

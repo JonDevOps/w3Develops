@@ -22,7 +22,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useToast } from '@/hooks/use-toast'
 import { useAuth, useUser } from '@/firebase'
 import { initiateEmailSignIn } from '@/firebase/non-blocking-login'
 import { useRouter } from 'next/navigation'
@@ -34,7 +33,6 @@ const formSchema = z.object({
 })
 
 export default function LoginPage() {
-  const { toast } = useToast()
   const auth = useAuth()
   const { user, isUserLoading } = useUser()
   const router = useRouter()
@@ -47,23 +45,18 @@ export default function LoginPage() {
     },
   })
 
+  const { isSubmitting } = form.formState
+
   useEffect(() => {
     if (!isUserLoading && user) {
-      toast({
-        title: 'Login Successful',
-        description: 'Redirecting to your dashboard...',
-      })
       router.push('/dashboard')
     }
-  }, [user, isUserLoading, router, toast])
+  }, [user, isUserLoading, router])
 
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     initiateEmailSignIn(auth, values.email, values.password)
-    toast({
-      title: 'Login Attempted',
-      description: 'You will be redirected upon successful login.',
-    })
+    // No toast needed here, useEffect will handle redirect
   }
 
   return (
@@ -84,7 +77,7 @@ export default function LoginPage() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
+                    <Input placeholder="name@example.com" {...field} disabled={isSubmitting} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -97,14 +90,14 @@ export default function LoginPage() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input type="password" placeholder="••••••••" {...field} disabled={isSubmitting} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
-              Sign In
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? 'Signing In...' : 'Sign In'}
             </Button>
           </form>
         </Form>
