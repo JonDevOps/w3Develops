@@ -6,7 +6,7 @@ import { doc, DocumentReference, collection, query, where, Query, getDocs } from
 import { useFirestore } from '@/firebase/provider';
 import { StudyGroup, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/componentsui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Users, CalendarDays, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
