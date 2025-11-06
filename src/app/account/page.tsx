@@ -130,14 +130,18 @@ export default function AccountPage() {
           <CardContent className="space-y-4">
             {isCohortsLoading ? <p>Loading cohorts...</p> : 
               (cohorts && cohorts.length > 0) ? (
-                <ul className="space-y-2">
-                  {cohorts.map(c => <li key={c.id} className="text-sm font-medium">{c.name}</li>)}
+                <ul className="divide-y">
+                  {cohorts.map(c => (
+                     <li key={c.id} className="py-2">
+                      <Link href={`/cohorts/${c.id}`} className="font-medium hover:underline">{c.name}</Link>
+                    </li>
+                  ))}
                 </ul>
               ) : (
                 <p className="text-sm text-muted-foreground">You haven't joined any cohorts yet.</p>
               )
             }
-             <div className="flex gap-2">
+             <div className="flex gap-2 pt-4">
                 <Button asChild size="sm" variant="secondary">
                   <Link href="/cohorts">Explore Cohorts</Link>
                 </Button>
@@ -156,14 +160,18 @@ export default function AccountPage() {
           <CardContent className="space-y-4">
             {isGroupsLoading ? <p>Loading groups...</p> : 
               (studyGroups && studyGroups.length > 0) ? (
-                 <ul className="space-y-2">
-                  {studyGroups.map(g => <li key={g.id} className="text-sm font-medium">{g.name}</li>)}
+                 <ul className="divide-y">
+                  {studyGroups.map(g => (
+                    <li key={g.id} className="py-2">
+                      <Link href={`/groups/${g.id}`} className="font-medium hover:underline">{g.name}</Link>
+                    </li>
+                  ))}
                 </ul>
               ) : (
                 <p className="text-sm text-muted-foreground">You haven't joined any groups yet.</p>
               )
             }
-            <div className="flex gap-2">
+            <div className="flex gap-2 pt-4">
                 <Button asChild size="sm" variant="secondary">
                 <Link href="/groups">Explore Groups</Link>
                 </Button>

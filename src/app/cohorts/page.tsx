@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useCollection, useMemoFirebase } from '@/firebase';
-import { collection, Query, Timestamp, orderBy, where, limit, query } from 'firebase/firestore';
+import { collection, Query, orderBy, where, limit, query } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,20 +11,14 @@ import { Cohort } from '@/lib/types';
 import { Github, Users, Search, CalendarDays } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-
-const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
-
-function formatTimestamp(timestamp: Timestamp | null | undefined): string {
-    if (!timestamp) return 'N/A';
-    return new Date(timestamp.seconds * 1000).toLocaleDateString();
-}
-
+import { formatTimestamp } from '@/lib/utils';
+import { ONE_WEEK_IN_MS } from '@/lib/constants';
 
 export default function CohortsPage() {
   const firestore = useFirestore();
   const [searchTerm, setSearchTerm] = useState('');
 
-  const oneWeekAgo = useMemo(() => new Timestamp(Math.floor((Date.now() - ONE_WEEK_IN_MS) / 1000), 0), []);
+  const oneWeekAgo = useMemo(() => new Date(Date.now() - ONE_WEEK_IN_MS), []);
 
   const newCohortsQuery = useMemoFirebase(() => {
     return query(
@@ -52,8 +46,8 @@ export default function CohortsPage() {
     if (!term) return { newCohorts, inProgressCohorts };
 
     return {
-      newCohorts: newCohorts?.filter(c => c.name.toLowerCase().includes(term) || c.topic.toLowerCase().includes(term)),
-      inProgressCohorts: inProgressCohorts?.filter(c => c.name.toLowerCase().includes(term) || c.topic.toLowerCase().includes(term)),
+      newCohorts: newCohorts?.filter(c => c.name_lowercase.includes(term) || c.topic.toLowerCase().includes(term)),
+      inProgressCohorts: inProgressCohorts?.filter(c => c.name_lowercase.includes(term) || c.topic.toLowerCase().includes(term)),
     };
   }, [searchTerm, newCohorts, inProgressCohorts]);
 
@@ -101,16 +95,18 @@ export default function CohortsPage() {
           <h2 className="text-2xl font-semibold">New</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredCohorts.newCohorts.map(cohort => (
-              <Card key={cohort.id}>
+              <Card key={cohort.id} className="flex flex-col">
                 <CardHeader>
                   <div className='flex justify-between items-start'>
-                    <CardTitle>{cohort.name}</CardTitle>
+                     <Link href={`/cohorts/${cohort.id}`} className="hover:underline">
+                      <CardTitle>{cohort.name}</CardTitle>
+                    </Link>
                     <Badge>New</Badge>
                   </div>
                    <Badge variant="secondary" className="w-fit text-center">{cohort.topic}</Badge>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground h-10 overflow-hidden">{cohort.description}</p>
+                <CardContent className="space-y-4 flex-grow flex flex-col">
+                  <p className="text-sm text-muted-foreground h-10 overflow-hidden flex-grow">{cohort.description}</p>
                    <div className="flex flex-col text-sm text-muted-foreground gap-2">
                     <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {cohort.memberIds.length} / 25 Members</div>
                     <Badge variant="outline" className="w-fit">{cohort.commitment}</Badge>
@@ -137,13 +133,15 @@ export default function CohortsPage() {
           <h2 className="text-2xl font-semibold">In Progress</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredCohorts.inProgressCohorts.map(cohort => (
-              <Card key={cohort.id}>
+              <Card key={cohort.id} className="flex flex-col">
                 <CardHeader>
-                    <CardTitle>{cohort.name}</CardTitle>
+                    <Link href={`/cohorts/${cohort.id}`} className="hover:underline">
+                      <CardTitle>{cohort.name}</CardTitle>
+                    </Link>
                     <Badge variant="secondary" className="w-fit text-center">{cohort.topic}</Badge>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground h-10 overflow-hidden">{cohort.description}</p>
+                <CardContent className="space-y-4 flex-grow flex flex-col">
+                  <p className="text-sm text-muted-foreground h-10 overflow-hidden flex-grow">{cohort.description}</p>
                   <div className="flex flex-col text-sm text-muted-foreground gap-2">
                         <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {cohort.memberIds.length} / 25 Members</div>
                         <Badge variant="outline" className="w-fit">{cohort.commitment}</Badge>

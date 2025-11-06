@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useCollection, useMemoFirebase } from '@/firebase';
-import { collection, Query, Timestamp, orderBy, where, limit, query } from 'firebase/firestore';
+import { collection, Query, orderBy, where, limit, query } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,19 +11,14 @@ import { StudyGroup } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Users, Search, CalendarDays } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-
-const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
-
-function formatTimestamp(timestamp: Timestamp | null | undefined): string {
-    if (!timestamp) return 'N/A';
-    return new Date(timestamp.seconds * 1000).toLocaleDateString();
-}
+import { formatTimestamp } from '@/lib/utils';
+import { ONE_WEEK_IN_MS } from '@/lib/constants';
 
 export default function GroupsPage() {
   const firestore = useFirestore();
   const [searchTerm, setSearchTerm] = useState('');
 
-  const oneWeekAgo = useMemo(() => new Timestamp(Math.floor((Date.now() - ONE_WEEK_IN_MS) / 1000), 0), []);
+  const oneWeekAgo = useMemo(() => new Date(Date.now() - ONE_WEEK_IN_MS), []);
 
   const newGroupsQuery = useMemoFirebase(() => {
     return query(
@@ -51,8 +46,8 @@ export default function GroupsPage() {
     if (!term) return { newGroups, inProgressGroups };
     
     return {
-        newGroups: newGroups?.filter(g => g.name.toLowerCase().includes(term) || g.topic.toLowerCase().includes(term)),
-        inProgressGroups: inProgressGroups?.filter(g => g.name.toLowerCase().includes(term) || g.topic.toLowerCase().includes(term))
+        newGroups: newGroups?.filter(g => g.name_lowercase.includes(term) || g.topic.toLowerCase().includes(term)),
+        inProgressGroups: inProgressGroups?.filter(g => g.name_lowercase.includes(term) || g.topic.toLowerCase().includes(term))
     }
   }, [searchTerm, newGroups, inProgressGroups]);
 
@@ -100,16 +95,18 @@ export default function GroupsPage() {
           <h2 className="text-2xl font-semibold">New</h2>
            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredGroups.newGroups.map(group => (
-              <Card key={group.id}>
+              <Card key={group.id} className="flex flex-col">
                 <CardHeader>
                   <div className="flex justify-between items-start">
-                    <CardTitle>{group.name}</CardTitle>
+                    <Link href={`/groups/${group.id}`} className="hover:underline">
+                      <CardTitle>{group.name}</CardTitle>
+                    </Link>
                     <Badge>New</Badge>
                   </div>
                   <Badge variant="secondary" className="w-fit">{group.topic}</Badge>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
+                <CardContent className="space-y-4 flex-grow flex flex-col">
+                  <p className="text-sm text-muted-foreground h-10 overflow-hidden flex-grow">{group.description}</p>
                   <div className="flex flex-col text-sm text-muted-foreground gap-2">
                     <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {group.memberIds.length} / 25 Members</div>
                     <Badge variant="outline" className="w-fit">{group.commitment}</Badge>
@@ -128,13 +125,15 @@ export default function GroupsPage() {
           <h2 className="text-2xl font-semibold">In Progress</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredGroups.inProgressGroups.map(group => (
-              <Card key={group.id}>
+              <Card key={group.id} className="flex flex-col">
                 <CardHeader>
-                    <CardTitle>{group.name}</CardTitle>
+                    <Link href={`/groups/${group.id}`} className="hover:underline">
+                        <CardTitle>{group.name}</CardTitle>
+                    </Link>
                     <Badge variant="secondary" className="w-fit">{group.topic}</Badge>
                 </CardHeader>
-                 <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
+                 <CardContent className="space-y-4 flex-grow flex flex-col">
+                  <p className="text-sm text-muted-foreground h-10 overflow-hidden flex-grow">{group.description}</p>
                   <div className="flex flex-col text-sm text-muted-foreground gap-2">
                     <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {group.memberIds.length} / 25 Members</div>
                     <Badge variant="outline" className="w-fit">{group.commitment}</Badge>
