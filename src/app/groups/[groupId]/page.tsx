@@ -133,7 +133,7 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
             </Card>
         </div>
 
-        <div>
+        <div className="md:col-span-1">
             <Card>
                 <CardHeader>
                     <CardTitle>Members ({group.memberIds.length} / {group.groupSizeLimit})</CardTitle>

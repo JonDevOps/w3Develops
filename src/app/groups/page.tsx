@@ -30,7 +30,7 @@ function MemberAvatar({ memberId }: { memberId: string }) {
   const userProfileRef = useMemoFirebase(() => {
     if (!firestore) return null
     return doc(firestore, 'users', memberId, 'profile', 'data')
-  }, [firestore, memberId])
+  }, [memberId])
 
   const { data: member } = useDoc(userProfileRef)
 
