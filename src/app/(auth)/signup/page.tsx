@@ -44,48 +44,57 @@ export default function SignupPage() {
       return;
     }
 
+    let newUser;
     try {
       // 1. Create user with email and password first
       const userCredential = await initiateEmailSignUp(auth, email, password);
-      const newUser = userCredential.user;
+      newUser = userCredential.user;
       const usernameLower = username.toLowerCase();
       
       // 2. Use a transaction to guarantee username uniqueness and create the profile
-      try {
-        await runTransaction(firestore, async (transaction) => {
-          const userDocRef = doc(firestore, "users", newUser.uid);
-          const usersRef = collection(firestore, 'users');
-          const q = query(usersRef, where("username_lowercase", "==", usernameLower));
-          const querySnapshot = await getDocs(q);
+      await runTransaction(firestore, async (transaction) => {
+        const userDocRef = doc(firestore, "users", newUser.uid);
+        const usersRef = collection(firestore, 'users');
+        const q = query(usersRef, where("username_lowercase", "==", usernameLower));
+        const querySnapshot = await getDocs(q);
 
-          if (!querySnapshot.empty) {
-            // This will abort the transaction
-            throw new Error("This username is already in use. Please choose another one.");
-          }
-
-          // If username is unique, create the user profile document
-          const userData: UserProfile = {
-            id: newUser.uid,
-            email: email,
-            username: username,
-            username_lowercase: usernameLower,
-            profilePictureUrl: '',
-            bio: '',
-            socialLinks: {},
-            skills: [],
-          };
-          transaction.set(userDocRef, userData);
-        });
-      } catch (transactionError: any) {
-        // If the transaction fails (e.g., username exists), we must delete the auth user
-        if (newUser) {
-          await deleteUser(newUser);
+        if (!querySnapshot.empty) {
+          // This will abort the transaction and be caught by the outer catch block
+          throw new Error("This username is already in use. Please choose another one.");
         }
-        // Re-throw the error to be caught by the outer catch block
-        throw transactionError;
-      }
+
+        // If username is unique, create the user profile document
+        const userData: UserProfile = {
+          id: newUser.uid,
+          email: email,
+          username: username,
+          username_lowercase: usernameLower,
+          profilePictureUrl: '',
+          bio: '',
+          socialLinks: {},
+          skills: [],
+        };
+        transaction.set(userDocRef, userData);
+      });
         // If transaction is successful, the useEffect will handle the redirect.
     } catch (error: any) {
+      // If any part of the process fails, attempt to clean up the auth user
+      if (newUser) {
+        try {
+          await deleteUser(newUser);
+        } catch (deleteError: any) {
+            // This is a critical state - user auth exists but profile creation failed
+            // and cleanup failed. The user needs to know.
+            toast({
+              variant: "destructive",
+              title: "Critical Sign Up Error",
+              description: "Your account could not be fully created, and cleanup failed. Please contact support.",
+              duration: 10000,
+            });
+            return; // Stop further execution
+        }
+      }
+
       let description = "An unknown error occurred during sign up.";
       // Handle both auth errors and transaction errors
       if (error.message === "This username is already in use. Please choose another one.") {
