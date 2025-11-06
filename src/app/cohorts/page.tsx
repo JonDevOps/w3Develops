@@ -111,7 +111,7 @@ export default function CohortsPage() {
                 <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground h-10 overflow-hidden">{cohort.description}</p>
                    <div className="flex flex-col text-sm text-muted-foreground gap-2">
-                    <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {cohort.memberIds.length} Member(s)</div>
+                    <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {cohort.memberIds.length} / 25 Members</div>
                     <div className="flex items-center"><Clock className="w-4 h-4 mr-2" /> {cohort.commitment}</div>
                     <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(cohort.createdAt)}</div>
                   </div>
@@ -146,7 +146,7 @@ export default function CohortsPage() {
                 <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground h-10 overflow-hidden">{cohort.description}</p>
                   <div className="flex flex-col text-sm text-muted-foreground gap-2">
-                        <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {cohort.memberIds.length} Member(s)</div>
+                        <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {cohort.memberIds.length} / 25 Members</div>
                         <div className="flex items-center"><Clock className="w-4 h-4 mr-2" /> {cohort.commitment}</div>
                         <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(cohort.createdAt)}</div>
                   </div>

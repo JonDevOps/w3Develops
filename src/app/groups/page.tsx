@@ -112,7 +112,7 @@ export default function GroupsPage() {
                 <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
                   <div className="flex flex-col text-sm text-muted-foreground gap-2">
-                    <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {group.memberIds.length} Member(s)</div>
+                    <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {group.memberIds.length} / 25 Members</div>
                     <div className="flex items-center"><Clock className="w-4 h-4 mr-2" /> {group.commitment}</div>
                     <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(group.createdAt)}</div>
                   </div>
@@ -137,7 +137,7 @@ export default function GroupsPage() {
                  <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
                   <div className="flex flex-col text-sm text-muted-foreground gap-2">
-                    <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {group.memberIds.length} Member(s)</div>
+                    <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {group.memberIds.length} / 25 Members</div>
                     <div className="flex items-center"><Clock className="w-4 h-4 mr-2" /> {group.commitment}</div>
                     <div className="flex items-center"><CalendarDays className="w-4 h-4 mr-2" /> Created: {formatTimestamp(group.createdAt)}</div>
                   </div>
