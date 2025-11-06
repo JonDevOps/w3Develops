@@ -1,19 +1,15 @@
 'use client';
 
 import { useDoc, useMemoFirebase, useCollection, useUser } from '@/firebase';
-import { doc, DocumentReference, collection, query, where, Query, runTransaction } from 'firebase/firestore';
+import { doc, DocumentReference, collection, query, where, Query } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Cohort, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Github, Users, CalendarDays, ArrowLeft, LogOut } from 'lucide-react';
+import { Github, Users, CalendarDays, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { formatTimestamp } from '@/lib/utils';
-import { useToast } from '@/components/ui/use-toast';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { ONE_WEEK_IN_MS } from '@/lib/constants';
 
 function MemberList({ memberIds }: { memberIds: string[] }) {
@@ -57,51 +53,14 @@ function MemberList({ memberIds }: { memberIds: string[] }) {
 
 export default function CohortDashboardPage({ params }: { params: { cohortId: string } }) {
   const { cohortId } = params;
-  const { user } = useUser();
   const firestore = useFirestore();
-  const { toast } = useToast();
-  const router = useRouter();
-  const [isLeaving, setIsLeaving] = useState(false);
-
+  
   const cohortDocRef = useMemoFirebase(() => {
     if (!cohortId) return null;
     return doc(firestore, 'cohorts', cohortId) as DocumentReference<Cohort>;
   }, [cohortId, firestore]);
 
   const { data: cohort, isLoading: isCohortLoading, error: cohortError } = useDoc<Cohort>(cohortDocRef);
-
-  const isMember = cohort?.memberIds.includes(user?.uid || '');
-
-  const handleLeave = async () => {
-    if (!user || !firestore || !cohortDocRef) return;
-
-    if (!confirm('Are you sure you want to leave this cohort?')) return;
-
-    setIsLeaving(true);
-
-    try {
-        await runTransaction(firestore, async (transaction) => {
-            const cohortDoc = await transaction.get(cohortDocRef);
-            if (!cohortDoc.exists()) {
-                throw new Error("Cohort does not exist!");
-            }
-            
-            const currentMemberIds = cohortDoc.data().memberIds || [];
-            const newMemberIds = currentMemberIds.filter(id => id !== user.uid);
-
-            transaction.update(cohortDocRef, { memberIds: newMemberIds });
-        });
-
-        toast({ title: 'Success', description: 'You have left the cohort.' });
-        router.push('/account');
-        router.refresh(); // Forces a refresh of the page data
-    } catch (error) {
-        console.error("Failed to leave cohort:", error);
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not leave the cohort. Please try again.' });
-    } finally {
-        setIsLeaving(false);
-    }
-  };
 
   if (isCohortLoading) {
     return <div className="text-center py-10">Loading cohort dashboard...</div>;
@@ -137,12 +96,6 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
                 </div>
                 <CardDescription>{cohort.description}</CardDescription>
             </div>
-            {isMember && (
-                <Button variant="outline" size="sm" onClick={handleLeave} disabled={isLeaving} className="flex-shrink-0">
-                    <LogOut className="w-4 h-4 mr-2" />
-                    {isLeaving ? 'Leaving...' : 'Leave Cohort'}
-                </Button>
-            )}
         </CardHeader>
         <CardContent className="space-y-6">
            <div className="flex flex-wrap gap-4 items-center">
