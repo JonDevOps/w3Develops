@@ -19,7 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { PlaceHolderImages } from '@/lib/placeholder-images'
-import { useDoc, useFirebase, useMemoFirebase, setDocumentNonBlocking } from '@/firebase'
+import { useDoc, useFirebase, useMemoFirebase, setDocumentNonBlocking, useUser } from '@/firebase'
 import { doc } from 'firebase/firestore'
 import { useEffect } from 'react'
 import { Trash } from 'lucide-react'
@@ -36,13 +36,13 @@ const profileSchema = z.object({
 
 export default function ProfilePage() {
   const { toast } = useToast()
-  const { user, firestore } = useFirebase()
+  const { user, firestore, isUserLoading } = useFirebase()
   const userAvatar = PlaceHolderImages.find((p) => p.id === 'avatar-1')
 
   const userProfileRef = useMemoFirebase(() => {
-    if (!user || !firestore) return null
+    if (isUserLoading || !user || !firestore) return null
     return doc(firestore, 'users', user.uid, 'profile', 'data')
-  }, [user, firestore])
+  }, [user, firestore, isUserLoading])
 
   const { data: userProfile, isLoading } = useDoc(userProfileRef)
 
@@ -104,7 +104,7 @@ export default function ProfilePage() {
     })
   }
   
-  if (isLoading) {
+  if (isLoading || isUserLoading) {
     return <p>Loading profile...</p>
   }
 

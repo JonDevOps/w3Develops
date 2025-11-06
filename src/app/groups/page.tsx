@@ -19,16 +19,17 @@ import {
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { ArrowRight, PlusCircle, Users, Group } from 'lucide-react'
-import { useCollection, useDoc, useFirebase, useMemoFirebase } from '@/firebase'
+import { useCollection, useDoc, useFirebase, useMemoFirebase, useUser } from '@/firebase'
 import { collection, doc } from 'firebase/firestore'
 
 function MemberAvatar({ memberId }: { memberId: string }) {
   const { firestore } = useFirebase()
+  const { isUserLoading } = useUser();
   
   const userProfileRef = useMemoFirebase(() => {
-    if (!firestore) return null
+    if (isUserLoading || !firestore) return null
     return doc(firestore, 'users', memberId, 'profile', 'data')
-  }, [firestore, memberId])
+  }, [firestore, memberId, isUserLoading])
 
   const { data: member } = useDoc(userProfileRef)
 
@@ -58,11 +59,11 @@ function MemberAvatar({ memberId }: { memberId: string }) {
 }
 
 export default function GroupsPage() {
-  const { firestore } = useFirebase()
+  const { firestore, isUserLoading } = useFirebase()
   
   const groupsCollectionRef = useMemoFirebase(
-    () => (firestore ? collection(firestore, 'learning_groups') : null),
-    [firestore]
+    () => (isUserLoading || !firestore ? null : collection(firestore, 'learning_groups')),
+    [firestore, isUserLoading]
   )
   const { data: groups, isLoading } = useCollection(groupsCollectionRef)
 
@@ -108,9 +109,9 @@ export default function GroupsPage() {
         </Button>
       </div>
 
-      {isLoading && <p className='text-center'>Loading groups...</p>}
+      {(isLoading || isUserLoading) && <p className='text-center'>Loading groups...</p>}
 
-      {!isLoading && groups && groups.length === 0 && renderEmptyState()}
+      {!isLoading && !isUserLoading && groups && groups.length === 0 && renderEmptyState()}
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         {groups?.map((group) => (

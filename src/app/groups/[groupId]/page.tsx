@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useDoc, useFirebase, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase'
+import { useDoc, useFirebase, useMemoFirebase, updateDocumentNonBlocking, useUser } from '@/firebase'
 import { arrayRemove, doc } from 'firebase/firestore'
 import { notFound, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -15,11 +15,12 @@ import React from 'react'
 
 function MemberPill({ memberId }: { memberId: string }) {
   const { firestore } = useFirebase()
+  const { isUserLoading } = useUser();
 
   const userProfileRef = useMemoFirebase(() => {
-    if (!firestore) return null
+    if (isUserLoading || !firestore) return null
     return doc(firestore, 'users', memberId, 'profile', 'data')
-  }, [firestore, memberId])
+  }, [firestore, memberId, isUserLoading])
 
   const { data: member } = useDoc(userProfileRef)
 
@@ -50,15 +51,15 @@ function MemberPill({ memberId }: { memberId: string }) {
 
 export default function GroupDashboardPage({ params }: { params: { groupId: string } }) {
   const resolvedParams = React.use(params);
-  const { firestore, user } = useFirebase()
+  const { firestore, user, isUserLoading } = useFirebase()
   const router = useRouter()
   const { toast } = useToast()
   const groupId = resolvedParams.groupId;
 
   const groupRef = useMemoFirebase(() => {
-    if (!firestore || !groupId) return null
+    if (isUserLoading || !firestore || !groupId) return null
     return doc(firestore, 'learning_groups', groupId)
-  }, [firestore, groupId])
+  }, [firestore, groupId, isUserLoading])
 
   const { data: group, isLoading } = useDoc(groupRef)
 
@@ -83,7 +84,7 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
     }
   }
 
-  if (isLoading) {
+  if (isLoading || isUserLoading) {
     return <div className="container mx-auto px-4 py-12">Loading group dashboard...</div>
   }
 
