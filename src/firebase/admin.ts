@@ -7,10 +7,7 @@ export function initializeAdminApp(): App {
     return getApps()[0];
   }
 
-  // process.env.SERVICE_ACCOUNT is a JSON string, so we need to parse it.
-  const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT as string);
-
-  return initializeApp({
-    credential: credential.cert(serviceAccount)
-  });
+  // When running in a Google Cloud environment, the SDK can automatically
+  // discover the service account credentials.
+  return initializeApp();
 }
