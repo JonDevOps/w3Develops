@@ -79,7 +79,6 @@ export default function SignupPage() {
         profilePictureUrl: '',
         socialLinks: [],
         primarySkill: 'Frontend',
-        learningPace: 'Moderate',
         bio: '',
       };
       

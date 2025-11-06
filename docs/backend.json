@@ -35,10 +35,6 @@
           "type": "string",
           "description": "The user's primary skill."
         },
-        "learningPace": {
-          "type": "string",
-          "description": "The user's learning pace (e.g., beginner, intermediate, advanced)."
-        },
         "bio": {
             "type": "string",
             "description": "A short biography of the user."

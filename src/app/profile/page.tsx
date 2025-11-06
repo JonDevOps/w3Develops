@@ -19,8 +19,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Label } from '@/components/ui/label'
 import { PlaceHolderImages } from '@/lib/placeholder-images'
 import { useDoc, useFirebase, useMemoFirebase, useUser, setDocumentNonBlocking } from '@/firebase'
 import { doc } from 'firebase/firestore'
@@ -33,7 +31,6 @@ const profileSchema = z.object({
   github: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   linkedin: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   primarySkill: z.enum(['Frontend', 'Backend', 'Full Stack', 'DevOps', 'UI/UX']),
-  learningPace: z.enum(['Casual', 'Moderate', 'Intense']),
 })
 
 export default function ProfilePage() {
@@ -57,7 +54,6 @@ export default function ProfilePage() {
       github: '',
       linkedin: '',
       primarySkill: 'Frontend',
-      learningPace: 'Moderate',
     },
   })
 
@@ -70,7 +66,6 @@ export default function ProfilePage() {
         github: userProfile.socialLinks?.find((l: string) => l.includes('github')) || '',
         linkedin: userProfile.socialLinks?.find((l: string) => l.includes('linkedin')) || '',
         primarySkill: userProfile.primarySkill || 'Frontend',
-        learningPace: userProfile.learningPace || 'Moderate'
       })
     }
   }, [userProfile, form])
@@ -87,7 +82,6 @@ export default function ProfilePage() {
         displayName: values.displayName,
         bio: values.bio || '',
         primarySkill: values.primarySkill,
-        learningPace: values.learningPace,
         socialLinks,
     }
     
@@ -227,49 +221,6 @@ export default function ProfilePage() {
                     <FormDescription>
                       This will help us match you with the right group.
                     </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="learningPace"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Preferred Learning Pace</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="flex flex-col space-y-1"
-                      >
-                        <FormItem className="flex items-center space-x-3 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value="Casual" />
-                          </FormControl>
-                          <Label className="font-normal">
-                            Casual (a few hours a week)
-                          </Label>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-3 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value="Moderate" />
-                          </FormControl>
-                          <Label className="font-normal">
-                            Moderate (5-10 hours a week)
-                          </Label>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-3 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value="Intense" />
-                          </FormControl>
-                          <Label className="font-normal">
-                            Intense (10+ hours a week)
-                          </Label>
-                        </FormItem>
-                      </RadioGroup>
-                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
