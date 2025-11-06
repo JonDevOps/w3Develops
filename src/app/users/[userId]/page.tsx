@@ -2,7 +2,7 @@
 
 import { useCollection } from '@/firebase';
 import { useState, useEffect, useMemo } from 'react';
-import { doc, getDoc, DocumentReference, collection, query, where, Query, DocumentData } from 'firebase/firestore';
+import { doc, getDoc, DocumentReference, collection, query, where, Query } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,12 +51,14 @@ function UserActivity({ userId }: { userId: string }) {
   const firestore = useFirestore();
 
   const userCohortsQuery = useMemo(() => {
+    if (!userId) return null;
     return query(collection(firestore, 'cohorts'), where('memberIds', 'array-contains', userId)) as Query;
   }, [userId, firestore]);
 
   const { data: cohorts, isLoading: isCohortsLoading } = useCollection<Cohort>(userCohortsQuery);
 
   const userGroupsQuery = useMemo(() => {
+    if (!userId) return null;
     return query(collection(firestore, 'studyGroups'), where('memberIds', 'array-contains', userId)) as Query;
   }, [userId, firestore]);
 
@@ -188,8 +190,9 @@ export default function UserProfilePage({ params }: { params: { userId: string }
           ) : <p className="text-sm text-muted-foreground">No skills listed yet.</p>}
         </CardContent>
       </Card>
-
-      <UserActivity userId={userId} />
+      
+      {/* Only render UserActivity if we have a valid userId */}
+      {userId && <UserActivity userId={userId} />}
 
     </div>
   );

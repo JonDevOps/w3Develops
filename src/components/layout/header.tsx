@@ -74,7 +74,7 @@ export default function Header() {
 
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
 
-  const logoHref = user ? '/account' : '/';
+  const logoHref = '/'; // Always link logo to homepage for consistency
   const isLoading = isUserLoading || isProfileLoading;
   
   const username = userProfile?.username || user?.email;

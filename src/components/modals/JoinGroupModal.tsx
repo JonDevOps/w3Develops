@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { topics, commitmentLevels } from '@/lib/constants';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, query, where, Query } from 'firebase/firestore';
 import { StudyGroup } from '@/lib/types';
 import JoinGroupButton from '../JoinGroupButton';
 import Link from 'next/link';
@@ -43,7 +43,7 @@ export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
       collection(firestore, 'studyGroups'),
       where('topic', '==', finalTopic),
       where('commitment', '==', finalCommitment)
-    );
+    ) as Query;
   }, [step, finalTopic, finalCommitment, firestore, user]);
 
   const { data: matchingGroups, isLoading } = useCollection<StudyGroup>(matchingGroupsQuery);

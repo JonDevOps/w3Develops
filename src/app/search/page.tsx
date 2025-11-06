@@ -103,9 +103,14 @@ function SearchResults() {
 
   const groupsByTopicQuery = useMemo(() => {
     if (!q) return null;
+    // Note: Firestore string queries are case-sensitive. For a true case-insensitive search
+    // on topics, you'd need to store a lowercase version of the topic in the document.
+    // For now, we'll capitalize the first letter as a simple workaround.
+    const capitalizedQ = q.charAt(0).toUpperCase() + q.slice(1);
     return query(
         collection(firestore, 'studyGroups'), 
-        where('topic', '>=', q), // Case-sensitive search on topic may be needed
+        orderBy('topic'),
+        where('topic', '>=', q),
         where('topic', '<=', q + '\uf8ff'),
         limit(10)
     ) as Query<StudyGroup>;
@@ -125,8 +130,10 @@ function SearchResults() {
 
   const cohortsByTopicQuery = useMemo(() => {
     if (!q) return null;
+    const capitalizedQ = q.charAt(0).toUpperCase() + q.slice(1);
     return query(
-        collection(firestore, 'cohorts'), 
+        collection(firestore, 'cohorts'),
+        orderBy('topic'),
         where('topic', '>=', q),
         where('topic', '<=', q + '\uf8ff'),
         limit(10)
