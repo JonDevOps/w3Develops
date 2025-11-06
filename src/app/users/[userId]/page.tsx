@@ -47,6 +47,69 @@ function ProfilePageSkeleton() {
   )
 }
 
+function UserActivity({ userId }: { userId: string }) {
+  const firestore = useFirestore();
+
+  const userCohortsQuery = useMemo(() => {
+    return query(collection(firestore, 'cohorts'), where('memberIds', 'array-contains', userId)) as Query;
+  }, [userId, firestore]);
+
+  const { data: cohorts, isLoading: isCohortsLoading } = useCollection<Cohort>(userCohortsQuery);
+
+  const userGroupsQuery = useMemo(() => {
+    return query(collection(firestore, 'studyGroups'), where('memberIds', 'array-contains', userId)) as Query;
+  }, [userId, firestore]);
+
+  const { data: studyGroups, isLoading: isGroupsLoading } = useCollection<StudyGroup>(userGroupsQuery);
+
+  return (
+    <div className="grid gap-6 md:grid-cols-2">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Users className="mr-2" />Build Cohorts</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isCohortsLoading ? <div className="h-10 w-full bg-muted rounded animate-pulse"></div> :
+            cohorts && cohorts.length > 0 ? (
+              <ul className="space-y-2">
+                {cohorts.map(c => (
+                  <li key={c.id}>
+                    <Link href={`/cohorts/${c.id}`} className="font-medium p-2 rounded-md hover:bg-accent flex justify-between items-center">
+                      <span>{c.name}</span>
+                      <Badge variant="secondary">{c.topic}</Badge>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : <p className="text-sm text-muted-foreground">Not a member of any cohorts yet.</p>}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Users className="mr-2" />Study Groups</CardTitle>
+        </CardHeader>
+        <CardContent>
+            {isGroupsLoading ? <div className="h-10 w-full bg-muted rounded animate-pulse"></div> :
+            studyGroups && studyGroups.length > 0 ? (
+              <ul className="space-y-2">
+                {studyGroups.map(g => (
+                  <li key={g.id}>
+                    <Link href={`/groups/${g.id}`} className="font-medium p-2 rounded-md hover:bg-accent flex justify-between items-center">
+                      <span>{g.name}</span>
+                      <Badge variant="secondary">{g.topic}</Badge>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : <p className="text-sm text-muted-foreground">Not a member of any groups yet.</p>}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+
 export default function UserProfilePage({ params }: { params: { userId: string } }) {
   const { userId } = params;
   const firestore = useFirestore();
@@ -72,20 +135,6 @@ export default function UserProfilePage({ params }: { params: { userId: string }
 
     fetchUserProfile();
   }, [userId, firestore]);
-
-  const userCohortsQuery = useMemo(() => {
-    if (!userId) return null;
-    return query(collection(firestore, 'cohorts'), where('memberIds', 'array-contains', userId)) as Query;
-  }, [userId, firestore]);
-
-  const { data: cohorts, isLoading: isCohortsLoading } = useCollection<Cohort>(userCohortsQuery);
-
-  const userGroupsQuery = useMemo(() => {
-    if (!userId) return null;
-    return query(collection(firestore, 'studyGroups'), where('memberIds', 'array-contains', userId)) as Query;
-  }, [userId, firestore]);
-
-  const { data: studyGroups, isLoading: isGroupsLoading } = useCollection<StudyGroup>(userGroupsQuery);
   
   if (isProfileLoading) {
     return <ProfilePageSkeleton />;
@@ -140,49 +189,8 @@ export default function UserProfilePage({ params }: { params: { userId: string }
         </CardContent>
       </Card>
 
-       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Users className="mr-2" />Build Cohorts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isCohortsLoading ? <div className="h-10 w-full bg-muted rounded animate-pulse"></div> :
-             cohorts && cohorts.length > 0 ? (
-                <ul className="space-y-2">
-                    {cohorts.map(c => (
-                        <li key={c.id}>
-                          <Link href={`/cohorts/${c.id}`} className="font-medium p-2 rounded-md hover:bg-accent flex justify-between items-center">
-                            <span>{c.name}</span>
-                            <Badge variant="secondary">{c.topic}</Badge>
-                          </Link>
-                        </li>
-                    ))}
-                </ul>
-            ) : <p className="text-sm text-muted-foreground">Not a member of any cohorts yet.</p>}
-          </CardContent>
-        </Card>
+      <UserActivity userId={userId} />
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Users className="mr-2" />Study Groups</CardTitle>
-          </CardHeader>
-          <CardContent>
-             {isGroupsLoading ? <div className="h-10 w-full bg-muted rounded animate-pulse"></div> :
-             studyGroups && studyGroups.length > 0 ? (
-                <ul className="space-y-2">
-                    {studyGroups.map(g => (
-                        <li key={g.id}>
-                          <Link href={`/groups/${g.id}`} className="font-medium p-2 rounded-md hover:bg-accent flex justify-between items-center">
-                            <span>{g.name}</span>
-                            <Badge variant="secondary">{g.topic}</Badge>
-                          </Link>
-                        </li>
-                    ))}
-                </ul>
-            ) : <p className="text-sm text-muted-foreground">Not a member of any groups yet.</p>}
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 }
