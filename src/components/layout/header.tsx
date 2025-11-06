@@ -15,13 +15,14 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import SearchBar from './search-bar';
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 
 export default function Header() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const router = useRouter();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
 
@@ -29,6 +30,12 @@ export default function Header() {
   useEffect(() => {
     setIsSearchOpen(false);
   }, [pathname]);
+
+  const handleLogout = () => {
+    auth.signOut().then(() => {
+      router.push('/');
+    });
+  };
 
   return (
     <header className="bg-card border-b sticky top-0 z-50">
@@ -90,7 +97,7 @@ export default function Header() {
                   <Link href={`/users/${user.uid}`}>View Profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => auth.signOut()}>
+                <DropdownMenuItem onClick={handleLogout}>
                   Log out
                 </DropdownMenuItem>
               </DropdownMenuContent>
