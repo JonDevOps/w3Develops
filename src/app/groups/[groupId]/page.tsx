@@ -72,17 +72,15 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
   const isMember = group?.memberIds.includes(user?.uid || '');
 
   const handleLeave = async () => {
-    if (!user || !firestore) return;
+    if (!user || !firestore || !groupDocRef) return;
 
     if (!confirm('Are you sure you want to leave this group?')) return;
     
     setIsLeaving(true);
     
     try {
-        const groupRef = doc(firestore, 'studyGroups', groupId);
-        
         await runTransaction(firestore, async (transaction) => {
-            const groupDoc = await transaction.get(groupRef);
+            const groupDoc = await transaction.get(groupDocRef);
             if (!groupDoc.exists()) {
                 throw new Error("Group does not exist!");
             }
@@ -90,11 +88,12 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
             const currentMemberIds = groupDoc.data().memberIds || [];
             const newMemberIds = currentMemberIds.filter((id: string) => id !== user.uid);
             
-            transaction.update(groupRef, { memberIds: newMemberIds });
+            transaction.update(groupDocRef, { memberIds: newMemberIds });
         });
 
         toast({ title: 'Success', description: 'You have left the group.' });
         router.push('/account');
+        router.refresh();
     } catch (error) {
         console.error("Failed to leave group:", error);
         toast({ variant: 'destructive', title: 'Error', description: 'Could not leave the group. Please try again.' });
