@@ -36,16 +36,13 @@ export default function Header() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <div className="flex items-center gap-4">
           <Link href={logoHref} className="flex items-center gap-2 flex-shrink-0">
-            <Image src="/logo.jpg" alt="w3Develops Logo" width={32} height={32} />
+            <Image src="/logo.jpg" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
           </Link>
+          <div className="hidden md:block">
+             <SearchBar />
+          </div>
         </div>
         
-        <div className="flex-1 flex justify-center px-4 sm:px-8">
-            <div className="w-full max-w-lg">
-                <SearchBar />
-            </div>
-        </div>
-
         <div className="flex items-center gap-4">
             <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
                 <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground">
@@ -60,14 +57,27 @@ export default function Header() {
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon">
-                    <Menu className="h-6 w-6" />
-                    <span className="sr-only">Toggle Menu</span>
+                    <Search className="h-6 w-6" />
+                    <span className="sr-only">Toggle Search</span>
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     <div className="p-2">
                       <SearchBar />
                     </div>
+                </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+            
+            <div className="md:hidden">
+                <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                    <Menu className="h-6 w-6" />
+                    <span className="sr-only">Toggle Menu</span>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
                     <DropdownMenuItem asChild><Link href="/groups">Study Groups</Link></DropdownMenuItem>
                     <DropdownMenuItem asChild><Link href="/cohorts">Build Cohorts</Link></DropdownMenuItem>
                 </DropdownMenuContent>
@@ -83,6 +93,7 @@ export default function Header() {
                     <Avatar className="h-8 w-8">
                         <AvatarImage src={user.photoURL || ''} alt={user.displayName || ''} />
                         <AvatarFallback>{user.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
+
                     </Avatar>
                     </Button>
                 </DropdownMenuTrigger>
