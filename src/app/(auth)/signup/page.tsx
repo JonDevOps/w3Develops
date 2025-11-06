@@ -23,13 +23,12 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
-import { useAuth, useFirestore } from '@/firebase'
+import { useAuth, useFirestore, setDocumentNonBlocking } from '@/firebase'
 import {
   createUserWithEmailAndPassword,
 } from 'firebase/auth'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { doc, getDoc, writeBatch } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates'
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -55,7 +54,7 @@ export default function SignupPage() {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!firestore) return;
+    if (!firestore || !auth) return;
 
     // Check for username uniqueness
     const usernameRef = doc(firestore, 'usernames', values.username);
@@ -70,6 +69,9 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
+      const userProfileRef = doc(firestore, 'users', user.uid, 'profile', 'data');
+      const usernameDocRef = doc(firestore, 'usernames', values.username);
+
       const userProfileData = {
         userId: user.uid,
         username: values.username,
@@ -81,13 +83,10 @@ export default function SignupPage() {
         bio: '',
       };
       
-      const userProfileRef = doc(firestore, 'users', user.uid, 'profile', 'data')
-      
-      // We use setDoc here because we need to perform multiple writes atomically
-      // This is a simplified version; a better approach would be a transaction or a Cloud Function.
-      await setDoc(userProfileRef, userProfileData);
-      await setDoc(usernameRef, { userId: user.uid });
-
+      const batch = writeBatch(firestore);
+      batch.set(userProfileRef, userProfileData);
+      batch.set(usernameDocRef, { userId: user.uid });
+      await batch.commit();
 
       toast({
         title: "Account Created!",

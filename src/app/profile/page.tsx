@@ -18,14 +18,13 @@ import { useToast } from '@/hooks/use-toast'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/componentsui/select'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { PlaceHolderImages } from '@/lib/placeholder-images'
-import { useDoc, useFirebase, useMemoFirebase, useUser } from '@/firebase'
+import { useDoc, useFirebase, useMemoFirebase, useUser, setDocumentNonBlocking } from '@/firebase'
 import { doc } from 'firebase/firestore'
 import { useEffect } from 'react'
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates'
 
 const profileSchema = z.object({
   displayName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -83,7 +82,7 @@ export default function ProfilePage() {
     if (values.linkedin) socialLinks.push(values.linkedin);
 
     const updatedProfile = {
-        userId: user.uid, // CRITICAL: Ensure userId is included for security rules
+        userId: user.uid,
         username: values.username,
         displayName: values.displayName,
         bio: values.bio || '',

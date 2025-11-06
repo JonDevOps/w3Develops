@@ -18,9 +18,9 @@ import {
 } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { ArrowRight, PlusCircle } from 'lucide-react'
-import { useCollection, useDoc, useFirebase, useMemoFirebase, useUser } from '@/firebase'
-import { arrayUnion, collection, doc, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { ArrowRight, PlusCircle, Users } from 'lucide-react'
+import { useCollection, useDoc, useFirebase, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase'
+import { arrayUnion, collection, doc } from 'firebase/firestore'
 import { useToast } from '@/hooks/use-toast'
 import { differenceInDays, fromUnixTime } from 'date-fns'
 
@@ -69,7 +69,7 @@ export default function GroupsPage() {
   )
   const { data: groups, isLoading } = useCollection(groupsCollectionRef)
 
-  const handleJoinGroup = async (groupId: string, memberIds: string[], createdAt: any) => {
+  const handleJoinGroup = (groupId: string, memberIds: string[], createdAt: any) => {
     if (!user || !firestore) {
       toast({
         variant: "destructive",
@@ -111,21 +111,13 @@ export default function GroupsPage() {
 
 
     const groupRef = doc(firestore, 'learning_groups', groupId);
-    try {
-      await updateDoc(groupRef, {
-        memberIds: arrayUnion(user.uid)
-      });
-      toast({
-        title: "Successfully joined!",
-        description: "You have been added to the group.",
-      });
-    } catch (e: any) {
-       toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: e.message || "Could not join group.",
-      });
-    }
+    updateDocumentNonBlocking(groupRef, {
+      memberIds: arrayUnion(user.uid)
+    });
+    toast({
+      title: "Successfully joined!",
+      description: "You have been added to the group.",
+    });
   }
 
 
