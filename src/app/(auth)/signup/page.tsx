@@ -1,3 +1,4 @@
+
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -60,7 +61,7 @@ export default function SignupPage() {
 
   useEffect(() => {
     if (!isUserLoading && user) {
-      router.push('/dashboard')
+      router.push('/account')
     }
   }, [user, isUserLoading, router])
 
