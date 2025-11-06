@@ -1,9 +1,9 @@
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
-import { useCollection, useMemoFirebase, useUser } from '@/firebase';
+import { useCollection, useUser } from '@/firebase/provider';
 import { collection, Query, orderBy, where, limit, query } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
+import { useFirestore } from '@/firebase/provider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -70,7 +70,7 @@ export default function GroupsPage() {
 
   const oneWeekAgo = useMemo(() => new Date(Date.now() - ONE_WEEK_IN_MS), []);
 
-  const newGroupsQuery = useMemoFirebase(() => {
+  const newGroupsQuery = useMemo(() => {
     if (!user) return null;
     return query(
         collection(firestore, 'studyGroups'), 
@@ -80,7 +80,7 @@ export default function GroupsPage() {
     ) as Query;
   }, [firestore, oneWeekAgo, user]);
 
-  const inProgressGroupsQuery = useMemoFirebase(() => {
+  const inProgressGroupsQuery = useMemo(() => {
     if (!user) return null;
     return query(
         collection(firestore, 'studyGroups'),

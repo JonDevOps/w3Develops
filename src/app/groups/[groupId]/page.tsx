@@ -1,8 +1,9 @@
 'use client';
 
-import { useDoc, useMemoFirebase, useCollection } from '@/firebase';
+import { useDoc, useCollection } from '@/firebase/firestore/use-doc';
+import { useMemo } from 'react';
 import { doc, DocumentReference, collection, query, where, Query } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
+import { useFirestore } from '@/firebase/provider';
 import { StudyGroup, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -15,7 +16,7 @@ import { ONE_WEEK_IN_MS } from '@/lib/constants';
 function MemberList({ memberIds }: { memberIds: string[] }) {
     const firestore = useFirestore();
 
-    const membersQuery = useMemoFirebase(() => {
+    const membersQuery = useMemo(() => {
         if (!memberIds || memberIds.length === 0) return null;
         // Use a 'where in' query to fetch only the members of this group.
         // This is secure and efficient. Firestore limits 'in' queries to 30 elements.
@@ -54,7 +55,7 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
   const { groupId } = params;
   const firestore = useFirestore();
 
-  const groupDocRef = useMemoFirebase(() => {
+  const groupDocRef = useMemo(() => {
     if (!groupId) return null;
     return doc(firestore, 'studyGroups', groupId) as DocumentReference<StudyGroup>;
   }, [groupId, firestore]);

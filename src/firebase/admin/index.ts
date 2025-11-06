@@ -8,11 +8,20 @@ let app: admin.app.App;
 let firestore: Firestore;
 
 if (admin.apps.length === 0) {
-  app = admin.initializeApp({
-    // Use applicationDefault to automatically find credentials in a Google Cloud environment.
-    credential: admin.credential.applicationDefault(),
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  });
+  // Check if the GOOGLE_APPLICATION_CREDENTIALS environment variable is set.
+  // This is a common practice for local development with the Admin SDK.
+  if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+     app = admin.initializeApp({
+      credential: admin.credential.applicationDefault(),
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    });
+  } else {
+    // In environments like Firebase App Hosting or Cloud Run, the credentials
+    // are discovered automatically without the env var.
+    app = admin.initializeApp({
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    });
+  }
 } else {
   app = admin.apps[0]!;
 }

@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useCollection, useMemoFirebase, useUser } from '@/firebase';
+import { useCollection, useUser } from '@/firebase/provider';
 import { collection, Query, orderBy, where, limit, query } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
+import { useFirestore } from '@/firebase/provider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -73,7 +73,7 @@ export default function CohortsPage() {
 
   const oneWeekAgo = useMemo(() => new Date(Date.now() - ONE_WEEK_IN_MS), []);
 
-  const newCohortsQuery = useMemoFirebase(() => {
+  const newCohortsQuery = useMemo(() => {
     if (!user) return null;
     return query(
       collection(firestore, 'cohorts'),
@@ -83,7 +83,7 @@ export default function CohortsPage() {
     ) as Query;
   }, [firestore, oneWeekAgo, user]);
 
-  const inProgressCohortsQuery = useMemoFirebase(() => {
+  const inProgressCohortsQuery = useMemo(() => {
     if (!user) return null;
     return query(
       collection(firestore, 'cohorts'),

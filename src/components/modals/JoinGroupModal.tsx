@@ -1,6 +1,6 @@
 'use client';
 import { useState, useMemo } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection } from '@/firebase/provider';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -36,7 +36,7 @@ export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
   const finalTopic = topic === 'Other' ? customTopic : topic;
   const finalCommitment = commitmentLevels[commitment as keyof typeof commitmentLevels];
 
-  const matchingGroupsQuery = useMemoFirebase(() => {
+  const matchingGroupsQuery = useMemo(() => {
     if (step !== 2 || !finalTopic || !finalCommitment || !user) return null;
     
     return query(
