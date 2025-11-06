@@ -71,7 +71,6 @@ export default function NewGroupPage() {
             description: `${values.name} has been successfully created.`,
         })
         router.push('/groups');
-
     } catch (e: any) {
         toast({
             variant: "destructive",
