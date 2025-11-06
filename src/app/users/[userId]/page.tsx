@@ -1,8 +1,8 @@
 'use client';
 
-import { useDoc, useCollection } from '@/firebase/firestore/use-doc';
-import { useMemo } from 'react';
-import { doc, DocumentReference, collection, query, where, Query } from 'firebase/firestore';
+import { useCollection } from '@/firebase/firestore/use-collection';
+import { useState, useEffect, useMemo } from 'react';
+import { doc, getDoc, DocumentReference, collection, query, where, Query, DocumentData } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -47,12 +47,27 @@ export default function UserProfilePage({ params }: { params: { userId: string }
   const { userId } = params;
   const firestore = useFirestore();
 
-  const userDocRef = useMemo(() => {
-    if (!userId) return null;
-    return doc(firestore, 'users', userId) as DocumentReference<UserProfile>;
-  }, [userId, firestore]);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
 
-  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchUserProfile = async () => {
+      setIsProfileLoading(true);
+      const userDocRef = doc(firestore, 'users', userId) as DocumentReference<UserProfile>;
+      const docSnap = await getDoc(userDocRef);
+
+      if (docSnap.exists()) {
+        setUserProfile({ id: docSnap.id, ...docSnap.data() });
+      } else {
+        setUserProfile(null);
+      }
+      setIsProfileLoading(false);
+    };
+
+    fetchUserProfile();
+  }, [userId, firestore]);
 
   const userCohortsQuery = useMemo(() => {
     if (!userId) return null;
