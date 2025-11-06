@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useAuth, useUser, useFirestore } from '@/firebase/provider';
 import { initiateEmailSignUp } from '@/firebase/non-blocking-login';
 import { useToast } from "@/components/ui/use-toast";
-import { doc, collection, query, where, getDocs, runTransaction, deleteDoc } from 'firebase/firestore';
+import { doc, collection, query, where, getDocs, runTransaction } from 'firebase/firestore';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 import { UserProfile } from '@/lib/types';
 import { deleteUser } from 'firebase/auth';
@@ -56,7 +56,7 @@ export default function SignupPage() {
           const userDocRef = doc(firestore, "users", newUser.uid);
           const usersRef = collection(firestore, 'users');
           const q = query(usersRef, where("username_lowercase", "==", usernameLower));
-          const querySnapshot = await getDocs(q); // Use getDocs, not transaction.get
+          const querySnapshot = await getDocs(q);
 
           if (!querySnapshot.empty) {
             // This will abort the transaction
