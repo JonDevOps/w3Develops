@@ -28,5 +28,3 @@ export interface Project {
   ownerId: string;
   githubUrl?: string;
 }
-
-    
