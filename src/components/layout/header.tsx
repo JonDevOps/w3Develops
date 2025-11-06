@@ -33,35 +33,40 @@ export default function Header() {
 
   return (
     <header className="bg-card border-b sticky top-0 z-50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 gap-4">
-        {/* Left Section: Logo & Search */}
-        <div className="flex items-center gap-6">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+        <div className="flex items-center gap-4">
           <Link href={logoHref} className="flex items-center gap-2 flex-shrink-0">
             <Code2 className="h-6 w-6 text-primary" />
             <span className="font-headline text-lg font-semibold">w3Develops</span>
           </Link>
-          <div className="hidden md:block w-full max-w-sm">
-            <SearchBar />
+          
+          {/* Search Dropdown for mobile */}
+          <div className="md:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                      <Search className="h-5 w-5" />
+                      <span className="sr-only">Search</span>
+                  </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-screen max-w-[calc(100vw-2rem)] mt-2" align="start">
+                  <div className="p-2">
+                        <SearchBar />
+                  </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
+        </div>
+        
+        {/* Center Search for desktop */}
+        <div className="hidden md:flex flex-1 justify-center px-8">
+            <div className="w-full max-w-md">
+                <SearchBar />
+            </div>
         </div>
 
         {/* Right Section: Nav, Auth, Menu */}
         <div className="flex items-center gap-4">
-            <div className="md:hidden">
-                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                            <Search className="h-5 w-5" />
-                            <span className="sr-only">Search</span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-screen max-w-[calc(100vw-2rem)] mt-2" align="center">
-                        <div className="p-2">
-                             <SearchBar />
-                        </div>
-                    </DropdownMenuContent>
-                 </DropdownMenu>
-            </div>
             <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
                 <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground">
                     Study Groups
