@@ -7,11 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useFirestore, useUser, addDocumentNonBlocking } from '@/firebase';
+import { useUser } from '@/firebase';
 import { useToast } from "@/components/ui/use-toast";
-import { collection, serverTimestamp } from 'firebase/firestore';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { findAndJoinCohort } from '@/app/actions/matchmaking';
 
 const topics = [
   "HTML/CSS", "JavaScript", "Python", "React", "Django", "Node.js", "Rust", 
@@ -25,10 +25,10 @@ const commitmentLevels = {
 }
 
 export default function CreateCohortPage() {
-  const firestore = useFirestore();
   const { user } = useUser();
   const router = useRouter();
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -37,7 +37,7 @@ export default function CreateCohortPage() {
   const [customTopic, setCustomTopic] = useState('');
   const [commitment, setCommitment] = useState('part-time');
 
-  const handleCreateCohort = (e: React.FormEvent) => {
+  const handleCreateCohort = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
         toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to create a cohort." });
@@ -50,32 +50,36 @@ export default function CreateCohortPage() {
       toast({ variant: "destructive", title: "Missing Fields", description: "Please fill out all required fields." });
       return;
     }
-    
-    const cohortsCollection = collection(firestore, "cohorts");
-    const newCohort = {
-        name,
-        name_lowercase: name.toLowerCase(),
-        description,
-        githubUrl,
+
+    // Creating a cohort now uses the matchmaking logic to prevent duplicates
+    // and join existing ones if available.
+    // NOTE: The 'name', 'description', and 'githubUrl' from this form will only be used
+    // if a *new* cohort is created by the matchmaking service. They are ignored if an
+    // existing cohort is joined. This is an intentional trade-off to reuse the logic.
+    // For a "true" create, we are interpreting it as "ensure I am in a cohort with these properties".
+    setIsSubmitting(true);
+    const result = await findAndJoinCohort({
         topic: finalTopic,
         commitment: commitmentLevels[commitment as keyof typeof commitmentLevels],
-        memberIds: [user.uid],
-        createdAt: serverTimestamp(),
-    };
+        userId: user.uid,
+    });
     
-    addDocumentNonBlocking(cohortsCollection, newCohort);
-
-    toast({ title: "Cohort Created!", description: `${name} has been created.` });
-    router.push('/cohorts');
+    if (result.success) {
+        toast({ title: "Success!", description: result.message });
+        router.push('/cohorts');
+    } else {
+        toast({ variant: "destructive", title: "Could Not Create or Join Cohort", description: result.message });
+    }
+    setIsSubmitting(false);
   };
 
   return (
     <div className="max-w-2xl mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle>Create a New Build Cohort</CardTitle>
+          <CardTitle>Create or Join a Build Cohort</CardTitle>
           <CardDescription>
-            Start a new cohort to build a project with other developers.
+            Start a new cohort to build a project. We'll check if a suitable cohort already exists for you to join first.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -83,6 +87,7 @@ export default function CreateCohortPage() {
             <div className="grid gap-2">
               <Label htmlFor="name">Cohort Name</Label>
               <Input id="name" placeholder="My Awesome Project Cohort" value={name} onChange={(e) => setName(e.target.value)} required />
+              <p className="text-xs text-muted-foreground">This name will be used if a new cohort is created.</p>
             </div>
 
             <div className="grid gap-2">
@@ -126,7 +131,9 @@ export default function CreateCohortPage() {
               <Label htmlFor="description">Description (Optional)</Label>
               <Textarea id="description" placeholder="A brief description of your project." value={description} onChange={(e) => setDescription(e.target.value)} />
             </div>
-            <Button type="submit">Create Cohort</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Processing...' : 'Create or Join Cohort'}
+            </Button>
           </form>
         </CardContent>
       </Card>

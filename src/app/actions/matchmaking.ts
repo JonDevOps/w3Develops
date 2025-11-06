@@ -3,9 +3,9 @@
 import { 
     FieldValue,
     Timestamp,
+    getFirestore,
 } from 'firebase-admin/firestore';
 import { initializeAdminApp } from '@/firebase/admin';
-import { getFirestore } from 'firebase-admin/firestore';
 
 const MAX_MEMBERS = 25;
 const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
@@ -25,14 +25,27 @@ async function findAndJoin(collectionName: 'studyGroups' | 'cohorts', params: Ma
     try {
         const { topic, commitment, userId } = params;
 
+        // First, check if the user is already in a group/cohort with the same topic and commitment.
+        // This is a business rule to prevent joining duplicates.
+        const collectionsToCheck = ['studyGroups', 'cohorts'];
+        for (const coll of collectionsToCheck) {
+            const existingMembershipQuery = firestore.collection(coll)
+                .where('memberIds', 'array-contains', userId)
+                .where('topic', '==', topic)
+                .where('commitment', '==', commitment);
+            
+            const existingMembershipSnapshot = await existingMembershipQuery.get();
+            if (!existingMembershipSnapshot.empty) {
+                return { success: false, message: `You are already in a ${coll === 'studyGroups' ? 'group' : 'cohort'} with this topic and commitment.` };
+            }
+        }
+
         const oneWeekAgo = Timestamp.fromMillis(Date.now() - ONE_WEEK_IN_MS);
         
         const collectionRef = firestore.collection(collectionName);
 
         const result = await firestore.runTransaction(async (transaction) => {
-            // Query for a suitable group/cohort.
-            // The check for whether a user is already in the group is now handled in the loop below,
-            // as 'not-in' queries are limited to 10 comparison values, which is not scalable.
+            // Query for a suitable group/cohort that is less than a week old and not full.
             const q = collectionRef
                 .where('topic', '==', topic)
                 .where('commitment', '==', commitment)

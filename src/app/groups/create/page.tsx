@@ -7,11 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useFirestore, useUser, addDocumentNonBlocking } from '@/firebase';
+import { useUser } from '@/firebase';
 import { useToast } from "@/components/ui/use-toast";
-import { collection, serverTimestamp } from 'firebase/firestore';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { findAndJoinGroup } from '@/app/actions/matchmaking';
 
 const topics = [
   "HTML/CSS", "JavaScript", "Python", "React", "Django", "Node.js", "Rust", 
@@ -25,10 +25,10 @@ const commitmentLevels = {
 }
 
 export default function CreateGroupPage() {
-  const firestore = useFirestore();
   const { user } = useUser();
   const router = useRouter();
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [name, setName] = useState('');
   const [topic, setTopic] = useState('');
@@ -36,7 +36,7 @@ export default function CreateGroupPage() {
   const [description, setDescription] = useState('');
   const [commitment, setCommitment] = useState('part-time');
 
-  const handleCreateGroup = (e: React.FormEvent) => {
+  const handleCreateGroup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
         toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to create a group." });
@@ -48,31 +48,32 @@ export default function CreateGroupPage() {
       toast({ variant: "destructive", title: "Missing Fields", description: "Please fill out all required fields." });
       return;
     }
-    
-    const groupsCollection = collection(firestore, "studyGroups");
-    const newGroup = {
-        name,
-        name_lowercase: name.toLowerCase(),
+
+    // Creating a group now uses the matchmaking logic to prevent duplicates
+    // and join existing ones if available.
+    setIsSubmitting(true);
+    const result = await findAndJoinGroup({
         topic: finalTopic,
-        description,
         commitment: commitmentLevels[commitment as keyof typeof commitmentLevels],
-        memberIds: [user.uid],
-        createdAt: serverTimestamp(),
-    };
+        userId: user.uid,
+    });
     
-    addDocumentNonBlocking(groupsCollection, newGroup);
-    
-    toast({ title: "Group Created!", description: `${name} has been created successfully.` });
-    router.push('/groups');
+    if (result.success) {
+        toast({ title: "Success!", description: result.message });
+        router.push('/groups');
+    } else {
+        toast({ variant: "destructive", title: "Could Not Create or Join Group", description: result.message });
+    }
+    setIsSubmitting(false);
   };
 
   return (
     <div className="max-w-2xl mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle>Create a New Study Group</CardTitle>
+          <CardTitle>Create or Join a Study Group</CardTitle>
           <CardDescription>
-            Start a new group to collaborate with others on a specific topic.
+            Start a new group to collaborate. We'll check if a suitable group already exists for you to join first.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -80,11 +81,12 @@ export default function CreateGroupPage() {
             <div className="grid gap-2">
               <Label htmlFor="name">Group Name</Label>
               <Input id="name" placeholder="e.g., React Rangers" value={name} onChange={(e) => setName(e.target.value)} required />
+              <p className="text-xs text-muted-foreground">This name will be used if a new group is created.</p>
             </div>
             
             <div className="grid gap-2">
               <Label htmlFor="topic">Topic of Study</Label>
-               <Select onValueChange={setTopic} value={topic}>
+               <Select onValueChange={setTopic} value={topic} required>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a topic" />
                 </SelectTrigger>
@@ -119,7 +121,9 @@ export default function CreateGroupPage() {
               <Label htmlFor="description">Description (Optional)</Label>
               <Textarea id="description" placeholder="What's the main goal of this group?" value={description} onChange={(e) => setDescription(e.target.value)} />
             </div>
-            <Button type="submit">Create Group</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Processing...' : 'Create or Join Group'}
+            </Button>
           </form>
         </CardContent>
       </Card>
