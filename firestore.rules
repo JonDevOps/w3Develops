@@ -22,8 +22,9 @@ service cloud.firestore {
                     && request.resource.data.memberIds is list
                     && request.resource.data.memberIds.size() == 1
                     && request.resource.data.memberIds[0] == request.auth.uid;
-      // Allow a user to join a group (add themselves to memberIds), and nothing else.
+      // Allow a user to join a group (add themselves to memberIds), if the group is not full.
       allow update: if request.auth != null
+                    && resource.data.memberIds.size() < 25
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds'])
                     && request.resource.data.memberIds.size() == resource.data.memberIds.size() + 1
                     && request.auth.uid in request.resource.data.memberIds
@@ -43,8 +44,9 @@ service cloud.firestore {
                     && request.resource.data.memberIds is list
                     && request.resource.data.memberIds.size() == 1
                     && request.resource.data.memberIds[0] == request.auth.uid;
-      // Allow a user to join a cohort (add themselves to memberIds), and nothing else.
+      // Allow a user to join a cohort (add themselves to memberIds), if the cohort is not full.
       allow update: if request.auth != null
+                    && resource.data.memberIds.size() < 25
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds'])
                     && request.resource.data.memberIds.size() == resource.data.memberIds.size() + 1
                     && request.auth.uid in request.resource.data.memberIds
