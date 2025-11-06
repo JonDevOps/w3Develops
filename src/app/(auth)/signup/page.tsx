@@ -23,13 +23,14 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
-import { useAuth, useFirestore, useUser } from '@/firebase'
+import { useAuth, useFirestore, useUser, errorEmitter } from '@/firebase'
 import {
   createUserWithEmailAndPassword,
 } from 'firebase/auth'
 import { doc, getDoc, writeBatch } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { FirestorePermissionError } from '@/firebase/errors'
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -56,11 +57,11 @@ export default function SignupPage() {
     },
   })
 
-  useEffect(() => {
-    if (!isUserLoading && user) {
-      router.push('/dashboard');
-    }
-  }, [user, isUserLoading, router]);
+  // Redirect if user is already logged in
+  if (!isUserLoading && user) {
+    router.push('/dashboard');
+    return null; // Render nothing while redirecting
+  }
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -76,40 +77,57 @@ export default function SignupPage() {
       return;
     }
 
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      const user = userCredential.user;
+    createUserWithEmailAndPassword(auth, values.email, values.password)
+      .then(async (userCredential) => {
+        const user = userCredential.user;
+        const userProfileRef = doc(firestore, 'users', user.uid, 'profile', 'data');
+        const usernameDocRef = doc(firestore, 'usernames', values.username);
 
-      const userProfileRef = doc(firestore, 'users', user.uid, 'profile', 'data');
-      const usernameDocRef = doc(firestore, 'usernames', values.username);
+        const userProfileData = {
+          userId: user.uid,
+          username: values.username,
+          displayName: values.fullName,
+          profilePictureUrl: '',
+          socialLinks: [],
+          bio: '',
+          portfolioUrl: '',
+          projects: [],
+        };
+        
+        const batch = writeBatch(firestore);
+        batch.set(userProfileRef, userProfileData);
+        batch.set(usernameDocRef, { userId: user.uid });
+        
+        await batch.commit();
 
-      const userProfileData = {
-        userId: user.uid,
-        username: values.username,
-        displayName: values.fullName,
-        profilePictureUrl: '',
-        socialLinks: [],
-        bio: '',
-      };
-      
-      const batch = writeBatch(firestore);
-      batch.set(userProfileRef, userProfileData);
-      batch.set(usernameDocRef, { userId: user.uid });
-      await batch.commit();
-
-      router.push('/dashboard');
-    } catch(e: any) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: e.message || "Could not create account.",
+        router.push('/dashboard');
+      })
+      .catch((e: any) => {
+        setIsSubmitting(false);
+        if (e.code && e.code.includes('permission-denied')) {
+             errorEmitter.emit(
+              'permission-error',
+              new FirestorePermissionError({
+                path: `users/${auth.currentUser?.uid}/profile/data` ,
+                operation: 'create',
+                requestResourceData: {
+                  userId: auth.currentUser?.uid,
+                  username: values.username,
+                  displayName: values.fullName,
+                },
+              })
+            )
+        } else {
+           toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: e.message || "Could not create account.",
+          });
+        }
       });
-    } finally {
-      setIsSubmitting(false);
-    }
   }
 
-  if (isUserLoading || user) {
+  if (isUserLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <p>Loading...</p>

@@ -7,6 +7,7 @@
  * Data Structure:
  * - User profiles are a single document located at /users/{userId}/profile/data, ensuring only the authenticated user can access their own profile.
  * - Learning groups are stored in a top-level /learning_groups/{learningGroupId} collection. Access is controlled by a list of member IDs stored directly in the document.
+ * - Counters for group naming are stored in a top-level /counters collection.
  *
  * Key Security Decisions:
  * - Users can only manage their own profiles.
@@ -32,7 +33,7 @@ service cloud.firestore {
       allow get: if isOwner() || isSignedIn(); // Allow other signed in users to view profiles
       allow list: if false; 
 
-      allow create: if isOwner() && request.resource.data.userId == userId && request.resource.data.username is string && request.resource.data.username.size() >= 3;
+      allow create: if isOwner(); // User can only create their own profile doc
       allow update: if isOwner() && request.resource.data.userId == resource.data.userId && request.resource.data.username == resource.data.username;
       allow delete: if isOwner();
     }
@@ -41,6 +42,10 @@ service cloud.firestore {
       allow get;
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
       allow update, delete: if false;
+    }
+    
+    match /counters/{counterId} {
+      allow read, write: if isSignedIn(); // Allow any signed-in user to read/write counters for group creation
     }
 
     match /learning_groups/{learningGroupId} {

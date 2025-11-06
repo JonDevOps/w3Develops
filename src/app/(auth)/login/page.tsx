@@ -47,18 +47,17 @@ export default function LoginPage() {
 
   const { isSubmitting } = form.formState
 
-  useEffect(() => {
-    if (!isUserLoading && user) {
-      router.push('/dashboard')
-    }
-  }, [user, isUserLoading, router])
-
+  // Redirect if user is already logged in
+  if (!isUserLoading && user) {
+    router.push('/dashboard')
+    return null; // Render nothing while redirecting
+  }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     initiateEmailSignIn(auth, values.email, values.password)
   }
 
-  if (isUserLoading || user) {
+  if (isUserLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <p>Loading...</p>

@@ -19,7 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useFirebase } from '@/firebase'
-import { addDoc, collection, serverTimestamp, query, where, getDocs, runTransaction, doc } from 'firebase/firestore'
+import { addDoc, collection, serverTimestamp, runTransaction, doc, increment } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 
 const technologies = ["html/css", "javascript", "python", "react", "django", "nodejs", "rust", "digital marketing", "web3", "cryptocurrency", "cybersecurity", "nfts", "sql", "artifical intelligence", "web design", "programming fundementals"] as const;
@@ -59,14 +59,16 @@ export default function NewGroupPage() {
     const groupsCollectionRef = collection(firestore, 'learning_groups');
     
     try {
+      const counterRef = doc(firestore, 'counters', `group--${values.primarySkill}--${values.timeCommitment}`);
+      const newGroupRef = doc(groupsCollectionRef); // Auto-generate ID
+
       await runTransaction(firestore, async (transaction) => {
-        const groupCountQuery = query(groupsCollectionRef, where('primarySkill', '==', values.primarySkill), where('timeCommitment', '==', values.timeCommitment));
-        const groupCountSnapshot = await getDocs(groupCountQuery);
-        const groupCount = groupCountSnapshot.size;
+        const counterDoc = await transaction.get(counterRef);
+        const newCount = counterDoc.exists() ? counterDoc.data().count + 1 : 1;
 
-        const groupName = `${values.primarySkill.charAt(0).toUpperCase() + values.primarySkill.slice(1)} ${values.timeCommitment} ${groupCount + 1}`;
-
-        const newGroupRef = doc(groupsCollectionRef);
+        const skillLabel = values.primarySkill.charAt(0).toUpperCase() + values.primarySkill.slice(1);
+        const commitmentLabel = values.timeCommitment;
+        const groupName = `${skillLabel} ${commitmentLabel} #${newCount}`;
 
         transaction.set(newGroupRef, {
             ...values,
@@ -75,6 +77,12 @@ export default function NewGroupPage() {
             groupSizeLimit: 25,
             createdAt: serverTimestamp(),
         });
+
+         if (counterDoc.exists()) {
+          transaction.update(counterRef, { count: increment(1) });
+        } else {
+          transaction.set(counterRef, { count: 1 });
+        }
 
         toast({
             title: 'Group Created!',
@@ -112,12 +120,12 @@ export default function NewGroupPage() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Group Name</FormLabel>
+                    <FormLabel>Custom Group Name (Optional)</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g., React Rangers" {...field} />
                     </FormControl>
                      <FormDescription>
-                      This will be overridden by our standard naming convention (e.g. JavaScript Part-time 1), but can be changed later.
+                      A standardized name will be generated (e.g. JavaScript Part-time #1), but you can provide a custom name here that will be used instead.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

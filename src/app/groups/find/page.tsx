@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { useFirebase } from '@/firebase'
-import { collection, query, where, getDocs, limit, runTransaction, doc, serverTimestamp, arrayUnion } from 'firebase/firestore'
+import { collection, query, where, getDocs, limit, runTransaction, doc, serverTimestamp, arrayUnion, increment } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 
 const technologies = ["html/css", "javascript", "python", "react", "django", "nodejs", "rust", "digital marketing", "web3", "cryptocurrency", "cybersecurity", "nfts", "sql", "artifical intelligence", "web design", "programming fundementals"] as const;
@@ -55,81 +55,82 @@ export default function FindGroupPage() {
     const groupsRef = collection(firestore, 'learning_groups');
     
     try {
+      // Find suitable groups outside the transaction first to reduce transaction time
+      const suitableGroupsQuery = query(
+        groupsRef,
+        where('primarySkill', '==', values.primarySkill),
+        where('timeCommitment', '==', values.timeCommitment),
+      );
+      const querySnapshot = await getDocs(suitableGroupsQuery);
+      
+      const availableGroups = querySnapshot.docs.filter(doc => {
+          const data = doc.data();
+          return data.memberIds.length < data.groupSizeLimit && !data.memberIds.includes(user.uid);
+      });
+
+      if (availableGroups.length > 0) {
+        // Attempt to join the first available group in a transaction
+        const groupToJoinRef = availableGroups[0].ref;
         await runTransaction(firestore, async (transaction) => {
-            // Query for an existing group that matches the criteria and has space
-            const q = query(
-              groupsRef,
-              where('primarySkill', '==', values.primarySkill),
-              where('timeCommitment', '==', values.timeCommitment)
-            );
+          const groupDoc = await transaction.get(groupToJoinRef);
+          if (!groupDoc.exists()) {
+            throw "This group no longer exists. Please try again.";
+          }
+          const groupData = groupDoc.data();
+          if (groupData.memberIds.length >= groupData.groupSizeLimit) {
+            throw "This group is now full. Please try finding another one.";
+          }
+          transaction.update(groupToJoinRef, { memberIds: arrayUnion(user.uid) });
+        });
+        toast({
+          title: 'Joined Existing Group!',
+          description: `You have been added to ${availableGroups[0].data().name}.`,
+        });
+      } else {
+        // No available group, create a new one within a transaction
+        const counterRef = doc(firestore, 'counters', `group--${values.primarySkill}--${values.timeCommitment}`);
+        const newGroupRef = doc(groupsRef); // Auto-generate ID for the new group
+
+        await runTransaction(firestore, async (transaction) => {
+            const counterDoc = await transaction.get(counterRef);
+            const newCount = counterDoc.exists() ? counterDoc.data().count + 1 : 1;
             
-            const querySnapshot = await getDocs(q); // Note: getDocs is not transactional
+            const skillLabel = values.primarySkill.charAt(0).toUpperCase() + values.primarySkill.slice(1);
+            const commitmentLabel = values.timeCommitment;
+            const groupName = `${skillLabel} ${commitmentLabel} #${newCount}`;
+
+            const newGroup = {
+                name: groupName,
+                description: `A group for developers focusing on ${values.primarySkill}.`,
+                primarySkill: values.primarySkill,
+                timeCommitment: values.timeCommitment,
+                memberIds: [user.uid],
+                groupSizeLimit: 25,
+                createdAt: serverTimestamp(),
+            };
             
-            const availableGroups = querySnapshot.docs.filter(doc => {
-                const data = doc.data();
-                return data.memberIds.length < data.groupSizeLimit && !data.memberIds.includes(user.uid);
-            });
-
-            if (availableGroups.length > 0) {
-                // Join the first available group
-                const groupDoc = availableGroups[0];
-                const groupRef = doc(firestore, 'learning_groups', groupDoc.id);
-
-                // We must re-read the document inside the transaction to ensure it hasn't changed.
-                const transactionalGroupDoc = await transaction.get(groupRef);
-                if (!transactionalGroupDoc.exists()) {
-                  throw new Error("Group no longer exists.");
-                }
-
-                const groupData = transactionalGroupDoc.data();
-                if (groupData.memberIds.length >= groupData.groupSizeLimit) {
-                  throw new Error("Group is now full. Please try again.");
-                }
-
-                transaction.update(groupRef, {
-                    memberIds: arrayUnion(user.uid)
-                });
-                toast({
-                    title: 'Joined Existing Group!',
-                    description: `You have been added to ${groupData.name}.`,
-                });
+            transaction.set(newGroupRef, newGroup);
+            if (counterDoc.exists()) {
+              transaction.update(counterRef, { count: increment(1) });
             } else {
-                // No available group, create a new one
-                const groupCountQuery = query(groupsRef, where('primarySkill', '==', values.primarySkill), where('timeCommitment', '==', values.timeCommitment));
-                const groupCountSnapshot = await getDocs(groupCountQuery);
-                const groupCount = groupCountSnapshot.size;
-
-                const skillLabel = values.primarySkill.charAt(0).toUpperCase() + values.primarySkill.slice(1);
-                const commitmentLabel = values.timeCommitment;
-                const groupName = `${skillLabel} ${commitmentLabel} ${groupCount + 1}`;
-                
-                const newGroupRef = doc(groupsRef); // Auto-generate ID
-                const newGroup = {
-                    name: groupName,
-                    description: `A group for developers focusing on ${values.primarySkill}.`,
-                    primarySkill: values.primarySkill,
-                    timeCommitment: values.timeCommitment,
-                    memberIds: [user.uid],
-                    groupSizeLimit: 25,
-                    createdAt: serverTimestamp(),
-                };
-                transaction.set(newGroupRef, newGroup);
-    
-                toast({
-                    title: 'New Group Created!',
-                    description: `You have been placed in a new group: ${groupName}.`,
-                });
+              transaction.set(counterRef, { count: 1 });
             }
         });
 
-        router.push('/groups');
+        toast({
+            title: 'New Group Created!',
+            description: `You have been placed in a new group.`,
+        });
+      }
+
+      router.push('/groups');
 
     } catch (e: any) {
-        console.error("Transaction failed: ", e);
+        console.error("Group matching failed: ", e);
         toast({
             variant: "destructive",
             title: "Uh oh! Something went wrong.",
-            description: e.message || "Could not find or create a group. Please try again.",
+            description: typeof e === 'string' ? e : e.message || "Could not find or create a group. Please try again.",
         });
     }
   }

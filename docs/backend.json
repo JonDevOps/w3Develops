@@ -120,6 +120,18 @@
         "groupSizeLimit",
         "timeCommitment"
       ]
+    },
+     "GroupCounter": {
+      "title": "Group Counter",
+      "type": "object",
+      "description": "A document to store the count for a specific type of group.",
+      "properties": {
+        "count": {
+          "type": "number",
+          "description": "The current number of groups of this type."
+        }
+      },
+      "required": ["count"]
     }
   },
   "auth": {
@@ -155,6 +167,15 @@
             "$ref": "#/entities/LearningGroup"
           },
           "description": "Stores learning group data."
+        }
+      },
+      {
+        "path": "/counters/{counterId}",
+        "definition": {
+          "schema": {
+            "$ref": "#/entities/GroupCounter"
+          },
+          "description": "Stores counters for naming learning groups uniquely."
         }
       }
     ]
