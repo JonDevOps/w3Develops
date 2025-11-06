@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { LogOut, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
 import { useToast } from '@/hooks/use-toast'
+import React from 'react'
 
 function MemberPill({ memberId }: { memberId: string }) {
   const { firestore } = useFirebase()
@@ -48,10 +49,11 @@ function MemberPill({ memberId }: { memberId: string }) {
 
 
 export default function GroupDashboardPage({ params }: { params: { groupId: string } }) {
+  const resolvedParams = React.use(params);
   const { firestore, user } = useFirebase()
   const router = useRouter()
   const { toast } = useToast()
-  const groupId = params.groupId;
+  const groupId = resolvedParams.groupId;
 
   const groupRef = useMemoFirebase(() => {
     if (!firestore || !groupId) return null
