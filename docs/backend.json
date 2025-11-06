@@ -77,6 +77,10 @@
           "type": "string",
           "description": "Name of the study group."
         },
+        "name_lowercase": {
+          "type": "string",
+          "description": "Lowercase version of the group name for case-insensitive searching."
+        },
         "description": {
           "type": "string",
           "description": "Description of the study group's focus or purpose."
@@ -105,6 +109,7 @@
       "required": [
         "id",
         "name",
+        "name_lowercase",
         "topic",
         "commitment",
         "createdAt"
@@ -121,6 +126,10 @@
         },
         "name": {
           "type": "string"
+        },
+        "name_lowercase": {
+          "type": "string",
+          "description": "Lowercase version of the cohort name for case-insensitive searching."
         },
         "description": {
           "type": "string"
@@ -153,6 +162,7 @@
       "required": [
         "id",
         "name",
+        "name_lowercase",
         "topic",
         "commitment",
         "createdAt"

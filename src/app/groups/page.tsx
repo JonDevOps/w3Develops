@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useCollection, useMemoFirebase } from '@/firebase';
-import { collection, Query, Timestamp } from 'firebase/firestore';
+import { collection, Query, Timestamp, orderBy, where, limit } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,46 +19,44 @@ function formatTimestamp(timestamp: Timestamp | null | undefined): string {
     return new Date(timestamp.seconds * 1000).toLocaleDateString();
 }
 
-
 export default function GroupsPage() {
   const firestore = useFirestore();
   const [searchTerm, setSearchTerm] = useState('');
 
-  const groupsQuery = useMemoFirebase(() => {
-    return collection(firestore, 'studyGroups') as Query;
-  }, [firestore]);
+  const oneWeekAgo = useMemo(() => new Timestamp(Math.floor((Date.now() - ONE_WEEK_IN_MS) / 1000), 0), []);
 
-  const { data: studyGroups, isLoading } = useCollection<StudyGroup>(groupsQuery);
-  
-  const { newGroups, inProgressGroups } = useMemo(() => {
-    if (!studyGroups) return { newGroups: [], inProgressGroups: [] };
+  const newGroupsQuery = useMemoFirebase(() => {
+    return query(
+        collection(firestore, 'studyGroups'), 
+        orderBy('createdAt', 'desc'),
+        where('createdAt', '>', oneWeekAgo),
+        limit(25)
+    ) as Query;
+  }, [firestore, oneWeekAgo]);
+
+  const inProgressGroupsQuery = useMemoFirebase(() => {
+    return query(
+        collection(firestore, 'studyGroups'),
+        orderBy('createdAt', 'desc'),
+        where('createdAt', '<=', oneWeekAgo),
+        limit(50)
+    ) as Query;
+  }, [firestore, oneWeekAgo]);
+
+  const { data: newGroups, isLoading: isLoadingNew } = useCollection<StudyGroup>(newGroupsQuery);
+  const { data: inProgressGroups, isLoading: isLoadingInProgress } = useCollection<StudyGroup>(inProgressGroupsQuery);
+
+  const filteredGroups = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+    if (!term) return { newGroups, inProgressGroups };
     
-    const now = Date.now();
-    const allFilteredGroups = studyGroups.filter(group => 
-      group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      group.topic.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    return {
+        newGroups: newGroups?.filter(g => g.name.toLowerCase().includes(term) || g.topic.toLowerCase().includes(term)),
+        inProgressGroups: inProgressGroups?.filter(g => g.name.toLowerCase().includes(term) || g.topic.toLowerCase().includes(term))
+    }
+  }, [searchTerm, newGroups, inProgressGroups]);
 
-    const newGroups = allFilteredGroups
-      .filter(g => g.createdAt && (now - g.createdAt.toMillis()) < ONE_WEEK_IN_MS)
-      .sort((a, b) => {
-        if (!a.createdAt) return 1;
-        if (!b.createdAt) return -1;
-        return b.createdAt.toMillis() - a.createdAt.toMillis();
-      });
-      
-    const inProgressGroups = allFilteredGroups
-      .filter(g => !g.createdAt || (now - g.createdAt.toMillis()) >= ONE_WEEK_IN_MS)
-       .sort((a, b) => {
-        if (!a.createdAt && !b.createdAt) return 0;
-        if (!a.createdAt) return 1;
-        if (!b.createdAt) return -1;
-        return b.createdAt.toMillis() - a.createdAt.toMillis();
-      });
-
-    return { newGroups, inProgressGroups };
-  }, [studyGroups, searchTerm]);
-
+  const isLoading = isLoadingNew || isLoadingInProgress;
 
   return (
     <div className="space-y-8">
@@ -89,19 +87,19 @@ export default function GroupsPage() {
 
       {isLoading && <p>Loading groups...</p>}
 
-      {!isLoading && studyGroups?.length === 0 && (
+      {!isLoading && !filteredGroups.newGroups?.length && !filteredGroups.inProgressGroups?.length && (
         <div className="text-center py-12">
             <h3 className="text-xl font-semibold">No Groups Found</h3>
-            <p className="text-muted-foreground mt-2">Be the first to create or join a group!</p>
+            <p className="text-muted-foreground mt-2">{searchTerm ? 'Try a different search term.' : 'Be the first to create or join a group!'}</p>
         </div>
       )}
 
       {/* New Groups Section */}
-      {newGroups.length > 0 && (
+      {filteredGroups.newGroups && filteredGroups.newGroups.length > 0 && (
         <section className="space-y-4">
           <h2 className="text-2xl font-semibold">New</h2>
            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {newGroups.map(group => (
+            {filteredGroups.newGroups.map(group => (
               <Card key={group.id}>
                 <CardHeader>
                   <div className="flex justify-between items-start">
@@ -125,11 +123,11 @@ export default function GroupsPage() {
       )}
       
       {/* In Progress Groups Section */}
-      {inProgressGroups.length > 0 && (
+      {filteredGroups.inProgressGroups && filteredGroups.inProgressGroups.length > 0 && (
          <section className="space-y-4">
           <h2 className="text-2xl font-semibold">In Progress</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {inProgressGroups.map(group => (
+            {filteredGroups.inProgressGroups.map(group => (
               <Card key={group.id}>
                 <CardHeader>
                     <CardTitle>{group.name}</CardTitle>

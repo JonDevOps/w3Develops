@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Users, Clock } from 'lucide-react';
+import { Users } from 'lucide-react';
 
 
 function SearchResults() {
@@ -20,36 +20,36 @@ function SearchResults() {
 
   const usersQuery = useMemoFirebase(() => {
     if (!q) return null;
-    const end = q.replace(/.$/, c => String.fromCharCode(c.charCodeAt(0) + 1));
+    const end = q + '\uf8ff';
     return query(
         collection(firestore, 'users'), 
         orderBy('displayName'),
         where('displayName', '>=', q),
-        where('displayName', '<', end),
+        where('displayName', '<=', end),
         limit(10)
     );
   }, [q, firestore]);
 
   const groupsQuery = useMemoFirebase(() => {
     if (!q) return null;
-     const end = q.replace(/.$/, c => String.fromCharCode(c.charCodeAt(0) + 1));
+     const end = q.toLowerCase() + '\uf8ff';
     return query(
         collection(firestore, 'studyGroups'), 
-        orderBy('name'),
-        where('name', '>=', q),
-        where('name', '<', end),
+        orderBy('name_lowercase'),
+        where('name_lowercase', '>=', q.toLowerCase()),
+        where('name_lowercase', '<=', end),
         limit(10)
     );
   }, [q, firestore]);
 
   const cohortsQuery = useMemoFirebase(() => {
     if (!q) return null;
-     const end = q.replace(/.$/, c => String.fromCharCode(c.charCodeAt(0) + 1));
+     const end = q.toLowerCase() + '\uf8ff';
     return query(
         collection(firestore, 'cohorts'), 
-        orderBy('name'),
-        where('name', '>=', q),
-        where('name', '<', end),
+        orderBy('name_lowercase'),
+        where('name_lowercase', '>=', q.toLowerCase()),
+        where('name_lowercase', '<=', end),
         limit(10)
     );
   }, [q, firestore]);

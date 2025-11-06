@@ -18,6 +18,7 @@ export interface UserProfile {
 export interface StudyGroup {
   id: string;
   name: string;
+  name_lowercase: string;
   description?: string;
   memberIds: string[];
   topic: string;
@@ -28,6 +29,7 @@ export interface StudyGroup {
 export interface Cohort {
   id: string;
   name: string;
+  name_lowercase: string;
   description?: string;
   memberIds: string[];
   githubUrl?: string;

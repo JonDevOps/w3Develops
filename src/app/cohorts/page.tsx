@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useCollection, useMemoFirebase } from '@/firebase';
-import { collection, Query, Timestamp } from 'firebase/firestore';
+import { collection, Query, Timestamp, orderBy, where, limit } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,40 +24,40 @@ export default function CohortsPage() {
   const firestore = useFirestore();
   const [searchTerm, setSearchTerm] = useState('');
 
-  const cohortsQuery = useMemoFirebase(() => {
-    return collection(firestore, 'cohorts') as Query;
-  }, [firestore]);
+  const oneWeekAgo = useMemo(() => new Timestamp(Math.floor((Date.now() - ONE_WEEK_IN_MS) / 1000), 0), []);
 
-  const { data: cohorts, isLoading } = useCollection<Cohort>(cohortsQuery);
+  const newCohortsQuery = useMemoFirebase(() => {
+    return query(
+      collection(firestore, 'cohorts'),
+      orderBy('createdAt', 'desc'),
+      where('createdAt', '>', oneWeekAgo),
+      limit(25)
+    ) as Query;
+  }, [firestore, oneWeekAgo]);
 
-  const { newCohorts, inProgressCohorts } = useMemo(() => {
-    if (!cohorts) return { newCohorts: [], inProgressCohorts: [] };
-    
-    const now = Date.now();
-    const allFilteredCohorts = cohorts.filter(cohort => 
-      cohort.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cohort.topic.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  const inProgressCohortsQuery = useMemoFirebase(() => {
+    return query(
+      collection(firestore, 'cohorts'),
+      orderBy('createdAt', 'desc'),
+      where('createdAt', '<=', oneWeekAgo),
+      limit(50)
+    ) as Query;
+  }, [firestore, oneWeekAgo]);
 
-    const newCohorts = allFilteredCohorts
-      .filter(c => c.createdAt && (now - c.createdAt.toMillis()) < ONE_WEEK_IN_MS)
-      .sort((a, b) => {
-        if (!a.createdAt) return 1;
-        if (!b.createdAt) return -1;
-        return b.createdAt.toMillis() - a.createdAt.toMillis();
-      });
-      
-    const inProgressCohorts = allFilteredCohorts
-      .filter(c => !c.createdAt || (now - c.createdAt.toMillis()) >= ONE_WEEK_IN_MS)
-      .sort((a, b) => {
-        if (!a.createdAt && !b.createdAt) return 0;
-        if (!a.createdAt) return 1;
-        if (!b.createdAt) return -1;
-        return b.createdAt.toMillis() - a.createdAt.toMillis();
-      });
+  const { data: newCohorts, isLoading: isLoadingNew } = useCollection<Cohort>(newCohortsQuery);
+  const { data: inProgressCohorts, isLoading: isLoadingInProgress } = useCollection<Cohort>(inProgressCohortsQuery);
 
-    return { newCohorts, inProgressCohorts };
-  }, [cohorts, searchTerm]);
+  const filteredCohorts = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+    if (!term) return { newCohorts, inProgressCohorts };
+
+    return {
+      newCohorts: newCohorts?.filter(c => c.name.toLowerCase().includes(term) || c.topic.toLowerCase().includes(term)),
+      inProgressCohorts: inProgressCohorts?.filter(c => c.name.toLowerCase().includes(term) || c.topic.toLowerCase().includes(term)),
+    };
+  }, [searchTerm, newCohorts, inProgressCohorts]);
+
+  const isLoading = isLoadingNew || isLoadingInProgress;
 
   return (
     <div className="space-y-8">
@@ -88,19 +88,19 @@ export default function CohortsPage() {
 
       {isLoading && <p>Loading cohorts...</p>}
       
-      {!isLoading && cohorts?.length === 0 && (
+      {!isLoading && !filteredCohorts.newCohorts?.length && !filteredCohorts.inProgressCohorts?.length && (
         <div className="text-center py-12">
             <h3 className="text-xl font-semibold">No Cohorts Found</h3>
-            <p className="text-muted-foreground mt-2">Be the first to create or join a cohort!</p>
+            <p className="text-muted-foreground mt-2">{searchTerm ? 'Try a different search term.' : 'Be the first to create or join a cohort!'}</p>
         </div>
       )}
 
       {/* New Cohorts Section */}
-      {newCohorts.length > 0 && (
+      {filteredCohorts.newCohorts && filteredCohorts.newCohorts.length > 0 && (
         <section className="space-y-4">
           <h2 className="text-2xl font-semibold">New</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {newCohorts.map(cohort => (
+            {filteredCohorts.newCohorts.map(cohort => (
               <Card key={cohort.id}>
                 <CardHeader>
                   <div className='flex justify-between items-start'>
@@ -132,11 +132,11 @@ export default function CohortsPage() {
       )}
 
       {/* In Progress Cohorts Section */}
-      {inProgressCohorts.length > 0 && (
+      {filteredCohorts.inProgressCohorts && filteredCohorts.inProgressCohorts.length > 0 && (
          <section className="space-y-4">
           <h2 className="text-2xl font-semibold">In Progress</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {inProgressCohorts.map(cohort => (
+            {filteredCohorts.inProgressCohorts.map(cohort => (
               <Card key={cohort.id}>
                 <CardHeader>
                     <CardTitle>{cohort.name}</CardTitle>

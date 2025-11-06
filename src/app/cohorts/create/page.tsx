@@ -54,6 +54,7 @@ export default function CreateCohortPage() {
     const cohortsCollection = collection(firestore, "cohorts");
     const newCohort = {
         name,
+        name_lowercase: name.toLowerCase(),
         description,
         githubUrl,
         topic: finalTopic,

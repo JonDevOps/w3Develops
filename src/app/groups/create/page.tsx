@@ -52,6 +52,7 @@ export default function CreateGroupPage() {
     const groupsCollection = collection(firestore, "studyGroups");
     const newGroup = {
         name,
+        name_lowercase: name.toLowerCase(),
         topic: finalTopic,
         description,
         commitment: commitmentLevels[commitment as keyof typeof commitmentLevels],
