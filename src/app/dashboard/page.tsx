@@ -1,10 +1,11 @@
 'use client'
 
-import { useDoc, useFirebase, useMemoFirebase } from '@/firebase'
+import { useDoc, useUser, useFirestore, useMemoFirebase } from '@/firebase'
 import { doc } from 'firebase/firestore'
 
 export default function DashboardPage() {
-  const { user, isUserLoading } = useFirebase()
+  const { user, isUserLoading } = useUser()
+  const firestore = useFirestore()
 
   const userProfileRef = useMemoFirebase(() => {
     if (isUserLoading || !user || !firestore) return null
@@ -15,7 +16,6 @@ export default function DashboardPage() {
     data: userProfile,
     isLoading: isProfileLoading,
   } = useDoc(userProfileRef)
-  const { firestore } = useFirebase()
 
   if (isUserLoading || isProfileLoading) {
     return (

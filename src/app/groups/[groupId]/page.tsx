@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useDoc, useFirebase, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase'
+import { useDoc, useUser, useFirestore, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase'
 import { arrayRemove, arrayUnion, doc } from 'firebase/firestore'
 import { notFound, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -39,7 +39,8 @@ function MemberPill({ member }: { member: GroupMember }) {
 
 export default function GroupDashboardPage({ params }: { params: { groupId: string } }) {
   const resolvedParams = React.use(params);
-  const { firestore, user, isUserLoading } = useFirebase()
+  const { user, isUserLoading } = useUser()
+  const firestore = useFirestore()
   const router = useRouter()
   const { toast } = useToast()
   const groupId = resolvedParams.groupId;
