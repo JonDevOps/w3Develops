@@ -1,0 +1,132 @@
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user's profile information.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserProfile entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the user's ID in the authentication system. (Relationship: User 1:1 UserProfile)"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "profilePictureUrl": {
+          "type": "string",
+          "description": "URL of the user's profile picture.",
+          "format": "uri"
+        },
+        "socialLinks": {
+          "type": "array",
+          "description": "An array of social media links.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "primarySkill": {
+          "type": "string",
+          "description": "The user's primary skill."
+        },
+        "learningPace": {
+          "type": "string",
+          "description": "The user's learning pace (e.g., beginner, intermediate, advanced)."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "displayName",
+        "primarySkill",
+        "learningPace"
+      ]
+    },
+    "LearningGroup": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "LearningGroup",
+      "type": "object",
+      "description": "Represents a learning group.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the LearningGroup entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the learning group."
+        },
+        "primarySkill": {
+          "type": "string",
+          "description": "The primary skill focus of the group."
+        },
+        "memberIds": {
+          "type": "array",
+          "description": "References to UserProfiles that are members of this group. (Relationship: LearningGroup 1:N UserProfile)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "groupSizeLimit": {
+          "type": "number",
+          "description": "The maximum number of members allowed in the group."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "primarySkill",
+        "memberIds",
+        "groupSizeLimit"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}/profile",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores user profile information. The `userId` parameter ensures path-based ownership, allowing only the authenticated user to access their own profile. Includes denormalized 'userId' field for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user, obtained from Firebase Authentication."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/learning_groups/{learningGroupId}",
+        "definition": {
+          "entityName": "LearningGroup",
+          "schema": {
+            "$ref": "#/backend/entities/LearningGroup"
+          },
+          "description": "Stores learning group data. Includes the `memberIds` array for authorization, ensuring only members can access the group's details. This enables authorization independence, avoiding the need for `get()` calls in security rules.",
+          "params": [
+            {
+              "name": "learningGroupId",
+              "description": "The unique identifier for the learning group."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to provide a secure and scalable solution for the w3Develops application. It incorporates key principles like Authorization Independence (CRITICAL), DBAC (Database-based Access Control), and clear data segregation to ensure robust security rules and easy debuggability.  \n\nUserProfile data is stored under `/users/{userId}/profile`. Path-based ownership simplifies security rules ensuring only the authenticated user can access their profile.\n\nLearning Groups are stored under `/learning_groups/{learningGroupId}`. Access is managed via a `memberIds` array (denormalized for Authorization Independence) within each learning group document.  This approach supports QAPs by enabling secure listing and filtering of groups without relying on complex rule logic.\n\nAuthorization Independence: The `memberIds` array within the `LearningGroup` collection provides Authorization Independence. Security rules can check if `request.auth.uid` is in the `memberIds` array to grant access, avoiding potentially insecure `get()` calls to other documents.\n\nQAPs: Public Group List: The structure supports QAPs for the Public Group List feature. The `learning_groups` collection can be queried securely, and the security rules can ensure that list operations are only permitted if, for example, the user is authenticated. Because the authorization data lives on the documents themselves, rules can be written such as `request.auth.uid in resource.data.memberIds`."
+  }
+}
