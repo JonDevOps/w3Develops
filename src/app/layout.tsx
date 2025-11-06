@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { cn } from '@/lib/utils'
 import { FirebaseClientProvider } from '@/firebase/client-provider'
+import { Suspense } from 'react'
 
 export const metadata: Metadata = {
   title: 'w3Develops',
@@ -36,7 +37,7 @@ export default function RootLayout({
         <FirebaseClientProvider>
           <div className="relative flex min-h-screen flex-col">
             <Header />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1"><Suspense>{children}</Suspense></main>
             <Footer />
           </div>
           <Toaster />
