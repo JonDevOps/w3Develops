@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Users } from 'lucide-react';
-import { topics } from '@/lib/constants';
+import { topics, ONE_WEEK_IN_MS } from '@/lib/constants';
 
 function SearchResultsSkeleton() {
   return (
@@ -199,23 +199,29 @@ function SearchResults() {
          <section>
           <h2 className="text-2xl font-semibold mb-4">Study Groups</h2>
           <div className="grid gap-6 md:grid-cols-2">
-            {mergedGroups.map(group => (
-              <Link href={`/groups/${group.id}`} key={group.id}>
-                <Card className="hover:bg-accent transition-colors">
-                  <CardHeader>
-                      <CardTitle>{group.name}</CardTitle>
-                      <Badge variant="secondary" className="w-fit">{group.topic}</Badge>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                      <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
-                      <div className="flex items-center text-sm text-muted-foreground gap-4">
-                          <div className="flex items-center"><Users className="w-4 h-4 mr-1" />{group.memberIds.length} / 25 Members</div>
-                          <Badge variant="outline" className="w-fit">{group.commitment}</Badge>
+            {mergedGroups.map(group => {
+              const isNew = group.createdAt && (Date.now() - group.createdAt.toMillis()) < ONE_WEEK_IN_MS;
+              return (
+                <Link href={`/groups/${group.id}`} key={group.id}>
+                  <Card className="hover:bg-accent transition-colors h-full">
+                    <CardHeader>
+                      <div className="flex justify-between items-start">
+                        <CardTitle>{group.name}</CardTitle>
+                        {isNew ? <Badge>New</Badge> : <Badge variant="secondary">In Progress</Badge>}
                       </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+                      <Badge variant="secondary" className="w-fit">{group.topic}</Badge>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        <p className="text-sm text-muted-foreground h-10 overflow-hidden">{group.description}</p>
+                        <div className="flex items-center text-sm text-muted-foreground gap-4">
+                            <div className="flex items-center"><Users className="w-4 h-4 mr-1" />{group.memberIds.length} / 25 Members</div>
+                            <Badge variant="outline" className="w-fit">{group.commitment}</Badge>
+                        </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              )
+            })}
           </div>
         </section>
       )}
@@ -224,11 +230,17 @@ function SearchResults() {
          <section>
           <h2 className="text-2xl font-semibold mb-4">Build Cohorts</h2>
           <div className="grid gap-6 md:grid-cols-2">
-            {mergedCohorts.map(cohort => (
+            {mergedCohorts.map(cohort => {
+              const isNew = cohort.createdAt && (Date.now() - cohort.createdAt.toMillis()) < ONE_WEEK_IN_MS;
+              return (
                <Link href={`/cohorts/${cohort.id}`} key={cohort.id}>
-                <Card className="hover:bg-accent transition-colors">
+                <Card className="hover:bg-accent transition-colors h-full">
                   <CardHeader>
-                      <CardTitle>{cohort.name}</CardTitle>                      <Badge variant="secondary" className="w-fit">{cohort.topic}</Badge>
+                    <div className="flex justify-between items-start">
+                      <CardTitle>{cohort.name}</CardTitle>
+                      {isNew ? <Badge>New</Badge> : <Badge variant="secondary">In Progress</Badge>}
+                    </div>
+                    <Badge variant="secondary" className="w-fit">{cohort.topic}</Badge>
                   </CardHeader>
                   <CardContent className="space-y-3">
                       <p className="text-sm text-muted-foreground h-10 overflow-hidden">{cohort.description}</p>
@@ -239,7 +251,8 @@ function SearchResults() {
                   </CardContent>
                 </Card>
                </Link>
-            ))}
+              )
+            })}
           </div>
         </section>
       )}
