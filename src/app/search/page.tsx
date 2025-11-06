@@ -20,36 +20,36 @@ function SearchResults() {
 
   const usersQuery = useMemoFirebase(() => {
     if (!q) return null;
-    const end = q.toLowerCase() + '\uf8ff';
+    const lowerQ = q.toLowerCase();
     return query(
         collection(firestore, 'users'), 
         orderBy('name_lowercase'),
-        where('name_lowercase', '>=', q.toLowerCase()),
-        where('name_lowercase', '<=', end),
+        where('name_lowercase', '>=', lowerQ),
+        where('name_lowercase', '<', lowerQ + '\uf8ff'),
         limit(10)
     );
   }, [q, firestore]);
 
   const groupsQuery = useMemoFirebase(() => {
     if (!q) return null;
-     const end = q.toLowerCase() + '\uf8ff';
+    const lowerQ = q.toLowerCase();
     return query(
         collection(firestore, 'studyGroups'), 
         orderBy('name_lowercase'),
-        where('name_lowercase', '>=', q.toLowerCase()),
-        where('name_lowercase', '<=', end),
+        where('name_lowercase', '>=', lowerQ),
+        where('name_lowercase', '<', lowerQ + '\uf8ff'),
         limit(10)
     );
   }, [q, firestore]);
 
   const cohortsQuery = useMemoFirebase(() => {
     if (!q) return null;
-     const end = q.toLowerCase() + '\uf8ff';
+    const lowerQ = q.toLowerCase();
     return query(
         collection(firestore, 'cohorts'), 
         orderBy('name_lowercase'),
-        where('name_lowercase', '>=', q.toLowerCase()),
-        where('name_lowercase', '<=', end),
+        where('name_lowercase', '>=', lowerQ),
+        where('name_lowercase', '<', lowerQ + '\uf8ff'),
         limit(10)
     );
   }, [q, firestore]);

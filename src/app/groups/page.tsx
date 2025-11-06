@@ -37,7 +37,7 @@ function JoinGroupButton({ group }: { group: StudyGroup }) {
     }
     
     const handleJoin = async () => {
-        if (!user) {
+        if (!user || !firestore) {
             toast({ variant: 'destructive', title: 'Not Logged In', description: 'You must be logged in to join a group.' });
             return;
         }
@@ -146,9 +146,6 @@ export default function GroupsPage() {
           <p className="text-muted-foreground">Find a group to learn and grow with.</p>
         </div>
         <div className="flex gap-2 flex-shrink-0">
-            <Button asChild>
-                <Link href="/groups/join">Join a Group</Link>
-            </Button>
             <Button asChild variant="secondary">
                 <Link href="/groups/create">Create a Group</Link>
             </Button>
@@ -227,7 +224,7 @@ export default function GroupsPage() {
                   </div>
                   <Badge variant="secondary" className="w-fit">{group.topic}</Badge>
                 </CardHeader>
-                 <CardContent className="space-y-4 flex-grow flex flex-col">
+                 <CardContent className="space-y-4 flex-grow flex flex-col justify-between">
                   <p className="text-sm text-muted-foreground h-10 overflow-hidden flex-grow">{group.description}</p>
                   <div className="flex flex-col text-sm text-muted-foreground gap-2">
                     <div className="flex items-center"><Users className="w-4 h-4 mr-2" /> {group.memberIds.length} / 25 Members</div>
