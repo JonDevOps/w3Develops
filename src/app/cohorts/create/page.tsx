@@ -115,7 +115,7 @@ export default function CreateCohortPage() {
           <form onSubmit={handleCreateCohort} className="grid gap-6">
             <div className="grid gap-2">
               <Label htmlFor="name">Cohort Name</Label>
-              <Input id="name" placeholder="My Awesome Project Cohort" value={name} onChange={(e) => setName(e.target.value)} required />
+              <Input id="name" placeholder="My Awesome Project Cohort" value={name} onChange={(e) => setName(e.target.value)} required maxLength={75} />
             </div>
 
             <div className="grid gap-2">
@@ -159,7 +159,7 @@ export default function CreateCohortPage() {
             {topic === 'Other' && (
               <div className="grid gap-2">
                 <Label htmlFor="customTopic">Custom Topic</Label>
-                <Input id="customTopic" placeholder="Enter your custom topic" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} required />
+                <Input id="customTopic" placeholder="Enter your custom topic" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} required maxLength={50} />
               </div>
             )}
             
@@ -179,11 +179,11 @@ export default function CreateCohortPage() {
 
             <div className="grid gap-2">
               <Label htmlFor="githubUrl">GitHub URL (Optional)</Label>
-              <Input id="githubUrl" placeholder="https://github.com/user/repo" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} />
+              <Input id="githubUrl" placeholder="https://github.com/user/repo" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} maxLength={150} />
             </div>
              <div className="grid gap-2">
               <Label htmlFor="description">Description (Optional)</Label>
-              <Textarea id="description" placeholder="A brief description of your project." value={description} onChange={(e) => setDescription(e.target.value)} />
+              <Textarea id="description" placeholder="A brief description of your project." value={description} onChange={(e) => setDescription(e.target.value)} maxLength={500} />
             </div>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? 'Creating...' : 'Create Cohort'}

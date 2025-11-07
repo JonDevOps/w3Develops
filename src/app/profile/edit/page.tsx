@@ -129,7 +129,7 @@ export default function EditProfilePage() {
 
             <div className="grid gap-2">
               <Label htmlFor="bio">Bio</Label>
-              <Textarea id="bio" placeholder="Tell us about yourself" value={bio} onChange={(e) => setBio(e.target.value)} disabled={isSubmitting}/>
+              <Textarea id="bio" placeholder="Tell us about yourself" value={bio} onChange={(e) => setBio(e.target.value)} disabled={isSubmitting} maxLength={250}/>
             </div>
 
             <div className="grid gap-2">
@@ -151,6 +151,7 @@ export default function EditProfilePage() {
                     placeholder="Add a skill (e.g. React)"
                     onKeyDown={(e) => { if(e.key === 'Enter') { e.preventDefault(); handleAddSkill();}}}
                     disabled={isSubmitting}
+                    maxLength={50}
                 />
                 <Button type="button" variant="outline" onClick={handleAddSkill} disabled={isSubmitting}>Add</Button>
               </div>
@@ -161,15 +162,15 @@ export default function EditProfilePage() {
                 <h3 className="text-lg font-medium">Social Links</h3>
                  <div className="grid gap-2">
                     <Label htmlFor="github">GitHub</Label>
-                    <Input id="github" placeholder="https://github.com/your-username" value={github} onChange={(e) => setGithub(e.target.value)} disabled={isSubmitting}/>
+                    <Input id="github" placeholder="https://github.com/your-username" value={github} onChange={(e) => setGithub(e.target.value)} disabled={isSubmitting} maxLength={150}/>
                 </div>
                  <div className="grid gap-2">
                     <Label htmlFor="linkedin">LinkedIn</Label>
-                    <Input id="linkedin" placeholder="https://linkedin.com/in/your-profile" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} disabled={isSubmitting}/>
+                    <Input id="linkedin" placeholder="https://linkedin.com/in/your-profile" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} disabled={isSubmitting} maxLength={150}/>
                 </div>
                  <div className="grid gap-2">
                     <Label htmlFor="twitter">Twitter / X</Label>
-                    <Input id="twitter" placeholder="https://twitter.com/your-handle" value={twitter} onChange={(e) => setTwitter(e.target.value)} disabled={isSubmitting}/>
+                    <Input id="twitter" placeholder="https://twitter.com/your-handle" value={twitter} onChange={(e) => setTwitter(e.target.value)} disabled={isSubmitting} maxLength={150}/>
                 </div>
             </div>
 

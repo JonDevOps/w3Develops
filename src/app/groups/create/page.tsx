@@ -111,7 +111,7 @@ export default function CreateGroupPage() {
           <form onSubmit={handleCreateGroup} className="grid gap-6">
             <div className="grid gap-2">
               <Label htmlFor="name">Group Name</Label>
-              <Input id="name" placeholder="e.g., React Rangers" value={name} onChange={(e) => setName(e.target.value)} required />
+              <Input id="name" placeholder="e.g., React Rangers" value={name} onChange={(e) => setName(e.target.value)} required maxLength={75} />
             </div>
             
             <div className="grid gap-2">
@@ -155,7 +155,7 @@ export default function CreateGroupPage() {
             {topic === 'Other' && (
               <div className="grid gap-2">
                 <Label htmlFor="customTopic">Custom Topic</Label>
-                <Input id="customTopic" placeholder="Enter your custom topic" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} required />
+                <Input id="customTopic" placeholder="Enter your custom topic" value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} required maxLength={50} />
               </div>
             )}
 
@@ -175,7 +175,7 @@ export default function CreateGroupPage() {
 
              <div className="grid gap-2">
               <Label htmlFor="description">Description (Optional)</Label>
-              <Textarea id="description" placeholder="What's the main goal of this group?" value={description} onChange={(e) => setDescription(e.target.value)} />
+              <Textarea id="description" placeholder="What's the main goal of this group?" value={description} onChange={(e) => setDescription(e.target.value)} maxLength={500} />
             </div>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? 'Creating...' : 'Create Group'}
