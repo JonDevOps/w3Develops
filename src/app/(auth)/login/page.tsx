@@ -7,10 +7,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useAuth, useUser } from '@/firebase';
+import { useAuth, useUser, initiateEmailSignIn } from '@/firebase';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export default function LoginPage() {
   const auth = useAuth();
@@ -31,7 +30,7 @@ export default function LoginPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-        await signInWithEmailAndPassword(auth, email, password);
+        await initiateEmailSignIn(auth, email, password);
         // onAuthStateChanged in the provider will trigger the useEffect above to redirect.
     } catch(error: any) {
         let description = "An unknown error occurred during sign in.";

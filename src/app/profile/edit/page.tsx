@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore } from '@/firebase/provider';
+import { useUser, useFirestore } from '@/firebase';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { doc, DocumentReference } from 'firebase/firestore';
@@ -30,6 +30,7 @@ export default function EditProfilePage() {
   const [github, setGithub] = useState('');
   const [linkedin, setLinkedin] = useState('');
   const [twitter, setTwitter] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const userDocRef = useMemo(() => {
     if (!user) return null;
@@ -67,15 +68,15 @@ export default function EditProfilePage() {
   };
 
 
-  const handleUpdateProfile = (e: React.FormEvent) => {
+  const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !userDocRef) {
       toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to update your profile.' });
       return;
     }
     
-    // Note: We don't allow username changes here for simplicity.
-    // A real app would need a more complex flow for username changes (checking for uniqueness again).
+    setIsSubmitting(true);
+    
     const updatedProfileData: Partial<UserProfile> = {
       bio,
       skills,
@@ -86,10 +87,19 @@ export default function EditProfilePage() {
       },
     };
 
-    updateDocumentNonBlocking(userDocRef, updatedProfileData);
-
-    toast({ title: 'Profile Updated', description: 'Your profile has been successfully updated.' });
-    router.push('/account');
+    try {
+      await updateDocumentNonBlocking(userDocRef, updatedProfileData);
+      toast({ title: 'Profile Updated', description: 'Your profile has been successfully updated.' });
+      router.push('/account');
+    } catch (error: any) {
+        toast({
+            variant: "destructive",
+            title: "Update Failed",
+            description: error.message || "Could not update your profile. Please try again.",
+        });
+    } finally {
+        setIsSubmitting(false);
+    }
   };
 
   if (isUserLoading || isProfileLoading) {
@@ -119,7 +129,7 @@ export default function EditProfilePage() {
 
             <div className="grid gap-2">
               <Label htmlFor="bio">Bio</Label>
-              <Textarea id="bio" placeholder="Tell us about yourself" value={bio} onChange={(e) => setBio(e.target.value)} />
+              <Textarea id="bio" placeholder="Tell us about yourself" value={bio} onChange={(e) => setBio(e.target.value)} disabled={isSubmitting}/>
             </div>
 
             <div className="grid gap-2">
@@ -128,7 +138,7 @@ export default function EditProfilePage() {
                 {skills.map(skill => (
                   <Badge key={skill} variant="secondary" className="flex items-center gap-1">
                     {skill}
-                    <button type="button" onClick={() => handleRemoveSkill(skill)} className="rounded-full hover:bg-muted-foreground/20">
+                    <button type="button" onClick={() => handleRemoveSkill(skill)} className="rounded-full hover:bg-muted-foreground/20" disabled={isSubmitting}>
                       <X className="h-3 w-3"/>
                     </button>
                   </Badge>
@@ -140,8 +150,10 @@ export default function EditProfilePage() {
                     onChange={e => setCurrentSkill(e.target.value)} 
                     placeholder="Add a skill (e.g. React)"
                     onKeyDown={(e) => { if(e.key === 'Enter') { e.preventDefault(); handleAddSkill();}}}
+                    disabled={isSubmitting}
                 />
-                <Button type="button" variant="outline" onClick={handleAddSkill}>Add</Button>              </div>
+                <Button type="button" variant="outline" onClick={handleAddSkill} disabled={isSubmitting}>Add</Button>
+              </div>
                <p className="text-xs text-muted-foreground">Press Enter or click Add to add a skill.</p>
             </div>
             
@@ -149,20 +161,22 @@ export default function EditProfilePage() {
                 <h3 className="text-lg font-medium">Social Links</h3>
                  <div className="grid gap-2">
                     <Label htmlFor="github">GitHub</Label>
-                    <Input id="github" placeholder="https://github.com/your-username" value={github} onChange={(e) => setGithub(e.target.value)} />
+                    <Input id="github" placeholder="https://github.com/your-username" value={github} onChange={(e) => setGithub(e.target.value)} disabled={isSubmitting}/>
                 </div>
                  <div className="grid gap-2">
                     <Label htmlFor="linkedin">LinkedIn</Label>
-                    <Input id="linkedin" placeholder="https://linkedin.com/in/your-profile" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} />
+                    <Input id="linkedin" placeholder="https://linkedin.com/in/your-profile" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} disabled={isSubmitting}/>
                 </div>
                  <div className="grid gap-2">
                     <Label htmlFor="twitter">Twitter / X</Label>
-                    <Input id="twitter" placeholder="https://twitter.com/your-handle" value={twitter} onChange={(e) => setTwitter(e.target.value)} />
+                    <Input id="twitter" placeholder="https://twitter.com/your-handle" value={twitter} onChange={(e) => setTwitter(e.target.value)} disabled={isSubmitting}/>
                 </div>
             </div>
 
 
-            <Button type="submit">Save Changes</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Saving...' : 'Save Changes'}
+            </Button>
           </form>
         </CardContent>
       </Card>

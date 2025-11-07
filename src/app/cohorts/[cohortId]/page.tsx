@@ -3,7 +3,7 @@
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { useEffect, useState, useMemo } from 'react';
 import { doc, DocumentReference, collection, query, where, getDocs, Query } from 'firebase/firestore';
-import { useFirestore } from '@/firebase/provider';
+import { useFirestore } from '@/firebase';
 import { Cohort, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -12,9 +12,11 @@ import { Github, Users, CalendarDays, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { formatTimestamp } from '@/lib/utils';
 import { ONE_WEEK_IN_MS } from '@/lib/constants';
+import { useToast } from '@/components/ui/use-toast';
 
 function MemberList({ memberIds }: { memberIds: string[] }) {
     const firestore = useFirestore();
+    const { toast } = useToast();
     const [members, setMembers] = useState<UserProfile[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -33,14 +35,18 @@ function MemberList({ memberIds }: { memberIds: string[] }) {
                 const memberData = snapshot.docs.map(doc => doc.data() as UserProfile);
                 setMembers(memberData);
             } catch (error) {
-                console.error("Error fetching members:", error);
+                toast({
+                  variant: 'destructive',
+                  title: 'Error fetching members',
+                  description: 'Could not load cohort members. Please try again later.'
+                });
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchMembers();
-    }, [firestore, memberIds]);
+    }, [firestore, memberIds, toast]);
 
 
     if (isLoading) {
@@ -85,7 +91,7 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
   }
   
   if (cohortError) {
-      return <div className="text-center py-10 text-destructive">Error: {cohortError.message}</div>
+      return <div className="text-center py-10 text-destructive">Error loading cohort data.</div>
   }
 
   if (!cohort) {
