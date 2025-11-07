@@ -102,15 +102,6 @@ export default function AccountPage() {
           </Avatar>
           <div>
             <h1 className="text-3xl font-headline">Hello, {userProfile.username || user.email}!</h1>
-            <p className="text-muted-foreground max-w-xl mt-2">{userProfile.bio || "You haven't added a bio yet. Edit your profile to tell the community about yourself."}</p>
-            <div className="flex flex-col sm:flex-row gap-2 mt-4 justify-center sm:justify-start">
-                <Button asChild>
-                  <Link href="/profile/edit">Edit Your Profile</Link>
-                </Button>
-                <Button asChild variant="secondary">
-                  <Link href={`/users/${user.uid}`}>View Public Profile</Link>
-                </Button>
-            </div>
           </div>
         </div>
         
