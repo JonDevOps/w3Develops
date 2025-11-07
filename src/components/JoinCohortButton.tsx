@@ -47,8 +47,7 @@ export default function JoinCohortButton({ cohort }: { cohort: Cohort }) {
         
         try {
             const cohortRef = doc(firestore, 'cohorts', cohort.id);
-            // Use a non-blocking update which plays well with the real-time listener
-            updateDocumentNonBlocking(cohortRef, { memberIds: arrayUnion(user.uid) });
+            await updateDocumentNonBlocking(cohortRef, { memberIds: arrayUnion(user.uid) });
             
             toast({ title: 'Success!', description: `You've joined the cohort: ${cohort.name}`});
             router.push(`/cohorts/${cohort.id}`);

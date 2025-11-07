@@ -9,8 +9,6 @@ import {
   QuerySnapshot,
   CollectionReference,
 } from 'firebase/firestore';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
 
 /** Utility type to add an 'id' field to a given type T. */
 type WithId<T> = T & { id: string };
@@ -67,28 +65,10 @@ export function useCollection<T = any>(
         setIsLoading(false);
       },
       (error: FirestoreError) => {
-        let path: string;
-        // This logic extracts the path from either a ref or a query
-        if ('path' in targetRefOrQuery) {
-          path = (targetRefOrQuery as CollectionReference).path;
-        } else {
-          // This is a query, getting the path is more complex. 
-          // For this app, we know queries are simple.
-          // A more robust solution might involve inspecting the query object.
-          path = `a query on a collection`;
-        }
-
-        const contextualError = new FirestorePermissionError({
-          operation: 'list',
-          path,
-        })
-
-        setError(contextualError)
-        setData(null)
-        setIsLoading(false)
-
-        // trigger global error propagation
-        errorEmitter.emit('permission-error', contextualError);
+        console.error("useCollection error: ", error);
+        setError(error);
+        setData(null);
+        setIsLoading(false);
       }
     );
 

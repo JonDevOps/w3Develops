@@ -37,22 +37,21 @@ export function JoinCohortModal({ isOpen, onClose }: JoinCohortModalProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const finalTopic = topic === 'Other' ? customTopic : topic;
-  const finalCommitment = commitmentLevels[commitment as keyof typeof commitmentLevels];
 
   const matchingCohortsQuery = useMemo(() => {
-    if (step !== 2 || !finalTopic || !finalCommitment || !user) return null;
+    if (step !== 2 || !finalTopic || !commitment || !user) return null;
     
     return query(
       collection(firestore, 'cohorts'),
       where('topic', '==', finalTopic),
-      where('commitment', '==', finalCommitment)
+      where('commitment', '==', commitmentLevels[commitment as keyof typeof commitmentLevels])
     ) as Query;
-  }, [step, finalTopic, finalCommitment, firestore, user]);
+  }, [step, finalTopic, commitment, firestore, user]);
 
   const { data: matchingCohorts, isLoading } = useCollection<Cohort>(matchingCohortsQuery);
 
   const handleFindCohorts = () => {
-    if (!finalTopic || !finalCommitment) return;
+    if (!finalTopic || !commitment) return;
     setStep(2);
   };
   
@@ -68,7 +67,7 @@ export function JoinCohortModal({ isOpen, onClose }: JoinCohortModalProps) {
     return matchingCohorts?.filter(c => c.memberIds.length < 25 && !c.memberIds.includes(user?.uid || '')) || [];
   }, [matchingCohorts, user]);
   
-  const findButtonDisabled = !finalTopic || !finalCommitment || (topic === 'Other' && !customTopic);
+  const findButtonDisabled = !finalTopic || !commitment || (topic === 'Other' && !customTopic);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>

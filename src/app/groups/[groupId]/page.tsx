@@ -39,8 +39,7 @@ function MemberList({ memberIds }: { memberIds: string[] }) {
         };
 
         fetchMembers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [firestore, JSON.stringify(memberIds)]);
+    }, [firestore, memberIds]);
 
     if (isLoading) {
         return <p>Loading members...</p>;

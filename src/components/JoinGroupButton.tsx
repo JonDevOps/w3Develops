@@ -49,8 +49,7 @@ export default function JoinGroupButton({ group }: { group: StudyGroup }) {
 
         try {
             const groupRef = doc(firestore, 'studyGroups', group.id);
-            // Use a non-blocking update which plays well with the real-time listener
-            updateDocumentNonBlocking(groupRef, { memberIds: arrayUnion(user.uid) });
+            await updateDocumentNonBlocking(groupRef, { memberIds: arrayUnion(user.uid) });
 
             toast({ title: 'Success!', description: `You've joined the group: ${group.name}` });
             router.push(`/groups/${group.id}`);
