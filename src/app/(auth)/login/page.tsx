@@ -7,10 +7,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useAuth, useUser } from '@/firebase/provider';
-import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
+import { useAuth, useUser } from '@/firebase';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export default function LoginPage() {
   const auth = useAuth();
@@ -19,6 +19,7 @@ export default function LoginPage() {
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!isUserLoading && user) {
@@ -28,8 +29,9 @@ export default function LoginPage() {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
-        await initiateEmailSignIn(auth, email, password);
+        await signInWithEmailAndPassword(auth, email, password);
         // onAuthStateChanged in the provider will trigger the useEffect above to redirect.
     } catch(error: any) {
         let description = "An unknown error occurred during sign in.";
@@ -45,6 +47,8 @@ export default function LoginPage() {
             title: "Login Failed",
             description: description,
         });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -70,6 +74,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={isSubmitting}
               />
             </div>
             <div className="grid gap-2">
@@ -80,10 +85,11 @@ export default function LoginPage() {
                 required 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={isSubmitting}
               />
             </div>
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? 'Logging In...' : 'Login'}
             </Button>
           </form>
         </CardContent>
