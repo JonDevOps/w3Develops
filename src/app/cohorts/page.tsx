@@ -152,7 +152,7 @@ export default function CohortsPage() {
 
         {/* New Cohorts Section */}
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold border-b border-foreground pb-2">New</h2>
+          <h2 className="text-2xl font-semibold w-fit border-b-2 border-foreground pb-1">New</h2>
           {!isLoading && filteredCohorts.newCohorts && filteredCohorts.newCohorts.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredCohorts.newCohorts.map(cohort => (
@@ -197,7 +197,7 @@ export default function CohortsPage() {
 
         {/* In Progress Cohorts Section */}
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold border-b border-foreground pb-2">In Progress</h2>
+          <h2 className="text-2xl font-semibold w-fit border-b-2 border-foreground pb-1">In Progress</h2>
           {!isLoading && filteredCohorts.inProgressCohorts && filteredCohorts.inProgressCohorts.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredCohorts.inProgressCohorts.map(cohort => (
