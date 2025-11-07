@@ -15,6 +15,7 @@ import { ONE_WEEK_IN_MS } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
 import { JoinGroupModal } from '@/components/modals/JoinGroupModal';
 import JoinGroupButton from '@/components/JoinGroupButton';
+import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 
 function GroupCardSkeleton() {
   return (
@@ -105,7 +106,7 @@ export default function GroupsPage() {
   const isLoading = isLoadingNew || isLoadingInProgress;
 
   if (isUserLoading || !user) {
-    return <div><GroupsPageSkeleton /></div>;
+    return <GroupsPageSkeleton />;
   }
 
   return (
@@ -149,7 +150,7 @@ export default function GroupsPage() {
 
         {/* New Groups Section */}
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold w-fit border-b-4 border-foreground pb-1">New</h2>
+          <h2 className="text-2xl font-semibold w-fit border-b-4 border-foreground">New</h2>
           {!isLoading && filteredGroups.newGroups && filteredGroups.newGroups.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredGroups.newGroups.map(group => (
@@ -186,7 +187,7 @@ export default function GroupsPage() {
         
         {/* In Progress Groups Section */}
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold w-fit border-b-4 border-foreground pb-1">In Progress</h2>
+          <h2 className="text-2xl font-semibold w-fit border-b-4 border-foreground">In Progress</h2>
           {!isLoading && filteredGroups.inProgressGroups && filteredGroups.inProgressGroups.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredGroups.inProgressGroups.map(group => (
