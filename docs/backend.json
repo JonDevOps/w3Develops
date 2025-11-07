@@ -169,6 +169,32 @@
         "commitment",
         "createdAt"
       ]
+    },
+    "Notification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Notification",
+      "type": "object",
+      "description": "Represents a user notification.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "isRead": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "link": {
+          "type": "string",
+          "format": "uri-reference"
+        }
+      },
+      "required": ["id", "message", "isRead", "createdAt"]
     }
   },
   "auth": {
@@ -194,6 +220,12 @@
         "$ref": "#/entities/Cohort"
       },
       "description": "Stores project cohort data."
+    },
+    "/users/{userId}/notifications/{notificationId}": {
+        "schema": {
+            "$ref": "#/entities/Notification"
+        },
+        "description": "Stores notifications for a specific user."
     }
   }
 }

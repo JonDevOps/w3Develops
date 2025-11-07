@@ -1,14 +1,36 @@
 'use client';
 
 import { useState } from 'react';
-import { useUser, useFirestore, updateDocumentNonBlocking } from '@/firebase';
-import { arrayUnion, doc } from 'firebase/firestore';
+import { useUser, useFirestore } from '@/firebase';
+import { arrayUnion, doc, collection, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { PlusCircle } from 'lucide-react';
 import { Cohort } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+
+async function updateDocumentNonBlocking(ref: any, data: any) {
+  const batch = writeBatch(ref.firestore);
+  batch.update(ref, data);
+  await batch.commit();
+}
+
+
+async function createNotificationsForMembers(firestore: any, memberIds: string[], message: string, link: string) {
+    const batch = writeBatch(firestore);
+    memberIds.forEach(memberId => {
+        const notificationRef = doc(collection(firestore, 'users', memberId, 'notifications'));
+        batch.set(notificationRef, {
+            message,
+            link,
+            isRead: false,
+            createdAt: serverTimestamp(),
+        });
+    });
+    await batch.commit();
+}
+
 
 export default function JoinCohortButton({ cohort }: { cohort: Cohort }) {
     const { user } = useUser();
@@ -50,6 +72,17 @@ export default function JoinCohortButton({ cohort }: { cohort: Cohort }) {
             await updateDocumentNonBlocking(cohortRef, { memberIds: arrayUnion(user.uid) });
             
             toast({ title: 'Success!', description: `You've joined the cohort: ${cohort.name}`});
+            
+            // If the cohort is now full, create notifications
+            if (cohort.memberIds.length + 1 === 25) {
+                const message = `Your build cohort "${cohort.name}" is now full!`;
+                const link = `/cohorts/${cohort.id}`;
+                // Include the new member in the notification list
+                const allMemberIds = [...cohort.memberIds, user.uid];
+                await createNotificationsForMembers(firestore, allMemberIds, message, link);
+                toast({ title: 'Cohort Full!', description: `Notifications sent to all members.`});
+            }
+
             router.push(`/cohorts/${cohort.id}`);
 
         } catch (error: any) {

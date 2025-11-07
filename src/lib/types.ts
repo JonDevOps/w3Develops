@@ -37,3 +37,11 @@ export interface Cohort {
   commitment: string;
   createdAt: Timestamp;
 }
+
+export interface Notification {
+  id: string;
+  message: string;
+  isRead: boolean;
+  createdAt: Timestamp;
+  link?: string;
+}

@@ -1,14 +1,34 @@
 'use client';
 
 import { useState } from 'react';
-import { useUser, useFirestore, updateDocumentNonBlocking } from '@/firebase';
-import { arrayUnion, doc } from 'firebase/firestore';
+import { useUser, useFirestore } from '@/firebase';
+import { arrayUnion, doc, writeBatch, collection, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { PlusCircle } from 'lucide-react';
 import { StudyGroup } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+
+async function updateDocumentNonBlocking(ref: any, data: any) {
+  const batch = writeBatch(ref.firestore);
+  batch.update(ref, data);
+  await batch.commit();
+}
+
+async function createNotificationsForMembers(firestore: any, memberIds: string[], message: string, link: string) {
+    const batch = writeBatch(firestore);
+    memberIds.forEach(memberId => {
+        const notificationRef = doc(collection(firestore, 'users', memberId, 'notifications'));
+        batch.set(notificationRef, {
+            message,
+            link,
+            isRead: false,
+            createdAt: serverTimestamp(),
+        });
+    });
+    await batch.commit();
+}
 
 export default function JoinGroupButton({ group }: { group: StudyGroup }) {
     const { user } = useUser();
@@ -52,6 +72,17 @@ export default function JoinGroupButton({ group }: { group: StudyGroup }) {
             await updateDocumentNonBlocking(groupRef, { memberIds: arrayUnion(user.uid) });
 
             toast({ title: 'Success!', description: `You've joined the group: ${group.name}` });
+
+             // If the group is now full, create notifications
+            if (group.memberIds.length + 1 === 25) {
+                const message = `Your study group "${group.name}" is now full!`;
+                const link = `/groups/${group.id}`;
+                // Include the new member in the notification list
+                const allMemberIds = [...group.memberIds, user.uid];
+                await createNotificationsForMembers(firestore, allMemberIds, message, link);
+                toast({ title: 'Group Full!', description: `Notifications sent to all members.`});
+            }
+
             router.push(`/groups/${group.id}`);
 
         } catch (error: any) {
