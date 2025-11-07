@@ -16,6 +16,7 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "w3Develops",
   description: "A community for developers to learn, build, and connect.",
+  viewport: "width=device-width, initial-scale=1",
   icons: {
     icon: [
       { url: '/favicon.ico' },
