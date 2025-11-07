@@ -29,16 +29,6 @@ function AccountPageSkeleton() {
           </div>
         </div>
       </div>
-      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-        <div className="lg:col-span-1 rounded-lg border bg-card p-6 space-y-3">
-            <div className="h-6 w-24 bg-muted rounded"></div>
-            <div className="h-10 w-full bg-muted rounded"></div>
-        </div>
-        <div className="lg:col-span-1 rounded-lg border bg-card p-6 space-y-3">
-            <div className="h-6 w-32 bg-muted rounded"></div>
-            <div className="h-10 w-full bg-muted rounded"></div>
-        </div>
-      </div>
        <div className="grid gap-6 md:grid-cols-2">
         <div className="rounded-lg border bg-card p-6 space-y-3">
           <div className="h-6 w-48 bg-muted rounded"></div>
@@ -124,47 +114,6 @@ export default function AccountPage() {
           </div>
         </div>
         
-        <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle>Your Skills</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {userProfile.skills && userProfile.skills.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                      {userProfile.skills.map(skill => <Badge key={skill} variant="secondary">{skill}</Badge>)}
-                  </div>
-              ) : (
-                  <p className="text-sm text-muted-foreground">Add skills to your profile to let others know what you're learning.</p>
-              )}
-            </CardContent>
-          </Card>
-          
-          <Card className="lg:col-span-1">
-              <CardHeader>
-                  <CardTitle>Social Links</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center gap-4">
-                  {userProfile.socialLinks?.github ? (
-                      <a href={userProfile.socialLinks.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
-                          <Github className="w-5 h-5" />
-                      </a>
-                  ) : <p className="text-sm text-muted-foreground">No GitHub</p>}
-                   {userProfile.socialLinks?.linkedin ? (
-                      <a href={userProfile.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
-                          <Linkedin className="w-5 h-5" />
-                      </a>
-                  ) : <p className="text-sm text-muted-foreground">No LinkedIn</p>}
-                   {userProfile.socialLinks?.twitter ? (
-                      <a href={userProfile.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
-                          <Twitter className="w-5 h-5" />
-                      </a>
-                  ) : <p className="text-sm text-muted-foreground">No Twitter</p>}
-              </CardContent>
-          </Card>
-
-        </div>
-
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
             <CardHeader>
