@@ -1,0 +1,46 @@
+'use client';
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import { useUser } from '@/firebase';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { LoadingSkeleton } from "@/components/layout/loading-skeleton";
+
+export default function SettingsPage() {
+    const { user, isUserLoading } = useUser();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!isUserLoading && !user) {
+            router.push('/login');
+        }
+    }, [user, isUserLoading, router]);
+
+    if (isUserLoading || !user) {
+        return <LoadingSkeleton />;
+    }
+
+    return (
+        <div className="max-w-2xl mx-auto">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Settings</CardTitle>
+                    <CardDescription>Manage your account settings and preferences.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                   <div className="flex items-center justify-between p-4 border rounded-lg">
+                        <div>
+                            <h4 className="font-medium">Profile</h4>
+                            <p className="text-sm text-muted-foreground">Update your public profile information.</p>
+                        </div>
+                        <Button asChild>
+                            <Link href="/profile/edit">Edit Profile</Link>
+                        </Button>
+                   </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
