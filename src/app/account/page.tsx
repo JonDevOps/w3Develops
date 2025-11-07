@@ -17,9 +17,9 @@ import { JoinGroupModal } from '@/components/modals/JoinGroupModal';
 function AccountPageSkeleton() {
   return (
     <div className="space-y-8 animate-pulse">
-      <div className="flex items-center gap-6">
-        <div className="rounded-full bg-muted h-24 w-24"></div>
-        <div className="space-y-2">
+      <div className="flex flex-col sm:flex-row items-center gap-6">
+        <div className="rounded-full bg-muted h-24 w-24 flex-shrink-0"></div>
+        <div className="space-y-2 w-full">
           <div className="h-8 bg-muted rounded w-64"></div>
           <div className="h-4 bg-muted rounded w-96"></div>
           <div className="h-4 bg-muted rounded w-80"></div>
@@ -95,15 +95,15 @@ export default function AccountPage() {
       <JoinCohortModal isOpen={isCohortModalOpen} onClose={() => setIsCohortModalOpen(false)} />
       <JoinGroupModal isOpen={isGroupModalOpen} onClose={() => setIsGroupModalOpen(false)} />
       <div className="space-y-8">
-        <div className="flex items-center gap-6">
-          <Avatar className="h-24 w-24">
+        <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
+          <Avatar className="h-24 w-24 flex-shrink-0">
             <AvatarImage src={userProfile.profilePictureUrl || user.photoURL || ''} alt={userProfile.username || ''} />
             <AvatarFallback className="text-3xl">{userProfile.username?.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div>
             <h1 className="text-3xl font-headline">Hello, {userProfile.username || user.email}!</h1>
             <p className="text-muted-foreground max-w-xl mt-2">{userProfile.bio || "You haven't added a bio yet. Edit your profile to tell the community about yourself."}</p>
-            <div className="flex gap-2 mt-4">
+            <div className="flex flex-col sm:flex-row gap-2 mt-4 justify-center sm:justify-start">
                 <Button asChild>
                   <Link href="/profile/edit">Edit Your Profile</Link>
                 </Button>
