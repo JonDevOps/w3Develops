@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useUser, useFirestore } from '@/firebase';
-import { arrayUnion, doc, writeBatch, collection, serverTimestamp } from 'firebase/firestore';
+import { arrayUnion, doc, writeBatch, collection, serverTimestamp, DocumentReference } from 'firebase/firestore';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -10,7 +10,7 @@ import { PlusCircle } from 'lucide-react';
 import { StudyGroup } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 
-async function updateDocumentNonBlocking(ref: any, data: any) {
+async function updateDocumentNonBlocking(ref: DocumentReference, data: any) {
   const batch = writeBatch(ref.firestore);
   batch.update(ref, data);
   await batch.commit();
@@ -21,6 +21,7 @@ async function createNotificationsForMembers(firestore: any, memberIds: string[]
     memberIds.forEach(memberId => {
         const notificationRef = doc(collection(firestore, 'users', memberId, 'notifications'));
         batch.set(notificationRef, {
+            id: notificationRef.id,
             message,
             link,
             isRead: false,
