@@ -165,8 +165,8 @@ export default function Header() {
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild><Link href="/account">Home</Link></DropdownMenuItem>
-                        <DropdownMenuItem asChild><Link href={`/users/${user.uid}`}>Profile</Link></DropdownMenuItem>
                         <DropdownMenuItem asChild><Link href="/chat">Chat</Link></DropdownMenuItem>
+                        <DropdownMenuItem asChild><Link href={`/users/${user.uid}`}>Profile</Link></DropdownMenuItem>
                         <DropdownMenuItem asChild><Link href="/settings">Settings</Link></DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={handleLogout}>
