@@ -31,7 +31,7 @@ async function createNotificationsForMembers(firestore: any, memberIds: string[]
     await batch.commit();
 }
 
-export default function JoinGroupButton({ group }: { group: StudyGroup }) {
+export default function JoinGroupButton({ group, onJoinSuccess }: { group: StudyGroup, onJoinSuccess?: (id: string) => void }) {
     const { user } = useUser();
     const { toast } = useToast();
     const firestore = useFirestore();
@@ -74,17 +74,19 @@ export default function JoinGroupButton({ group }: { group: StudyGroup }) {
 
             toast({ title: 'Success!', description: `You've joined the group: ${group.name}` });
 
-             // If the group is now full, create notifications
             if (group.memberIds.length + 1 === 25) {
                 const message = `Your study group "${group.name}" is now full!`;
                 const link = `/groups/${group.id}`;
-                // Include the new member in the notification list
                 const allMemberIds = [...group.memberIds, user.uid];
                 await createNotificationsForMembers(firestore, allMemberIds, message, link);
                 toast({ title: 'Group Full!', description: `Notifications sent to all members.`});
             }
 
-            router.push(`/groups/${group.id}`);
+            if (onJoinSuccess) {
+                onJoinSuccess(group.id);
+            } else {
+                router.push(`/groups/${group.id}`);
+            }
 
         } catch (error: any) {
             toast({ variant: 'destructive', title: 'Could Not Join', description: error.message || "An unexpected error occurred." });

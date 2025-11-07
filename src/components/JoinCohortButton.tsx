@@ -33,7 +33,7 @@ async function createNotificationsForMembers(firestore: any, memberIds: string[]
 }
 
 
-export default function JoinCohortButton({ cohort }: { cohort: Cohort }) {
+export default function JoinCohortButton({ cohort, onJoinSuccess }: { cohort: Cohort, onJoinSuccess?: (id: string) => void }) {
     const { user } = useUser();
     const { toast } = useToast();
     const firestore = useFirestore();
@@ -74,17 +74,19 @@ export default function JoinCohortButton({ cohort }: { cohort: Cohort }) {
             
             toast({ title: 'Success!', description: `You've joined the cohort: ${cohort.name}`});
             
-            // If the cohort is now full, create notifications
             if (cohort.memberIds.length + 1 === 25) {
                 const message = `Your build cohort "${cohort.name}" is now full!`;
                 const link = `/cohorts/${cohort.id}`;
-                // Include the new member in the notification list
                 const allMemberIds = [...cohort.memberIds, user.uid];
                 await createNotificationsForMembers(firestore, allMemberIds, message, link);
                 toast({ title: 'Cohort Full!', description: `Notifications sent to all members.`});
             }
-
-            router.push(`/cohorts/${cohort.id}`);
+            
+            if (onJoinSuccess) {
+                onJoinSuccess(cohort.id);
+            } else {
+                router.push(`/cohorts/${cohort.id}`);
+            }
 
         } catch (error: any) {
              toast({ variant: 'destructive', title: 'Could Not Join', description: error.message || "An unexpected error occurred." });

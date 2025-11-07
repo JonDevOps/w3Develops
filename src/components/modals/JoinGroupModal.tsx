@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { Input } from '../ui/input';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose, DrawerFooter, DrawerDescription } from '@/components/ui/drawer';
 import { ChevronDown } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 
 interface JoinGroupModalProps {
@@ -29,6 +30,7 @@ interface JoinGroupModalProps {
 export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
   const { user } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
 
   const [topic, setTopic] = useState('');
   const [customTopic, setCustomTopic] = useState('');
@@ -62,6 +64,11 @@ export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
     setCommitment('part-time');
     onClose();
   }
+
+  const handleJoinSuccess = (groupId: string) => {
+    handleClose();
+    router.push(`/groups/${groupId}`);
+  };
 
   const availableGroups = useMemo(() => {
     return matchingGroups?.filter(g => g.memberIds.length < 25 && !g.memberIds.includes(user?.uid || '')) || [];
@@ -158,7 +165,7 @@ export function JoinGroupModal({ isOpen, onClose }: JoinGroupModalProps) {
                       <p className="font-semibold">{group.name}</p>
                       <p className="text-sm text-muted-foreground">{group.memberIds.length} / 25 members</p>
                     </div>
-                    <JoinGroupButton group={group} />
+                    <JoinGroupButton group={group} onJoinSuccess={handleJoinSuccess} />
                   </div>
                 ))}
               </div>

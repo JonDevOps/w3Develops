@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { Input } from '../ui/input';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose, DrawerFooter, DrawerDescription } from '@/components/ui/drawer';
 import { ChevronDown } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 
 interface JoinCohortModalProps {
@@ -29,6 +30,7 @@ interface JoinCohortModalProps {
 export function JoinCohortModal({ isOpen, onClose }: JoinCohortModalProps) {
   const { user } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
 
   const [topic, setTopic] = useState('');
   const [customTopic, setCustomTopic] = useState('');
@@ -62,6 +64,11 @@ export function JoinCohortModal({ isOpen, onClose }: JoinCohortModalProps) {
     setCommitment('part-time');
     onClose();
   }
+
+  const handleJoinSuccess = (cohortId: string) => {
+    handleClose();
+    router.push(`/cohorts/${cohortId}`);
+  };
 
   const availableCohorts = useMemo(() => {
     return matchingCohorts?.filter(c => c.memberIds.length < 25 && !c.memberIds.includes(user?.uid || '')) || [];
@@ -158,7 +165,7 @@ export function JoinCohortModal({ isOpen, onClose }: JoinCohortModalProps) {
                       <p className="font-semibold">{cohort.name}</p>
                       <p className="text-sm text-muted-foreground">{cohort.memberIds.length} / 25 members</p>
                     </div>
-                    <JoinCohortButton cohort={cohort} />
+                    <JoinCohortButton cohort={cohort} onJoinSuccess={handleJoinSuccess} />
                   </div>
                 ))}
               </div>
