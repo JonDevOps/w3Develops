@@ -118,8 +118,8 @@ export default function CohortsPage() {
       <div className="space-y-8">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="text-3xl font-headline">Build Cohorts</h1>
-            <p className="text-muted-foreground">Explore cohorts building projects in the w3Develops community.</p>
+            <h1 className="text-3xl font-headline">Group Projects</h1>
+            <p className="text-muted-foreground">Explore groups building projects in the w3Develops community.</p>
           </div>
           <div className="flex gap-2 flex-shrink-0">
              <Button onClick={() => setIsModalOpen(true)}>
@@ -153,7 +153,7 @@ export default function CohortsPage() {
 
         {/* New Cohorts Section */}
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold w-fit border-b-4 border-foreground">New</h2>
+          <h2 className="pb-2 text-2xl font-semibold w-fit border-b-4 border-foreground">New</h2>
           {!isLoading && filteredCohorts.newCohorts && filteredCohorts.newCohorts.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredCohorts.newCohorts.map(cohort => (
@@ -198,7 +198,7 @@ export default function CohortsPage() {
 
         {/* In Progress Cohorts Section */}
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold w-fit border-b-4 border-foreground">In Progress</h2>
+          <h2 className="pb-2 text-2xl font-semibold w-fit border-b-4 border-foreground">In Progress</h2>
           {!isLoading && filteredCohorts.inProgressCohorts && filteredCohorts.inProgressCohorts.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredCohorts.inProgressCohorts.map(cohort => (
