@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useAuth, useUser, initiateEmailSignIn } from '@/firebase';
 import { useToast } from '@/components/ui/use-toast';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
+import { sendPasswordResetEmail } from 'firebase/auth';
 
 export default function LoginPage() {
   const auth = useAuth();
@@ -51,6 +52,30 @@ export default function LoginPage() {
     }
   };
 
+  const handlePasswordReset = async () => {
+    if (!email) {
+      toast({
+        variant: "destructive",
+        title: "Email required",
+        description: "Please enter your email address to reset your password.",
+      });
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast({
+        title: "Password Reset Email Sent",
+        description: `If an account exists for ${email}, a password reset link has been sent.`,
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not send password reset email. Please try again.",
+      });
+    }
+  };
+
   if (isUserLoading || user) {
     return <LoadingSkeleton />;
   }
@@ -77,7 +102,12 @@ export default function LoginPage() {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+                <div className="flex items-center">
+                    <Label htmlFor="password">Password</Label>
+                    <button type="button" onClick={handlePasswordReset} className="ml-auto inline-block text-sm underline">
+                        Forgot password?
+                    </button>
+                </div>
               <Input 
                 id="password" 
                 type="password" 

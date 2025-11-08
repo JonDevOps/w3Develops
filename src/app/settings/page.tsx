@@ -39,6 +39,15 @@ export default function SettingsPage() {
                             <Link href="/profile/edit">Edit Profile</Link>
                         </Button>
                    </div>
+                   <div className="flex items-center justify-between p-4 border rounded-lg">
+                        <div>
+                            <h4 className="font-medium">Security</h4>
+                            <p className="text-sm text-muted-foreground">Change your password and email address.</p>
+                        </div>
+                        <Button asChild>
+                            <Link href="/security">Manage Security</Link>
+                        </Button>
+                   </div>
                 </CardContent>
             </Card>
         </div>
