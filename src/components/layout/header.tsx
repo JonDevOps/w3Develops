@@ -123,7 +123,7 @@ export default function Header() {
                   <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground">
                       Study Groups
                   </Link>                  <Link href="/cohorts" className="text-muted-foreground transition-colors hover:text-foreground">
-                      Build Projects
+                      Group Projects
                   </Link>
               </nav>
               
@@ -137,7 +137,7 @@ export default function Header() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                       <DropdownMenuItem asChild><Link href="/groups">Study Groups</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild><Link href="/cohorts">Build Projects</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/cohorts">Group Projects</Link></DropdownMenuItem>
                   </DropdownMenuContent>
                   </DropdownMenu>
               </div>
