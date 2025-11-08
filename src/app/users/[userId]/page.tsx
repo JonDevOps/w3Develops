@@ -67,7 +67,7 @@ function UserActivity({ userId }: { userId: string }) {
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Users className="mr-2" />Build Cohorts</CardTitle>
+          <CardTitle className="flex items-center gap-2"><Users className="mr-2" />Group Projects</CardTitle>
         </CardHeader>
         <CardContent>
           {isCohortsLoading ? <div className="h-10 w-full bg-muted rounded animate-pulse"></div> :
