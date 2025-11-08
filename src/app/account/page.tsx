@@ -108,7 +108,7 @@ export default function AccountPage() {
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>Your Build Cohorts</CardTitle>
+              <CardTitle>Your Group Projects</CardTitle>
               <CardDescription>Cohorts you have created or joined to build projects.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
