@@ -102,12 +102,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="grid gap-2">
-                <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
-                    <button type="button" onClick={handlePasswordReset} className="ml-auto inline-block text-sm underline">
-                        Forgot password?
-                    </button>
-                </div>
+              <Label htmlFor="password">Password</Label>
               <Input 
                 id="password" 
                 type="password" 
@@ -116,6 +111,11 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isSubmitting}
               />
+              <div className="text-right">
+                <button type="button" onClick={handlePasswordReset} className="text-sm underline">
+                    Forgot password?
+                </button>
+              </div>
             </div>
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? 'Logging In...' : 'Login'}
