@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Github, Twitter, Youtube, Facebook } from 'lucide-react';
-import { FaDiscord } from 'react-icons/fa';
 
 export default function Footer() {
   return (
@@ -30,7 +29,7 @@ export default function Footer() {
           
           <div className="flex justify-center md:justify-end gap-4">
              <a href="https://discord.gg/WphGvTT" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-                <FaDiscord size={24} />
+                {/* Discord Icon was here, removed due to missing package */}
               </a>
               <a href="https://www.facebook.com/groups/w3develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <Facebook />
