@@ -1,8 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { Github, Twitter, Youtube, Facebook, Linkedin, Podcast, Instagram } from 'lucide-react';
-import { FaDiscord, FaMedium } from 'react-icons/fa';
+import { Github, Twitter, Youtube, Facebook } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -20,8 +19,8 @@ export default function Footer() {
               <a href="https://www.youtube.com/w3Develops?sub_confirmation=1" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <Youtube />
               </a>
-              <a href="https://discord.gg/WphGvTT" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-                <FaDiscord size={24} />
+              <a href="https://www.facebook.com/groups/w3develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+                <Facebook />
               </a>
           </div>
 
@@ -30,21 +29,14 @@ export default function Footer() {
           </div>
           
           <div className="flex justify-center md:justify-end gap-4">
-             <a href="https://www.instagram.com/w3develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-                <Instagram />
-              </a>
-              <a href="https://medium.com/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-                <FaMedium size={24} />
-              </a>
-              <a href="https://www.linkedin.com/company/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-                <Linkedin />
-              </a>
-              <a href="https://www.youtube.com/watch?v=VLZhlngst2E&list=PLTwiqKOPckq-z5E-LUpMXpcv_GWXE2k4F" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-                <Podcast />
-              </a>
-              <a href="https://www.facebook.com/groups/w3develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-                <Facebook />
-              </a>
+            <ul className="list-inline quicklinks">
+              <li className="list-inline-item">
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li className="list-inline-item">
+                <a href="#">Terms of Use</a>
+              </li>
+            </ul>
           </div>
 
         </div>
