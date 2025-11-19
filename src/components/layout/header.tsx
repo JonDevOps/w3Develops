@@ -139,9 +139,6 @@ export default function Header() {
                   <Link href="/meetups" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
                       Meetups
                   </Link>
-                  <Link href="/chat" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
-                      Community
-                  </Link>
                    <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
                       Learn
                   </Link>
@@ -164,9 +161,7 @@ export default function Header() {
                       <DropdownMenuItem asChild><Link href="/solo-projects">Solo Projects</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/book-clubs">Book Clubs</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/meetups">Meetups</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild><Link href="/chat">Community</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/groups">Learn</Link></DropdownMenuItem>
-                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild><Link href="/news">News</Link></DropdownMenuItem>
                   </DropdownMenuContent>
                   </DropdownMenu>
@@ -195,7 +190,6 @@ export default function Header() {
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild><Link href="/account">Home</Link></DropdownMenuItem>
-                        <DropdownMenuItem asChild><Link href="/chat">Chat</Link></DropdownMenuItem>
                         <DropdownMenuItem asChild><Link href={`/users/${user.uid}`}>Profile</Link></DropdownMenuItem>
                         <DropdownMenuItem asChild><Link href="/settings">Settings</Link></DropdownMenuItem>
                         <DropdownMenuSeparator />
