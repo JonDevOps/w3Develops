@@ -10,7 +10,7 @@ export default function Footer() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center text-center">
           
-          <div className="flex justify-center md:justify-start gap-4 flex-wrap order-1">
+          <div className="flex justify-center md:justify-start gap-4 flex-wrap order-2 md:order-1">
               <a href="https://github.com/w3develops/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <Github />
               </a>
@@ -28,9 +28,9 @@ export default function Footer() {
               </a>
           </div>
 
-          <div className="text-center order-2 md:order-1">
+          <div className="text-center order-1 md:order-2">
             <p className="text-sm text-muted-foreground">Made with ❤️ for a better web</p>
-            <div className="flex justify-center gap-4 text-sm text-muted-foreground">
+            <div className="flex justify-center gap-4 text-sm text-muted-foreground mt-2 flex-wrap">
                 <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
                 <Link href="/terms" className="hover:text-foreground">Terms of Use</Link>
                 <Link href="/cookies" className="hover:text-foreground">Cookies</Link>
@@ -39,7 +39,7 @@ export default function Footer() {
             </div>
           </div>
           
-          <div className="flex justify-center md:justify-end gap-4 flex-wrap order-3 md:order-2">
+          <div className="flex justify-center md:justify-end gap-4 flex-wrap order-3 md:order-3">
             <a href="https://www.instagram.com/w3develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
               <Instagram />
             </a>
