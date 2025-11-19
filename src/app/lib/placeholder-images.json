@@ -1,0 +1,7 @@
+{
+    "hero": {
+        "src": "https://picsum.photos/seed/hero-bg/1920/1080",
+        "alt": "A photograph of a desk with a laptop and a cup of coffee on it.",
+        "data-ai-hint": "studio desk"
+    }
+}
