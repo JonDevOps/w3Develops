@@ -139,6 +139,9 @@ export default function Header() {
                   <Link href="/meetups" className="text-muted-foreground transition-colors hover:text-foreground">
                       Meetups
                   </Link>
+                  <Link href="/news" className="text-muted-foreground transition-colors hover:text-foreground">
+                      News
+                  </Link>
               </nav>
               
               <div className="md:hidden">
@@ -155,6 +158,7 @@ export default function Header() {
                       <DropdownMenuItem asChild><Link href="/solo-projects">Solo Projects</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/book-clubs">Book Clubs</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/meetups">Meetups</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/news">News</Link></DropdownMenuItem>
                   </DropdownMenuContent>
                   </DropdownMenu>
               </div>
