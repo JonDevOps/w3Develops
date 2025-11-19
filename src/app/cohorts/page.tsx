@@ -12,7 +12,6 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { formatTimestamp } from '@/lib/utils';
 import { ONE_WEEK_IN_MS } from '@/lib/constants';
-import { useRouter } from 'next/navigation';
 import { JoinCohortModal } from '@/components/modals/JoinCohortModal';
 import JoinCohortButton from '@/components/JoinCohortButton';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
@@ -60,38 +59,29 @@ function CohortsPageSkeleton() {
 
 export default function CohortsPage() {
   const firestore = useFirestore();
-  const { user, isUserLoading } = useUser();
-  const router = useRouter();
+  const { user } = useUser();
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, isUserLoading, router]);
 
   const oneWeekAgo = useMemo(() => new Date(Date.now() - ONE_WEEK_IN_MS), []);
 
   const newCohortsQuery = useMemo(() => {
-    if (!user) return null;
     return query(
       collection(firestore, 'cohorts'),
       orderBy('createdAt', 'desc'),
       where('createdAt', '>', oneWeekAgo),
       limit(25)
     ) as Query;
-  }, [firestore, oneWeekAgo, user]);
+  }, [firestore, oneWeekAgo]);
 
   const inProgressCohortsQuery = useMemo(() => {
-    if (!user) return null;
     return query(
       collection(firestore, 'cohorts'),
       orderBy('createdAt', 'desc'),
       where('createdAt', '<=', oneWeekAgo),
       limit(50)
     ) as Query;
-  }, [firestore, oneWeekAgo, user]);
+  }, [firestore, oneWeekAgo]);
 
   const { data: newCohorts, isLoading: isLoadingNew } = useCollection<Cohort>(newCohortsQuery);
   const { data: inProgressCohorts, isLoading: isLoadingInProgress } = useCollection<Cohort>(inProgressCohortsQuery);
@@ -108,10 +98,6 @@ export default function CohortsPage() {
 
   const isLoading = isLoadingNew || isLoadingInProgress;
 
-  if (isUserLoading || !user) {
-    return <CohortsPageSkeleton />;
-  }
-
   return (
     <>
       <JoinCohortModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
@@ -121,15 +107,17 @@ export default function CohortsPage() {
             <h1 className="text-3xl font-headline">Group Projects</h1>
             <p className="text-muted-foreground">Explore groups building projects in the w3Develops community.</p>
           </div>
-          <div className="flex gap-2 flex-shrink-0">
-             <Button onClick={() => setIsModalOpen(true)}>
-                <PlusCircle className="w-4 h-4 mr-2" />
-                Join a Cohort
-            </Button>
-            <Button asChild variant="secondary">
-                <Link href="/cohorts/create">Create a Cohort</Link>
-            </Button>
-          </div>
+          {user && (
+            <div className="flex gap-2 flex-shrink-0">
+               <Button onClick={() => setIsModalOpen(true)}>
+                  <PlusCircle className="w-4 h-4 mr-2" />
+                  Join a Cohort
+              </Button>
+              <Button asChild variant="secondary">
+                  <Link href="/cohorts/create">Create a Cohort</Link>
+              </Button>
+            </div>
+          )}
         </div>
 
         <div className="relative">
