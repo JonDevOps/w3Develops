@@ -1,5 +1,8 @@
+'use client';
+
 import Link from "next/link";
-import { Github, Twitter, Youtube, Facebook } from 'lucide-react';
+import { Github, Twitter, Youtube, Facebook, Linkedin, Reddit, Podcast, Instagram } from 'lucide-react';
+import { FaDiscord, FaMedium } from 'react-icons/fa';
 
 export default function Footer() {
   return (
@@ -17,19 +20,30 @@ export default function Footer() {
               <a href="https://www.youtube.com/w3Develops?sub_confirmation=1" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <Youtube />
               </a>
+              <a href="https://discord.gg/WphGvTT" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+                <FaDiscord size={24} />
+              </a>
           </div>
 
-          <div className="text-sm text-muted-foreground text-center">
+          <div className="text-sm text-muted-foreground text-center order-first md:order-none">
             <p>Made with ❤️ for a better web</p>
-            <div className="flex justify-center gap-4 mt-2">
-                <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
-                <Link href="/terms" className="hover:text-foreground">Terms of Use</Link>
-            </div>
           </div>
           
           <div className="flex justify-center md:justify-end gap-4">
-             <a href="https://discord.gg/WphGvTT" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-                {/* Discord Icon was here, removed due to missing package */}
+             <a href="https://www.instagram.com/w3develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+                <Instagram />
+              </a>
+              <a href="https://medium.com/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+                <FaMedium size={24} />
+              </a>
+              <a href="https://www.linkedin.com/company/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+                <Linkedin />
+              </a>
+              <a href="https://www.reddit.com/r/w3Develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+                <Reddit />
+              </a>
+              <a href="https://www.youtube.com/watch?v=VLZhlngst2E&list=PLTwiqKOPckq-z5E-LUpMXpcv_GWXE2k4F" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+                <Podcast />
               </a>
               <a href="https://www.facebook.com/groups/w3develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <Facebook />
