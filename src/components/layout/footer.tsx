@@ -8,9 +8,9 @@ export default function Footer() {
   return (
     <footer className="bg-card border-t py-6">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center text-center md:text-left">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center text-center">
           
-          <div className="flex justify-center md:justify-start gap-4 flex-wrap">
+          <div className="flex justify-center md:justify-start gap-4 flex-wrap order-1">
               <a href="https://github.com/w3develops/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <Github />
               </a>
@@ -28,19 +28,19 @@ export default function Footer() {
               </a>
           </div>
 
-          <div className="text-center order-first md:order-none">
+          <div className="text-center order-2 md:order-1">
             <p className="text-sm text-muted-foreground">Made with ❤️ for a better web</p>
             <ul className="list-inline quicklinks text-sm text-muted-foreground flex justify-center gap-4 mt-2">
               <li className="list-inline-item">
-                <a href="#">Privacy Policy</a>
+                <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
               </li>
               <li className="list-inline-item">
-                <a href="#">Terms of Use</a>
+                <Link href="/terms" className="hover:text-foreground">Terms of Use</Link>
               </li>
             </ul>
           </div>
           
-          <div className="flex justify-center md:justify-end gap-4 flex-wrap">
+          <div className="flex justify-center md:justify-end gap-4 flex-wrap order-3 md:order-2">
             <a href="https://www.instagram.com/w3develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
               <Instagram />
             </a>
