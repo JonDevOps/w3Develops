@@ -61,10 +61,14 @@ export default function Header() {
     };
   }, [isMobileSearchVisible]);
 
-  const handleLogout = () => {
-    auth.signOut().then(() => {
-      router.push('/');
-    });
+  const handleLogout = async () => {
+    try {
+        await auth.signOut();
+        router.push('/');
+    } catch (error) {
+        console.error("Error signing out: ", error);
+        // Optionally, show a toast message to the user
+    }
   };
 
   const userDocRef = useMemo(() => {

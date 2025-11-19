@@ -1,6 +1,5 @@
 'use client';
 
-import Link from "next/link";
 import { Github, Twitter, Youtube, Facebook, Linkedin, Instagram, Podcast } from 'lucide-react';
 import { FaDiscord, FaMedium, FaReddit } from 'react-icons/fa';
 
@@ -30,14 +29,6 @@ export default function Footer() {
 
           <div className="text-center order-2 md:order-1">
             <p className="text-sm text-muted-foreground">Made with ❤️ for a better web</p>
-            <ul className="list-inline quicklinks text-sm text-muted-foreground flex justify-center gap-4 mt-2">
-              <li className="list-inline-item">
-                <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
-              </li>
-              <li className="list-inline-item">
-                <Link href="/terms" className="hover:text-foreground">Terms of Use</Link>
-              </li>
-            </ul>
           </div>
           
           <div className="flex justify-center md:justify-end gap-4 flex-wrap order-3 md:order-2">
