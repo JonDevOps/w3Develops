@@ -136,6 +136,9 @@ export default function Header() {
                   <Link href="/book-clubs" className="text-muted-foreground transition-colors hover:text-foreground">
                       Book Clubs
                   </Link>
+                  <Link href="/meetups" className="text-muted-foreground transition-colors hover:text-foreground">
+                      Meetups
+                  </Link>
               </nav>
               
               <div className="md:hidden">
@@ -151,6 +154,7 @@ export default function Header() {
                       <DropdownMenuItem asChild><Link href="/cohorts">Group Projects</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/solo-projects">Solo Projects</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/book-clubs">Book Clubs</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/meetups">Meetups</Link></DropdownMenuItem>
                   </DropdownMenuContent>
                   </DropdownMenu>
               </div>
