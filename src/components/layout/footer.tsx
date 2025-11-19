@@ -48,7 +48,7 @@ export default function Footer() {
   return (
     <footer className="bg-card border-t py-6">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Mobile Layout: Single column, centered */}
+        {/* Mobile Layout */}
         <div className="flex flex-col items-center gap-6 md:hidden">
           <div className="flex justify-center gap-5">
             {primarySocials}
@@ -60,7 +60,7 @@ export default function Footer() {
                 <Link href="/terms" className="hover:text-foreground">Terms of Use</Link>
                 <Link href="/cookies" className="hover:text-foreground">Cookies</Link>
                 <Link href="/donate" className="hover:text-foreground">Donate</Link>
-                <Link href="/merch" className="hover:text-foreground">Merch</Link>
+                <Link href="/merch" className="hover:text-foreground">Marketplace</Link>
             </div>
           </div>
           <div className="flex justify-center gap-5">
@@ -68,9 +68,9 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Desktop Layout: 3 columns */}
+        {/* Desktop Layout */}
         <div className="hidden md:grid md:grid-cols-3 md:gap-8 md:items-center">
-          <div className="hidden md:flex justify-start gap-5">
+          <div className="flex justify-start gap-5">
             {primarySocials}
           </div>
           <div className="text-center">
@@ -80,10 +80,10 @@ export default function Footer() {
                 <Link href="/terms" className="hover:text-foreground">Terms of Use</Link>
                 <Link href="/cookies" className="hover:text-foreground">Cookies</Link>
                 <Link href="/donate" className="hover:text-foreground">Donate</Link>
-                <Link href="/merch" className="hover:text-foreground">Merch</Link>
+                <Link href="/merch" className="hover:text-foreground">Marketplace</Link>
             </div>
           </div>
-          <div className="hidden md:flex justify-end gap-5">
+          <div className="flex justify-end gap-5">
             {secondarySocials}
           </div>
         </div>

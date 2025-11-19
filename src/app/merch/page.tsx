@@ -2,21 +2,21 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function MerchPage() {
+export default function MarketplacePage() {
     return (
         <div className="max-w-4xl mx-auto">
             <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-3xl">Merch</CardTitle>
+                    <CardTitle className="font-headline text-3xl">Marketplace</CardTitle>
                     <CardDescription>
-                        Support w3Develops and grab some swag!
+                        A place to find developer talent and opportunities.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="text-center py-12">
                         <h3 className="text-xl font-semibold">Under Construction</h3>
                         <p className="text-muted-foreground mt-2">
-                            Our merchandise store is coming soon. Stay tuned!
+                            Our marketplace is coming soon. Stay tuned!
                         </p>
                     </div>
                 </CardContent>
