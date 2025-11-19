@@ -112,7 +112,7 @@ export default function Header() {
             <Link href={logoHref} className="flex items-center gap-2 flex-shrink-0 md:hidden">
               <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
             </Link>
-            <div className="w-full max-w-sm">
+            <div className="hidden md:block w-full max-w-sm">
               <SearchBar 
                 query={searchQuery}
                 onQueryChange={setSearchQuery}
@@ -121,6 +121,13 @@ export default function Header() {
           </div>
         
           <div className="flex items-center gap-4">
+              <div className="md:hidden">
+                <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchVisible(true)}>
+                  <Search className="h-6 w-6" />
+                  <span className="sr-only">Search</span>
+                </Button>
+              </div>
+
               {isLoading ? (
                   <div className="h-8 w-8 bg-muted rounded-full animate-pulse" />
               ) : user ? (

@@ -22,42 +22,54 @@ const navLinks = [
 
 
 export default function Sidebar() {
-    return (
-        <Sheet>
-            <SheetTrigger asChild>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="md:hidden"
-                >
-                    <Menu className="h-6 w-6" />
-                    <span className="sr-only">Toggle Navigation</span>
-                </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-                <nav className="flex flex-col h-full">
-                     <div className="flex items-center gap-2 border-b pb-4">
-                        <Link href="/" className="flex items-center gap-2 font-semibold">
-                             <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
-                             <span>w3Develops</span>
+    const sidebarContent = (
+         <nav className="flex flex-col h-full">
+             <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+                <Link href="/" className="flex items-center gap-2 font-semibold">
+                     <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
+                     <span className="">w3Develops</span>
+                </Link>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+                <div className="grid items-start gap-2 p-2 lg:p-4">
+                     {navLinks.map(({ href, label, icon: Icon }) => (
+                        <Link
+                            key={href + label}
+                            href={href}
+                            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                        >
+                            <Icon className="h-4 w-4" />
+                            {label}
                         </Link>
-                    </div>
-                    <div className="flex-1 overflow-y-auto py-4">
-                        <div className="grid items-start gap-2">
-                             {navLinks.map(({ href, label, icon: Icon }) => (
-                                <Link
-                                    key={href + label}
-                                    href={href}
-                                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                                >
-                                    <Icon className="h-4 w-4" />
-                                    {label}
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                </nav>
-            </SheetContent>
-        </Sheet>
+                    ))}
+                </div>
+            </div>
+        </nav>
+    );
+
+    return (
+        <>
+            {/* Desktop Sidebar */}
+            <div className="hidden md:flex md:flex-col md:h-full">
+                {sidebarContent}
+            </div>
+
+            {/* Mobile Sidebar */}
+            <Sheet>
+                <SheetTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="md:hidden"
+                    >
+                        <Menu className="h-6 w-6" />
+                        <span className="sr-only">Toggle Navigation</span>
+                    </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[300px] sm:w-[400px] p-0">
+                    {sidebarContent}
+                </SheetContent>
+            </Sheet>
+        </>
     )
 }
