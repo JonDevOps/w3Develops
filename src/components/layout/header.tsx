@@ -145,6 +145,15 @@ export default function Header() {
                    <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
                       Learn
                   </Link>
+                  <Link href="/hackathon" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
+                      Hackathon
+                  </Link>
+                  <Link href="/competitions" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
+                      Competitions
+                  </Link>
+                  <Link href="/pair-programming" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
+                      Pair Programming
+                  </Link>
                   <Link href="/news" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
                       News
                   </Link>
@@ -166,6 +175,9 @@ export default function Header() {
                       <DropdownMenuItem asChild><Link href="/meetups">Meetups</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/chat">Chat</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/groups">Learn</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/hackathon">Hackathon</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/competitions">Competitions</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/pair-programming">Pair Programming</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/news">News</Link></DropdownMenuItem>
                   </DropdownMenuContent>
                   </DropdownMenu>
