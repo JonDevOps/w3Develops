@@ -1,7 +1,7 @@
 'use client';
 
-import { Github, Twitter, Youtube, Facebook, Linkedin, Instagram, Podcast } from 'lucide-react';
-import { FaDiscord, FaMedium, FaReddit } from 'react-icons/fa';
+import { Github, Twitter, Youtube, Facebook, Linkedin, Instagram, Podcast, Newspaper } from 'lucide-react';
+import { FaDiscord, FaReddit } from 'react-icons/fa';
 import Link from 'next/link';
 
 export default function Footer() {
@@ -43,7 +43,7 @@ export default function Footer() {
               <Instagram />
             </a>
             <a href="https://medium.com/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-              <FaMedium size={24} />
+              <Newspaper />
             </a>
             <a href="https://www.linkedin.com/company/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
               <Linkedin />
