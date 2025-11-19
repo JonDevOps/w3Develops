@@ -20,6 +20,7 @@ import { useRouter } from 'next/navigation';
 import { doc, DocumentReference } from 'firebase/firestore';
 import { UserProfile } from '@/lib/types';
 import NotificationBell from '@/components/notifications/NotificationBell';
+import Sidebar from './sidebar';
 
 
 export default function Header() {
@@ -105,16 +106,13 @@ export default function Header() {
         {/* Default Header View */}
         <div className={`flex items-center gap-4 ${isMobileSearchVisible ? 'hidden' : 'flex'} w-full`}>
           <div className="flex items-center gap-4 flex-1">
-            <Link href={logoHref} className="flex items-center gap-2 flex-shrink-0">
+             <div className="md:hidden">
+                <Sidebar />
+             </div>
+            <Link href={logoHref} className="flex items-center gap-2 flex-shrink-0 md:hidden">
               <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
             </Link>
-            <div className="md:hidden">
-              <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchVisible(true)}>
-                  <Search className="h-6 w-6" />
-                  <span className="sr-only">Open Search</span>
-              </Button>
-            </div>
-            <div className="hidden md:block w-full max-w-[15rem]">
+            <div className="w-full max-w-sm">
               <SearchBar 
                 query={searchQuery}
                 onQueryChange={setSearchQuery}
@@ -123,66 +121,6 @@ export default function Header() {
           </div>
         
           <div className="flex items-center gap-4">
-              <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
-                  <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
-                      Study Groups
-                  </Link>
-                  <Link href="/cohorts" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
-                      Group Projects
-                  </Link>
-                  <Link href="/solo-projects" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
-                      Solo Projects
-                  </Link>
-                  <Link href="/book-clubs" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
-                      Book Clubs
-                  </Link>
-                  <Link href="/meetups" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
-                      Meetups
-                  </Link>
-                   <Link href="/chat" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
-                      Chat
-                  </Link>
-                   <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
-                      Learn
-                  </Link>
-                  <Link href="/hackathon" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
-                      Hackathon
-                  </Link>
-                  <Link href="/competitions" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
-                      Competitions
-                  </Link>
-                  <Link href="/pair-programming" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
-                      Pair Programming
-                  </Link>
-                  <Link href="/news" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
-                      News
-                  </Link>
-              </nav>
-              
-              <div className="md:hidden">
-                  <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                      <Menu className="h-6 w-6" />
-                      <span className="sr-only">Toggle Menu</span>
-                      </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                      <DropdownMenuItem asChild><Link href="/groups">Study Groups</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild><Link href="/cohorts">Group Projects</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild><Link href="/solo-projects">Solo Projects</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild><Link href="/book-clubs">Book Clubs</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild><Link href="/meetups">Meetups</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild><Link href="/chat">Chat</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild><Link href="/groups">Learn</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild><Link href="/hackathon">Hackathon</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild><Link href="/competitions">Competitions</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild><Link href="/pair-programming">Pair Programming</Link></DropdownMenuItem>
-                      <DropdownMenuItem asChild><Link href="/news">News</Link></DropdownMenuItem>
-                  </DropdownMenuContent>
-                  </DropdownMenu>
-              </div>
-
               {isLoading ? (
                   <div className="h-8 w-8 bg-muted rounded-full animate-pulse" />
               ) : user ? (
