@@ -15,10 +15,6 @@ interface CryptoAddress {
 
 const cryptoAddresses: CryptoAddress[] = [
     {
-        name: 'Solana',
-        address: '4abvxRwWukzMUNrgk6kzwt7KhfAXUDYVKj45FEn6EW1k',
-    },
-    {
         name: 'Bitcoin',
         address: 'bc1qppjzq8lsd753zat3pn5jy7c6e0fpwwvugpy89l',
         protocol: 'Native Segwit',
@@ -26,6 +22,10 @@ const cryptoAddresses: CryptoAddress[] = [
     {
         name: 'Ethereum',
         address: '0x00C5D793627c8DCDF2ECbA6382048A2CEEe5D5ED',
+    },
+    {
+        name: 'Solana',
+        address: '4abvxRwWukzMUNrgk6kzwt7KhfAXUDYVKj45FEn6EW1k',
     },
 ];
 
