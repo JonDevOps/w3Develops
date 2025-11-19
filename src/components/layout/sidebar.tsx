@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Users, Newspaper, Code, Award, Users2, BookOpen, MessageSquare, GraduationCap, Hammer, Trophy, GitBranch, Rss } from "lucide-react";
+import { Menu, Users, Code, Award, Users2, BookOpen, MessageSquare, GraduationCap, Hammer, Trophy, GitBranch, Rss } from "lucide-react";
 import Image from "next/image";
 
 const navLinks = [
@@ -23,7 +23,7 @@ const navLinks = [
 
 export default function Sidebar() {
     const sidebarContent = (
-         <nav className="flex flex-col h-full">
+         <nav className="flex flex-col h-full text-foreground">
              <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
                 <Link href="/" className="flex items-center gap-2 font-semibold">
                      <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
@@ -31,7 +31,7 @@ export default function Sidebar() {
                 </Link>
             </div>
             <div className="flex-1 overflow-y-auto">
-                <div className="grid items-start gap-2 p-2 lg:p-4">
+                <div className="grid items-start gap-1 p-2 lg:p-4">
                      {navLinks.map(({ href, label, icon: Icon }) => (
                         <Link
                             key={href + label}
@@ -48,28 +48,19 @@ export default function Sidebar() {
     );
 
     return (
-        <>
-            {/* Desktop Sidebar */}
-            <div className="hidden md:flex md:flex-col md:h-full">
+        <Sheet>
+            <SheetTrigger asChild>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                >
+                    <Menu className="h-6 w-6" />
+                    <span className="sr-only">Toggle Navigation</span>
+                </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] sm:w-[400px] p-0 bg-card">
                 {sidebarContent}
-            </div>
-
-            {/* Mobile Sidebar */}
-            <Sheet>
-                <SheetTrigger asChild>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="md:hidden"
-                    >
-                        <Menu className="h-6 w-6" />
-                        <span className="sr-only">Toggle Navigation</span>
-                    </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-[300px] sm:w-[400px] p-0">
-                    {sidebarContent}
-                </SheetContent>
-            </Sheet>
-        </>
+            </SheetContent>
+        </Sheet>
     )
 }

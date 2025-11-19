@@ -6,7 +6,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
-import Sidebar from "@/components/layout/sidebar";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const spaceGrotesk = Space_Grotesk({
@@ -60,17 +59,12 @@ export default function RootLayout({
         )}
       >
         <FirebaseClientProvider>
-          <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-             <div className="hidden border-r bg-muted/40 md:block">
-               <Sidebar />
-             </div>
-             <div className="flex flex-col">
-              <Header />
-              <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {children}
-              </main>
-              <Footer />
-            </div>
+          <div className="flex min-h-screen w-full flex-col">
+            <Header />
+            <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted/40 p-4 md:gap-8 md:p-10">
+              {children}
+            </main>
+            <Footer />
           </div>
           <Toaster />
         </FirebaseClientProvider>
