@@ -14,7 +14,7 @@ const navLinks = [
     { href: "/meetups", label: "Meetups", icon: Users },
     { href: "/chat", label: "Chat", icon: MessageSquare },
     { href: "/groups", label: "Learn", icon: GraduationCap },
-    { href: "/hackathon", label: "Hackathon", icon: Hammer },
+    { href: "/hackathon", label: "Hackathons", icon: Hammer },
     { href: "/competitions", label: "Competitions", icon: Trophy },
     { href: "/pair-programming", label: "Pair Programming", icon: GitBranch },
     { href: "/news", label: "News", icon: Rss },
