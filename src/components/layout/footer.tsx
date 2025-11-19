@@ -34,6 +34,7 @@ export default function Footer() {
                 <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
                 <Link href="/terms" className="hover:text-foreground">Terms of Use</Link>
                 <Link href="/cookies" className="hover:text-foreground">Cookies</Link>
+                <a href="https://paypal.me/pools/c/8oEZJpXUzK" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">Donate</a>
             </div>
           </div>
           
