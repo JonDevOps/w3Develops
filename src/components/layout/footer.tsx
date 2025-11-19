@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { Github, Twitter, Youtube, Facebook, Linkedin, Reddit, Podcast, Instagram } from 'lucide-react';
+import { Github, Twitter, Youtube, Facebook, Linkedin, Podcast, Instagram } from 'lucide-react';
 import { FaDiscord, FaMedium } from 'react-icons/fa';
 
 export default function Footer() {
@@ -38,9 +38,6 @@ export default function Footer() {
               </a>
               <a href="https://www.linkedin.com/company/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <Linkedin />
-              </a>
-              <a href="https://www.reddit.com/r/w3Develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-                <Reddit />
               </a>
               <a href="https://www.youtube.com/watch?v=VLZhlngst2E&list=PLTwiqKOPckq-z5E-LUpMXpcv_GWXE2k4F" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <Podcast />
