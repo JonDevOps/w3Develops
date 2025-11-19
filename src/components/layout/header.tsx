@@ -164,7 +164,6 @@ export default function Header() {
                       <DropdownMenuItem asChild><Link href="/solo-projects">Solo Projects</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/book-clubs">Book Clubs</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/meetups">Meetups</Link></DropdownMenuItem>
-                      <DropdownMenuSeparator />
                       <DropdownMenuItem asChild><Link href="/chat">Community</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/groups">Learn</Link></DropdownMenuItem>
                        <DropdownMenuSeparator />
