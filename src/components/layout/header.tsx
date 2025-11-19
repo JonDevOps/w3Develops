@@ -126,8 +126,12 @@ export default function Header() {
               <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
                   <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground">
                       Study Groups
-                  </Link>                  <Link href="/cohorts" className="text-muted-foreground transition-colors hover:text-foreground">
+                  </Link>
+                  <Link href="/cohorts" className="text-muted-foreground transition-colors hover:text-foreground">
                       Group Projects
+                  </Link>
+                  <Link href="/solo-projects" className="text-muted-foreground transition-colors hover:text-foreground">
+                      Solo Projects
                   </Link>
               </nav>
               
@@ -142,6 +146,7 @@ export default function Header() {
                   <DropdownMenuContent align="end">
                       <DropdownMenuItem asChild><Link href="/groups">Study Groups</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/cohorts">Group Projects</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/solo-projects">Solo Projects</Link></DropdownMenuItem>
                   </DropdownMenuContent>
                   </DropdownMenu>
               </div>
