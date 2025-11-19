@@ -26,29 +26,11 @@ export default function Footer() {
               <a href="https://discord.gg/ckQ52gA" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                 <FaDiscord size={24} />
               </a>
-              <a href="https://www.instagram.com/w3develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-                <Instagram />
-              </a>
-              <a href="https://medium.com/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-                <FaMedium size={24} />
-              </a>
-              <a href="https://www.linkedin.com/company/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-                <Linkedin />
-              </a>
-               <a href="https://www.reddit.com/r/w3Develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-                <FaReddit size={24} />
-              </a>
-               <a href="https://www.youtube.com/watch?v=VLZhlngst2E&list=PLTwiqKOPckq-z5E-LUpMXpcv_GWXE2k4F" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
-                <Podcast />
-              </a>
           </div>
 
-          <div className="text-sm text-muted-foreground text-center order-first md:order-none">
-            <p>Made with ❤️ for a better web</p>
-          </div>
-          
-          <div className="flex justify-center md:justify-end gap-4">
-            <ul className="list-inline quicklinks">
+          <div className="text-center order-first md:order-none">
+            <p className="text-sm text-muted-foreground">Made with ❤️ for a better web</p>
+            <ul className="list-inline quicklinks text-sm text-muted-foreground flex justify-center gap-4 mt-2">
               <li className="list-inline-item">
                 <a href="#">Privacy Policy</a>
               </li>
@@ -56,6 +38,24 @@ export default function Footer() {
                 <a href="#">Terms of Use</a>
               </li>
             </ul>
+          </div>
+          
+          <div className="flex justify-center md:justify-end gap-4 flex-wrap">
+            <a href="https://www.instagram.com/w3develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+              <Instagram />
+            </a>
+            <a href="https://medium.com/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+              <FaMedium size={24} />
+            </a>
+            <a href="https://www.linkedin.com/company/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+              <Linkedin />
+            </a>
+             <a href="https://www.reddit.com/r/w3Develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+              <FaReddit size={24} />
+            </a>
+             <a href="https://www.youtube.com/watch?v=VLZhlngst2E&list=PLTwiqKOPckq-z5E-LUpMXpcv_GWXE2k4F" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+              <Podcast />
+            </a>
           </div>
 
         </div>
