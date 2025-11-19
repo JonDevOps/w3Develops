@@ -2,6 +2,7 @@
 
 import { Github, Twitter, Youtube, Facebook, Linkedin, Instagram, Podcast } from 'lucide-react';
 import { FaDiscord, FaMedium, FaReddit } from 'react-icons/fa';
+import Link from 'next/link';
 
 export default function Footer() {
   return (
@@ -29,6 +30,11 @@ export default function Footer() {
 
           <div className="text-center order-2 md:order-1">
             <p className="text-sm text-muted-foreground">Made with ❤️ for a better web</p>
+            <div className="flex justify-center gap-4 text-sm text-muted-foreground">
+                <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
+                <Link href="/terms" className="hover:text-foreground">Terms of Use</Link>
+                <Link href="/cookies" className="hover:text-foreground">Cookies</Link>
+            </div>
           </div>
           
           <div className="flex justify-center md:justify-end gap-4 flex-wrap order-3 md:order-2">
