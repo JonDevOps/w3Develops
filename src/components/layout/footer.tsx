@@ -35,6 +35,7 @@ export default function Footer() {
                 <Link href="/terms" className="hover:text-foreground">Terms of Use</Link>
                 <Link href="/cookies" className="hover:text-foreground">Cookies</Link>
                 <Link href="/donate" className="hover:text-foreground">Donate</Link>
+                <Link href="/merch" className="hover:text-foreground">Merch</Link>
             </div>
           </div>
           
