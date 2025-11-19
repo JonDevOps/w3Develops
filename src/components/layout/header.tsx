@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Search, Menu, ArrowLeft } from 'lucide-react';
+import { Search, Menu, ArrowLeft, Newspaper } from 'lucide-react';
 import { useUser, useAuth, useFirestore, useDoc } from '@/firebase';
 import {
   DropdownMenu,
@@ -133,6 +133,9 @@ export default function Header() {
                   <Link href="/solo-projects" className="text-muted-foreground transition-colors hover:text-foreground">
                       Solo Projects
                   </Link>
+                  <Link href="/book-clubs" className="text-muted-foreground transition-colors hover:text-foreground">
+                      Book Clubs
+                  </Link>
               </nav>
               
               <div className="md:hidden">
@@ -147,6 +150,7 @@ export default function Header() {
                       <DropdownMenuItem asChild><Link href="/groups">Study Groups</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/cohorts">Group Projects</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/solo-projects">Solo Projects</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/book-clubs">Book Clubs</Link></DropdownMenuItem>
                   </DropdownMenuContent>
                   </DropdownMenu>
               </div>
