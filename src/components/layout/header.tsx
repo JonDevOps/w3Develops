@@ -13,7 +13,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import SearchBar from './search-bar';
@@ -140,32 +139,12 @@ export default function Header() {
                   <Link href="/meetups" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
                       Meetups
                   </Link>
-                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2">Community</Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem asChild>
-                        <a href="https://discord.gg/ckQ52gA" target="_blank" rel="noopener noreferrer">
-                          <Users className="mr-2 h-4 w-4" />
-                          <span>Discord Chat</span>
-                        </a>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2">Learn</Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                       <DropdownMenuItem asChild>
-                         <Link href="/groups">
-                            <BookOpen className="mr-2 h-4 w-4" />
-                            <span>Study Groups</span>
-                         </Link>
-                       </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <Link href="/chat" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
+                      Community
+                  </Link>
+                   <Link href="/groups" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
+                      Learn
+                  </Link>
                   <Link href="/news" className="text-muted-foreground transition-colors hover:text-foreground px-3 py-2 rounded-md">
                       News
                   </Link>
@@ -186,15 +165,8 @@ export default function Header() {
                       <DropdownMenuItem asChild><Link href="/book-clubs">Book Clubs</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href="/meetups">Meetups</Link></DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuLabel>Community</DropdownMenuLabel>
-                      <DropdownMenuItem asChild>
-                        <a href="https://discord.gg/ckQ52gA" target="_blank" rel="noopener noreferrer">
-                          Discord Chat
-                        </a>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuLabel>Learn</DropdownMenuLabel>
-                      <DropdownMenuItem asChild><Link href="/groups">Study Groups</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/chat">Community</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/groups">Learn</Link></DropdownMenuItem>
                        <DropdownMenuSeparator />
                       <DropdownMenuItem asChild><Link href="/news">News</Link></DropdownMenuItem>
                   </DropdownMenuContent>
