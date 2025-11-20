@@ -59,7 +59,6 @@ export default function Header() {
           <Sidebar />
           <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
             <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
-            w3Develops
           </Link>
         </div>
 
