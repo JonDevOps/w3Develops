@@ -1,27 +1,37 @@
 'use client';
 
 import Link from "next/link";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetState } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Users, Code, Award, Users2, BookOpen, MessageSquare, GraduationCap, Hammer, Trophy, GitBranch, Rss } from "lucide-react";
+import { Menu, Users, Code, BookOpen, MessageSquare, GraduationCap, Hammer, Trophy, GitBranch, Rss, Briefcase, Podcast } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 
 const navLinks = [
     { href: "/groups", label: "Study Groups", icon: Users },
-    { href: "/cohorts", label: "Group Projects", icon: Users2 },
+    { href: "/cohorts", label: "Group Projects", icon: Code },
     { href: "/solo-projects", label: "Solo Projects", icon: Code },
     { href: "/book-clubs", label: "Book Clubs", icon: BookOpen },
     { href: "/meetups", label: "Meetups", icon: Users },
     { href: "/chat", label: "Chat", icon: MessageSquare },
-    { href: "/groups", label: "Learn", icon: GraduationCap },
-    { href: "/hackathon", label: "Hackathons", icon: Hammer },
-    { href: "/competitions", label: "Competitions", icon: Trophy },
     { href: "/pair-programming", label: "Pair Programming", icon: GitBranch },
+    { href: "/competitions", label: "Competitions", icon: Trophy },
+    { href: "/hackathons", label: "Hackathons", icon: Hammer },
+    { href: "/job-board", label: "Job Board", icon: Briefcase },
+    { href: "/tutor", label: "Tutor", icon: GraduationCap },
+    { href: "/mentorship", label: "Mentorship", icon: Users },
+    { href: "/podcast", label: "Podcast", icon: Podcast },
     { href: "/news", label: "News", icon: Rss },
 ];
 
 
 export default function Sidebar() {
+    const [open, setOpen] = useState(false);
+
+    const handleLinkClick = () => {
+        setOpen(false);
+    };
+
     const sidebarContent = (
          <nav className="flex flex-col h-full text-foreground">
              <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
@@ -37,6 +47,7 @@ export default function Sidebar() {
                             key={href + label}
                             href={href}
                             className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                            onClick={handleLinkClick}
                         >
                             <Icon className="h-4 w-4" />
                             {label}
@@ -48,7 +59,7 @@ export default function Sidebar() {
     );
 
     return (
-        <Sheet>
+        <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
                 <Button
                     variant="ghost"
