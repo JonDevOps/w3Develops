@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useAuth, useUser, useFirestore } from '@/firebase';
 import { useToast } from "@/components/ui/use-toast";
-import { doc, collection, query, where, getDocs, setDoc } from 'firebase/firestore';
+import { doc, collection, query, where, getDocs, setDoc, serverTimestamp } from 'firebase/firestore';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 import { UserProfile } from '@/lib/types';
 import { deleteUser, UserCredential, createUserWithEmailAndPassword } from 'firebase/auth';
@@ -111,8 +111,7 @@ export default function SignupPage() {
       
       // 3. Create the user profile document
       const userDocRef = doc(firestore, "users", newUser.uid);
-      const userData: UserProfile = {
-        id: newUser.uid,
+      const userData: Omit<UserProfile, 'id' | 'createdAt'> & { createdAt: any } = {
         email: email,
         username: username,
         username_lowercase: usernameLower,
@@ -120,6 +119,7 @@ export default function SignupPage() {
         bio: '',
         socialLinks: {},
         skills: [],
+        createdAt: serverTimestamp(),
       };
       await setDoc(userDocRef, userData);
         

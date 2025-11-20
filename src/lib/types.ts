@@ -13,6 +13,7 @@ export interface UserProfile {
     twitter?: string;
   };
   skills?: string[];
+  createdAt: Timestamp;
 }
 
 export interface StudyGroup {

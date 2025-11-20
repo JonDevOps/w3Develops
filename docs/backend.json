@@ -56,13 +56,19 @@
           "items": {
             "type": "string"
           }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the user profile was created."
         }
       },
       "required": [
         "id",
         "email",
         "username",
-        "username_lowercase"
+        "username_lowercase",
+        "createdAt"
       ]
     },
     "StudyGroup": {
