@@ -30,9 +30,10 @@ service cloud.firestore {
                     && request.resource.data.memberIds is list
                     && request.resource.data.memberIds.size() == 1
                     && request.resource.data.memberIds[0] == request.auth.uid;
-      // Allow a user to join a group (add themselves to memberIds), if the group is not full.
+      // Allow a user to join a group (add themselves to memberIds), if the group is not full and is less than 7 days old.
       allow update: if request.auth != null
                     && resource.data.memberIds.size() < 25
+                    && request.time - resource.data.createdAt < duration.value(7, 'd')
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds'])
                     && request.resource.data.memberIds == resource.data.memberIds.concat([request.auth.uid]);
     }
@@ -53,9 +54,10 @@ service cloud.firestore {
                     && request.resource.data.memberIds is list
                     && request.resource.data.memberIds.size() == 1
                     && request.resource.data.memberIds[0] == request.auth.uid;
-      // Allow a user to join a cohort (add themselves to memberIds), if the cohort is not full.
+      // Allow a user to join a cohort (add themselves to memberIds), if the cohort is not full and is less than 7 days old.
       allow update: if request.auth != null
                     && resource.data.memberIds.size() < 25
+                    && request.time - resource.data.createdAt < duration.value(7, 'd')
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds'])
                     && request.resource.data.memberIds == resource.data.memberIds.concat([request.auth.uid]);
     }
