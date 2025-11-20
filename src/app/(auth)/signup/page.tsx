@@ -111,7 +111,7 @@ export default function SignupPage() {
       
       // 3. Create the user profile document
       const userDocRef = doc(firestore, "users", newUser.uid);
-      const userData: Omit<UserProfile, 'id' | 'createdAt'> & { createdAt: any } = {
+      const userData: Omit<UserProfile, 'id' | 'createdAt' | 'lastLoginAt'> & { createdAt: any, lastLoginAt: any } = {
         email: email,
         username: username,
         username_lowercase: usernameLower,
@@ -120,6 +120,7 @@ export default function SignupPage() {
         socialLinks: {},
         skills: [],
         createdAt: serverTimestamp(),
+        lastLoginAt: serverTimestamp(),
       };
       await setDoc(userDocRef, userData);
         

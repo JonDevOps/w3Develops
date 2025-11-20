@@ -17,10 +17,11 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import SearchBar from './search-bar';
 import { useRouter } from 'next/navigation';
-import { doc, DocumentReference } from 'firebase/firestore';
+import { doc, DocumentReference, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { UserProfile } from '@/lib/types';
 import NotificationBell from '@/components/notifications/NotificationBell';
 import Sidebar from './sidebar';
+import { useToast } from '../ui/use-toast';
 
 
 export default function Header() {
@@ -28,17 +29,28 @@ export default function Header() {
   const auth = useAuth();
   const firestore = useFirestore();
   const router = useRouter();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleLogout = async () => {
+    if (!user) return;
+    
     try {
+        const userDocRef = doc(firestore, 'users', user.uid);
+        // We do not await this, to make logout feel faster.
+        updateDoc(userDocRef, { lastLogoutAt: serverTimestamp() });
+
         await auth.signOut();
         router.push('/');
     } catch (error) {
         console.error("Error signing out: ", error);
-        // Optionally, show a toast message to the user
+        toast({
+            variant: "destructive",
+            title: "Logout Failed",
+            description: "An error occurred while signing out. Please try again.",
+        })
     }
   };
 

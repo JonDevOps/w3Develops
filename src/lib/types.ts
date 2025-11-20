@@ -14,6 +14,8 @@ export interface UserProfile {
   };
   skills?: string[];
   createdAt: Timestamp;
+  lastLoginAt?: Timestamp;
+  lastLogoutAt?: Timestamp;
 }
 
 export interface StudyGroup {

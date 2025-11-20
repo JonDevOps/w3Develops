@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { FirebaseApp } from 'firebase/app';
-import { Firestore } from 'firebase/firestore';
+import { Firestore, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged } from 'firebase/auth';
 
 interface FirebaseProviderProps {
@@ -68,8 +68,8 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 
   // Effect to subscribe to Firebase auth state changes
   useEffect(() => {
-    if (!auth) { // If no Auth service instance, cannot determine user state
-      setUserAuthState({ user: null, isUserLoading: false, userError: new Error("Auth service not provided.") });
+    if (!auth || !firestore) { // If no Auth service instance, cannot determine user state
+      setUserAuthState({ user: null, isUserLoading: false, userError: new Error("Auth or Firestore service not provided.") });
       return;
     }
 
@@ -78,6 +78,14 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
     const unsubscribe = onAuthStateChanged(
       auth,
       (firebaseUser) => { // Auth state determined
+        if (firebaseUser) {
+            // User is signed in. Update their last login time.
+            const userDocRef = doc(firestore, 'users', firebaseUser.uid);
+            updateDoc(userDocRef, { lastLoginAt: serverTimestamp() }).catch(error => {
+                console.error("Failed to update last login time:", error);
+                // Non-critical error, so we don't block the login flow.
+            });
+        }
         setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });
       },
       (error) => { // Auth listener error
@@ -86,7 +94,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
       }
     );
     return () => unsubscribe(); // Cleanup
-  }, [auth]); // Depends on the auth instance
+  }, [auth, firestore]); // Depends on the auth instance
 
   const servicesAvailable = !!(firebaseApp && firestore && auth);
   const contextValue: FirebaseContextState = {
