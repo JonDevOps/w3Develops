@@ -16,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/groups',
     '/groups/create',
     '/hackathons',
+    '/hackerspaces',
     '/job-board',
     '/login',
     '/mentorship',

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger, SheetState } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Users, Code, BookOpen, MessageSquare, GraduationCap, Hammer, Trophy, GitBranch, Rss, Briefcase, Podcast } from "lucide-react";
+import { Menu, Users, Code, BookOpen, MessageSquare, GraduationCap, Hammer, Trophy, GitBranch, Rss, Briefcase, Podcast, Factory } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -17,6 +17,7 @@ const navLinks = [
     { href: "/pair-programming", label: "Pair Programming", icon: GitBranch },
     { href: "/competitions", label: "Competitions", icon: Trophy },
     { href: "/hackathons", label: "Hackathons", icon: Hammer },
+    { href: "/hackerspaces", label: "Hackerspaces", icon: Factory },
     { href: "/job-board", label: "Job Board", icon: Briefcase },
     { href: "/tutor", label: "Tutor", icon: GraduationCap },
     { href: "/mentorship", label: "Mentorship", icon: Users },
