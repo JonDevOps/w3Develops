@@ -2,7 +2,7 @@
 
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { useEffect, useState, useMemo } from 'react';
-import { doc, DocumentReference, collection, query, where, getDocs, Query } from 'firebase/firestore';
+import { doc, DocumentReference, collection, query, where, getDocs, Query, documentId } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Cohort, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -30,11 +30,12 @@ function MemberList({ memberIds }: { memberIds: string[] }) {
             try {
                 // Firestore 'in' queries are limited to 30 elements. 
                 // For larger groups, pagination would be necessary.
-                const membersQuery = query(collection(firestore, 'users'), where('id', 'in', memberIds.slice(0, 30)));
+                const membersQuery = query(collection(firestore, 'users'), where(documentId(), 'in', memberIds.slice(0, 30)));
                 const snapshot = await getDocs(membersQuery);
-                const memberData = snapshot.docs.map(doc => doc.data() as UserProfile);
+                const memberData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
                 setMembers(memberData);
             } catch (error) {
+                console.error("Error fetching members: ", error);
                 toast({
                   variant: 'destructive',
                   title: 'Error fetching members',
