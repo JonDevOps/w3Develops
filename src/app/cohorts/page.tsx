@@ -144,7 +144,9 @@ export default function CohortsPage() {
           <h2 className="pb-2 text-2xl font-semibold w-fit border-b-4 border-foreground">New</h2>
           {!isLoading && filteredCohorts.newCohorts && filteredCohorts.newCohorts.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {filteredCohorts.newCohorts.map(cohort => (
+              {filteredCohorts.newCohorts.map(cohort => {
+                const isNew = cohort.createdAt && (Date.now() - cohort.createdAt.toMillis()) < ONE_WEEK_IN_MS;
+                return(
                 <Card key={cohort.id} className="flex flex-col">
                   <CardHeader>
                     <div className='flex justify-between items-start'>
@@ -173,11 +175,11 @@ export default function CohortsPage() {
                               </a>
                           </Button>
                       )}
-                      <JoinCohortButton cohort={cohort} />
+                      {isNew && <JoinCohortButton cohort={cohort} />}
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+              )})}
             </div>
           ) : (
              !isLoading && <p className="text-muted-foreground">No new cohorts at this time.</p>

@@ -141,7 +141,9 @@ export default function GroupsPage() {
           <h2 className="text-2xl font-semibold w-fit border-b-4 border-foreground">New</h2>
           {!isLoading && filteredGroups.newGroups && filteredGroups.newGroups.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {filteredGroups.newGroups.map(group => (
+              {filteredGroups.newGroups.map(group => {
+                const isNew = group.createdAt && (Date.now() - group.createdAt.toMillis()) < ONE_WEEK_IN_MS;
+                return (
                 <Card key={group.id} className="flex flex-col">
                   <CardHeader>
                     <div className="flex justify-between items-start">
@@ -162,11 +164,11 @@ export default function GroupsPage() {
                       </div>
                     </div>
                     <div className="flex items-center">
-                       <JoinGroupButton group={group} />
+                       {isNew && <JoinGroupButton group={group} />}
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+              )})}
             </div>
           ) : (
              !isLoading && <p className="text-muted-foreground">No new groups at this time.</p>
