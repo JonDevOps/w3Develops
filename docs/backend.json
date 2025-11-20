@@ -71,6 +71,24 @@
             "type": "string",
             "format": "date-time",
             "description": "The timestamp of the user's last logout."
+        },
+        "followers": {
+          "type": "array",
+          "description": "A list of user IDs that are following this user.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "following": {
+          "type": "array",
+          "description": "A list of user IDs that this user is following.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "followInfoPrivate": {
+          "type": "boolean",
+          "description": "If true, the user's follower and following lists are private."
         }
       },
       "required": [

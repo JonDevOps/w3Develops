@@ -14,8 +14,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { X } from 'lucide-react';
+import { X, Lock } from 'lucide-react';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
+import { Switch } from '@/components/ui/switch';
 
 export default function EditProfilePage() {
   const { user, isUserLoading } = useUser();
@@ -30,6 +31,7 @@ export default function EditProfilePage() {
   const [github, setGithub] = useState('');
   const [linkedin, setLinkedin] = useState('');
   const [twitter, setTwitter] = useState('');
+  const [followInfoPrivate, setFollowInfoPrivate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const userDocRef = useMemo(() => {
@@ -47,6 +49,7 @@ export default function EditProfilePage() {
       setGithub(userProfile.socialLinks?.github || '');
       setLinkedin(userProfile.socialLinks?.linkedin || '');
       setTwitter(userProfile.socialLinks?.twitter || '');
+      setFollowInfoPrivate(userProfile.followInfoPrivate || false);
     }
   }, [userProfile]);
   
@@ -85,6 +88,7 @@ export default function EditProfilePage() {
         linkedin: linkedin,
         twitter: twitter,
       },
+      followInfoPrivate,
     };
 
     try {
@@ -174,6 +178,25 @@ export default function EditProfilePage() {
                 </div>
             </div>
 
+            <div className="grid gap-4">
+              <h3 className="text-lg font-medium">Privacy Settings</h3>
+              <div className="flex items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                  <Label htmlFor="follow-info-private" className="text-base">
+                    Private Follow Information
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Hide your &quot;followers&quot; and &quot;following&quot; lists from other users.
+                  </p>
+                </div>
+                <Switch
+                  id="follow-info-private"
+                  checked={followInfoPrivate}
+                  onCheckedChange={setFollowInfoPrivate}
+                  disabled={isSubmitting}
+                />
+              </div>
+            </div>
 
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? 'Saving...' : 'Save Changes'}

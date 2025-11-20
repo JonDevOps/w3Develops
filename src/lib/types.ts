@@ -16,6 +16,9 @@ export interface UserProfile {
   createdAt: Timestamp;
   lastLoginAt?: Timestamp;
   lastLogoutAt?: Timestamp;
+  followers?: string[];
+  following?: string[];
+  followInfoPrivate?: boolean;
 }
 
 export interface StudyGroup {

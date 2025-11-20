@@ -3,20 +3,23 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Users can read all profiles, but only write to their own.
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Users can read all profiles, but only write to their own data.
     match /users/{userId} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == userId;
-
-      // Notifications subcollection
-      match /notifications/{notificationId} {
-        // A user can only access their own notifications.
-        allow read, write: if request.auth != null && request.auth.uid == userId;
-      }
+      // Allow creation/deletion (for signup/account deletion)
+      allow create, delete: if isOwner(userId);
+      // Allow updates to most fields by the owner
+      allow update: if isOwner(userId) && request.resource.data.keys().hasOnly([
+        'bio', 'skills', 'socialLinks', 'followInfoPrivate', 'lastLoginAt', 'lastLogoutAt', 'profilePictureUrl',
+        'email', 'username', 'username_lowercase', 'createdAt', 'followers', 'following' // Can't change these
+      ]);
     }
-
+    
     // Allow public read on study groups.
-    // Allow creation if user is authenticated and provides valid data, strictly enforcing the schema.
     match /studyGroups/{groupId} {
       allow read: if true;
       allow create: if request.auth != null 
@@ -39,7 +42,6 @@ service cloud.firestore {
     }
 
     // Allow public read on cohorts.
-    // Allow creation if user is authenticated and provides valid data, strictly enforcing the schema.
     match /cohorts/{cohortId} {
       allow read: if true;
       allow create: if request.auth != null 
@@ -60,6 +62,19 @@ service cloud.firestore {
                     && request.time - resource.data.createdAt < duration.value(7, 'd')
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds'])
                     && request.resource.data.memberIds == resource.data.memberIds.concat([request.auth.uid]);
+    }
+
+    // Rules for Follow/Unfollow Transaction
+    match /functions/{functionName} {
+      // Allow authenticated users to call the 'followUser' callable function.
+      // The function itself will contain the security logic.
+      allow call: if request.auth != null;
+    }
+    
+    // Notifications subcollection
+    match /users/{userId}/notifications/{notificationId} {
+      // A user can only access their own notifications.
+      allow read, write: if isOwner(userId);
     }
   }
 }

@@ -1,14 +1,23 @@
 'use client';
 
-import { useCollection, useFirestore } from '@/firebase';
+import { useCollection, useFirestore, useUser } from '@/firebase';
 import { useState, useEffect, useMemo } from 'react';
-import { doc, getDoc, DocumentReference, collection, query, where, Query } from 'firebase/firestore';
+import { doc, getDoc, DocumentReference, collection, query, where, Query, documentId } from 'firebase/firestore';
 import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Github, Linkedin, Twitter, BrainCircuit, Users } from 'lucide-react';
+import { Github, Linkedin, Twitter, BrainCircuit, Users, Lock, UserCheck, UserPlus } from 'lucide-react';
 import Link from 'next/link';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import FollowButton from '@/components/FollowButton';
 
 function ProfilePageSkeleton() {
   return (
@@ -44,6 +53,60 @@ function ProfilePageSkeleton() {
       </div>
     </div>
   )
+}
+
+function UserFollowList({ title, userIds }: { title: string, userIds: string[] }) {
+    const firestore = useFirestore();
+    const [profiles, setProfiles] = useState<UserProfile[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchProfiles = async () => {
+            if (!userIds || userIds.length === 0) {
+                setIsLoading(false);
+                return;
+            }
+            setIsLoading(true);
+            const profilesQuery = query(collection(firestore, 'users'), where(documentId(), 'in', userIds.slice(0, 30)));
+            const snapshot = await getDocs(profilesQuery);
+            const profilesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
+            setProfiles(profilesData);
+            setIsLoading(false);
+        };
+        fetchProfiles();
+    }, [firestore, userIds]);
+
+    return (
+        <Dialog>
+            <DialogTrigger asChild>
+                <div className="text-center hover:bg-accent p-2 rounded-md cursor-pointer">
+                    <p className="font-semibold text-lg">{userIds.length}</p>
+                    <p className="text-sm text-muted-foreground">{title}</p>
+                </div>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+                 <DialogHeader>
+                    <DialogTitle>{title}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+                    {isLoading && <p>Loading...</p>}
+                    {!isLoading && profiles.length === 0 && <p className="text-muted-foreground">No users to display.</p>}
+                    {profiles.map(profile => (
+                        <Link href={`/users/${profile.id}`} key={profile.id} className="flex items-center gap-4 hover:bg-accent p-2 rounded-md">
+                           <Avatar className="h-10 w-10">
+                                <AvatarImage src={profile.profilePictureUrl || ''} />
+                                <AvatarFallback>{profile.username?.charAt(0).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <p className="font-semibold">{profile.username}</p>
+                                <p className="text-sm text-muted-foreground line-clamp-1">{profile.bio}</p>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </DialogContent>
+        </Dialog>
+    )
 }
 
 function UserActivity({ userId }: { userId: string }) {
@@ -113,10 +176,13 @@ function UserActivity({ userId }: { userId: string }) {
 
 export default function UserProfilePage({ params }: { params: { userId: string } }) {
   const { userId } = params;
+  const { user: currentUser } = useUser();
   const firestore = useFirestore();
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isProfileLoading, setIsProfileLoading] = useState(true);
+  
+  const isOwner = currentUser?.uid === userId;
 
   useEffect(() => {
     if (!userId) return;
@@ -144,6 +210,8 @@ export default function UserProfilePage({ params }: { params: { userId: string }
   if (!userProfile) {
     return <div className="text-center py-10">User not found.</div>;
   }
+  
+  const showFollowInfo = isOwner || !userProfile.followInfoPrivate;
 
   return (
     <div className="space-y-8">
@@ -153,7 +221,7 @@ export default function UserProfilePage({ params }: { params: { userId: string }
             <AvatarImage src={userProfile.profilePictureUrl || ''} alt={userProfile.username} />
             <AvatarFallback className="text-5xl">{userProfile.username?.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
-          <div className="text-center md:text-left">
+          <div className="flex-1 text-center md:text-left">
             <h1 className="text-3xl font-headline">{userProfile.username}</h1>
             <p className="text-muted-foreground mt-1 max-w-2xl">{userProfile.bio}</p>
             <div className="flex justify-center md:justify-start items-center gap-4 mt-4">
@@ -174,7 +242,25 @@ export default function UserProfilePage({ params }: { params: { userId: string }
               )}
             </div>
           </div>
+          <div className="flex flex-col gap-2 self-center md:self-start">
+             <FollowButton targetUserId={userProfile.id} targetUserFollowers={userProfile.followers || []} />
+          </div>
         </CardContent>
+        <CardHeader className="border-t">
+          <div className="flex justify-around">
+            {showFollowInfo ? (
+              <>
+                 <UserFollowList title="Followers" userIds={userProfile.followers || []} />
+                 <UserFollowList title="Following" userIds={userProfile.following || []} />
+              </>
+            ) : (
+              <div className="text-center text-muted-foreground p-4 flex items-center gap-2">
+                <Lock className="w-4 h-4" />
+                <span>This user's follow info is private.</span>
+              </div>
+            )}
+          </div>
+        </CardHeader>
       </Card>
 
       <Card>

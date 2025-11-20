@@ -121,6 +121,9 @@ export default function SignupPage() {
         skills: [],
         createdAt: serverTimestamp(),
         lastLoginAt: serverTimestamp(),
+        followers: [],
+        following: [],
+        followInfoPrivate: false,
       };
       await setDoc(userDocRef, userData);
         
