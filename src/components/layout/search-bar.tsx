@@ -2,10 +2,10 @@
 
 import { FormEvent, forwardRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Input } from '@/components/ui/input';
+import { Input, type InputProps } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 
-interface SearchBarProps {
+interface SearchBarProps extends Omit<InputProps, 'query'> {
   query: string;
   onQueryChange: (query: string) => void;
 }

@@ -29,6 +29,8 @@ export default function Header() {
   const firestore = useFirestore();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleLogout = async () => {
     try {
@@ -39,6 +41,12 @@ export default function Header() {
         // Optionally, show a toast message to the user
     }
   };
+
+  useEffect(() => {
+    if (isMobileSearchOpen) {
+      searchInputRef.current?.focus();
+    }
+  }, [isMobileSearchOpen]);
 
   const userDocRef = useMemo(() => {
     if (!user) return null;
@@ -57,21 +65,46 @@ export default function Header() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <div className="flex items-center gap-4">
           <Sidebar />
-          <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
-            <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
-          </Link>
+          {!isMobileSearchOpen && (
+             <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
+                <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
+             </Link>
+          )}
         </div>
 
-        <div className="flex-1 md:flex justify-center px-4 lg:px-20">
-          <div className="w-full max-w-lg">
-            <SearchBar 
-              query={searchQuery}
-              onQueryChange={setSearchQuery}
-            />
+        <div className="flex-1 flex justify-center px-4 lg:px-20">
+          <div className="w-full max-w-lg relative">
+            {/* Mobile Search - shown only on small screens when search is open */}
+            {isMobileSearchOpen && (
+              <div className="md:hidden absolute inset-0 bg-background flex items-center">
+                 <SearchBar 
+                    ref={searchInputRef}
+                    query={searchQuery}
+                    onQueryChange={setSearchQuery}
+                    onBlur={() => setIsMobileSearchOpen(false)}
+                  />
+              </div>
+            )}
+             {/* Desktop Search - hidden on small screens, always visible on medium+ */}
+            <div className="hidden md:block">
+              <SearchBar 
+                query={searchQuery}
+                onQueryChange={setSearchQuery}
+              />
+            </div>
           </div>
         </div>
         
         <div className="flex items-center gap-4">
+          {/* Mobile search icon - shown only on small screens */}
+           <div className="md:hidden">
+             {!isMobileSearchOpen && (
+              <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchOpen(true)}>
+                <Search className="h-6 w-6" />
+                <span className="sr-only">Search</span>
+              </Button>
+             )}
+          </div>
           {isLoading ? (
               <div className="h-8 w-8 bg-muted rounded-full animate-pulse" />
           ) : user ? (
