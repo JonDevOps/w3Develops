@@ -83,8 +83,8 @@ export default function Header() {
                   <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
                </Link>
             )}
-            {/* Desktop Search */}
-            <div className="hidden md:block w-full max-w-lg">
+             {/* Desktop Search */}
+            <div className="hidden md:block w-full max-w-sm">
                 <SearchBar 
                   query={searchQuery}
                   onQueryChange={setSearchQuery}
