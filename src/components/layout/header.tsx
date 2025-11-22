@@ -77,35 +77,33 @@ export default function Header() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <div className="flex items-center gap-4">
           <Sidebar />
-          {!isMobileSearchOpen && (
-             <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
-                <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
-             </Link>
-          )}
-        </div>
-
-        <div className="flex-1 flex justify-center px-4 lg:px-20">
-          <div className="w-full max-w-lg relative">
-            {/* Mobile Search - shown only on small screens when search is open */}
-            {isMobileSearchOpen && (
-              <div className="md:hidden absolute inset-0 bg-background flex items-center">
-                 <SearchBar 
-                    ref={searchInputRef}
-                    query={searchQuery}
-                    onQueryChange={setSearchQuery}
-                    onBlur={() => setIsMobileSearchOpen(false)}
-                  />
-              </div>
+          <div className="flex items-center gap-6">
+            {!isMobileSearchOpen && (
+               <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
+                  <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
+               </Link>
             )}
-             {/* Desktop Search - hidden on small screens, always visible on medium+ */}
-            <div className="hidden md:block">
-              <SearchBar 
-                query={searchQuery}
-                onQueryChange={setSearchQuery}
-              />
+            {/* Desktop Search */}
+            <div className="hidden md:block w-full max-w-lg">
+                <SearchBar 
+                  query={searchQuery}
+                  onQueryChange={setSearchQuery}
+                />
             </div>
           </div>
         </div>
+
+        {/* Mobile Search - shown only on small screens when search is open */}
+        {isMobileSearchOpen && (
+          <div className="md:hidden absolute inset-0 bg-background flex items-center px-4">
+              <SearchBar 
+                ref={searchInputRef}
+                query={searchQuery}
+                onQueryChange={setSearchQuery}
+                onBlur={() => setIsMobileSearchOpen(false)}
+              />
+          </div>
+        )}
         
         <div className="flex items-center gap-4">
           {/* Mobile search icon - shown only on small screens */}
