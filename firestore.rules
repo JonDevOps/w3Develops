@@ -76,11 +76,5 @@ service cloud.firestore {
       // A user can only access their own notifications.
       allow read, write: if isOwner(userId);
     }
-
-    // Newsletter subscribers rules
-    match /newsletter-subscribers/{subscriberId} {
-      // No client-side access is allowed. This must be handled by a secure server action.
-      allow read, write: if false;
-    }
   }
 }

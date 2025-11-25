@@ -10,27 +10,6 @@ import { PlusCircle } from 'lucide-react';
 import { StudyGroup } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 
-async function updateDocumentNonBlocking(ref: DocumentReference, data: any) {
-  const batch = writeBatch(ref.firestore);
-  batch.update(ref, data);
-  await batch.commit();
-}
-
-async function createNotificationsForMembers(firestore: any, memberIds: string[], message: string, link: string) {
-    const batch = writeBatch(firestore);
-    memberIds.forEach(memberId => {
-        const notificationRef = doc(collection(firestore, 'users', memberId, 'notifications'));
-        batch.set(notificationRef, {
-            id: notificationRef.id,
-            message,
-            link,
-            isRead: false,
-            createdAt: serverTimestamp(),
-        });
-    });
-    await batch.commit();
-}
-
 export default function JoinGroupButton({ group, onJoinSuccess }: { group: StudyGroup, onJoinSuccess?: (id: string) => void }) {
     const { user } = useUser();
     const { toast } = useToast();
@@ -70,17 +49,30 @@ export default function JoinGroupButton({ group, onJoinSuccess }: { group: Study
 
         try {
             const groupRef = doc(firestore, 'studyGroups', group.id);
-            await updateDocumentNonBlocking(groupRef, { memberIds: arrayUnion(user.uid) });
-
-            toast({ title: 'Success!', description: `You've joined the group: ${group.name}` });
+            const batch = writeBatch(firestore);
+            batch.update(groupRef, { memberIds: arrayUnion(user.uid) });
 
             if (group.memberIds.length + 1 === 25) {
                 const message = `Your study group "${group.name}" is now full!`;
                 const link = `/groups/${group.id}`;
                 const allMemberIds = [...group.memberIds, user.uid];
-                await createNotificationsForMembers(firestore, allMemberIds, message, link);
+
+                allMemberIds.forEach(memberId => {
+                    const notificationRef = doc(collection(firestore, 'users', memberId, 'notifications'));
+                    batch.set(notificationRef, {
+                        id: notificationRef.id,
+                        message,
+                        link,
+                        isRead: false,
+                        createdAt: serverTimestamp(),
+                    });
+                });
                 toast({ title: 'Group Full!', description: `Notifications sent to all members.`});
             }
+
+            await batch.commit();
+
+            toast({ title: 'Success!', description: `You've joined the group: ${group.name}` });
 
             if (onJoinSuccess) {
                 onJoinSuccess(group.id);
