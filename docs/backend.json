@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -89,6 +90,26 @@
         "followInfoPrivate": {
           "type": "boolean",
           "description": "If true, the user's follower and following lists are private."
+        },
+        "createdStudyGroupIds": {
+            "type": "array",
+            "description": "A list of StudyGroup IDs created by this user.",
+            "items": { "type": "string" }
+        },
+        "joinedStudyGroupIds": {
+            "type": "array",
+            "description": "A list of StudyGroup IDs this user has joined (but not created).",
+            "items": { "type": "string" }
+        },
+        "createdCohortIds": {
+            "type": "array",
+            "description": "A list of Cohort IDs created by this user.",
+            "items": { "type": "string" }
+        },
+        "joinedCohortIds": {
+            "type": "array",
+            "description": "A list of Cohort IDs this user has joined (but not created).",
+            "items": { "type": "string" }
         }
       },
       "required": [
@@ -116,6 +137,10 @@
         "name_lowercase": {
           "type": "string",
           "description": "Lowercase version of the group name for case-insensitive searching."
+        },
+        "creatorId": {
+          "type": "string",
+          "description": "The ID of the user who created the group."
         },
         "description": {
           "type": "string",
@@ -146,6 +171,7 @@
         "id",
         "name",
         "name_lowercase",
+        "creatorId",
         "topic",
         "commitment",
         "createdAt"
@@ -166,6 +192,10 @@
         "name_lowercase": {
           "type": "string",
           "description": "Lowercase version of the cohort name for case-insensitive searching."
+        },
+        "creatorId": {
+          "type": "string",
+          "description": "The ID of the user who created the cohort."
         },
         "description": {
           "type": "string"
@@ -199,6 +229,7 @@
         "id",
         "name",
         "name_lowercase",
+        "creatorId",
         "topic",
         "commitment",
         "createdAt"

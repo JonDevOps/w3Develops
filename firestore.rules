@@ -1,3 +1,4 @@
+
 rules_version = '2';
 
 service cloud.firestore {
@@ -6,6 +7,13 @@ service cloud.firestore {
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
     }
+
+    // Helper function for list operations
+    function isAddingToList(request, field) {
+      let list = resource.data[field];
+      let newList = request.resource.data[field];
+      return newList.size() == list.size() + 1 && newList.hasAll(list);
+    }
     
     // Users can read all profiles, but only write to their own data.
     match /users/{userId} {
@@ -13,19 +21,30 @@ service cloud.firestore {
       // Allow creation/deletion (for signup/account deletion)
       allow create, delete: if isOwner(userId);
       // Allow updates to most fields by the owner
-      allow update: if isOwner(userId) && request.resource.data.keys().hasOnly([
-        'bio', 'skills', 'socialLinks', 'followInfoPrivate', 'lastLoginAt', 'lastLogoutAt', 'profilePictureUrl', 'isSubscribedToNewsletter',
-        'email', 'username', 'username_lowercase', 'createdAt', 'followers', 'following' // Can't change these
-      ]);
+      allow update: if isOwner(userId) && (
+        // Standard profile updates
+        (request.resource.data.keys().hasOnly([
+            'bio', 'skills', 'socialLinks', 'followInfoPrivate', 'lastLoginAt', 'lastLogoutAt', 
+            'profilePictureUrl', 'isSubscribedToNewsletter',
+            'email', 'username', 'username_lowercase', 'createdAt', 'followers', 'following',
+            'createdStudyGroupIds', 'joinedStudyGroupIds', 'createdCohortIds', 'joinedCohortIds'
+        ])) ||
+        // Transactional updates for joining/creating groups/cohorts
+        (isAddingToList(request, 'createdStudyGroupIds')) ||
+        (isAddingToList(request, 'joinedStudyGroupIds')) ||
+        (isAddingToList(request, 'createdCohortIds')) ||
+        (isAddingToList(request, 'joinedCohortIds'))
+      );
     }
     
     // Allow public read on study groups.
     match /studyGroups/{groupId} {
       allow read: if true;
       allow create: if request.auth != null 
-                    && request.resource.data.keys().hasOnly(['name', 'name_lowercase', 'topic', 'commitment', 'description', 'createdAt', 'memberIds'])
+                    && request.resource.data.keys().hasOnly(['name', 'name_lowercase', 'topic', 'commitment', 'description', 'createdAt', 'memberIds', 'creatorId'])
                     && request.resource.data.name is string
                     && request.resource.data.name_lowercase is string
+                    && request.resource.data.creatorId == request.auth.uid
                     && request.resource.data.topic is string
                     && request.resource.data.commitment is string
                     && request.resource.data.description is string
@@ -38,16 +57,17 @@ service cloud.firestore {
                     && resource.data.memberIds.size() < 25
                     && request.time - resource.data.createdAt < duration.value(7, 'd')
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds'])
-                    && request.resource.data.memberIds == resource.data.memberIds.concat([request.auth.uid]);
+                    && isAddingToList(request, 'memberIds');
     }
 
     // Allow public read on cohorts.
     match /cohorts/{cohortId} {
       allow read: if true;
       allow create: if request.auth != null 
-                    && request.resource.data.keys().hasOnly(['name', 'name_lowercase', 'topic', 'commitment', 'githubUrl', 'description', 'createdAt', 'memberIds'])
+                    && request.resource.data.keys().hasOnly(['name', 'name_lowercase', 'topic', 'commitment', 'githubUrl', 'description', 'createdAt', 'memberIds', 'creatorId'])
                     && request.resource.data.name is string
                     && request.resource.data.name_lowercase is string
+                    && request.resource.data.creatorId == request.auth.uid
                     && request.resource.data.topic is string
                     && request.resource.data.commitment is string
                     && request.resource.data.githubUrl is string
@@ -61,14 +81,7 @@ service cloud.firestore {
                     && resource.data.memberIds.size() < 25
                     && request.time - resource.data.createdAt < duration.value(7, 'd')
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds'])
-                    && request.resource.data.memberIds == resource.data.memberIds.concat([request.auth.uid]);
-    }
-
-    // Rules for Follow/Unfollow Transaction
-    match /functions/{functionName} {
-      // Allow authenticated users to call the 'followUser' callable function.
-      // The function itself will contain the security logic.
-      allow call: if request.auth != null;
+                    && isAddingToList(request, 'memberIds');
     }
     
     // Notifications subcollection

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useUser, useFirestore } from '@/firebase';
 import { useToast } from "@/components/ui/use-toast";
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { collection, serverTimestamp, query, where, getDocs, addDoc } from 'firebase/firestore';
+import { collection, serverTimestamp, query, where, getDocs, doc, writeBatch, arrayUnion } from 'firebase/firestore';
 import { topics, commitmentLevels } from '@/lib/constants';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose, DrawerFooter, DrawerDescription } from '@/components/ui/drawer';
@@ -79,16 +80,28 @@ export default function CreateCohortPage() {
       }
 
       // If no suitable cohort found, create a new one
-      const newCohortRef = await addDoc(collection(firestore, 'cohorts'), {
+      const batch = writeBatch(firestore);
+      const newCohortRef = doc(collection(firestore, 'cohorts'));
+
+      batch.set(newCohortRef, {
         name: name,
         name_lowercase: name.toLowerCase(),
         topic: finalTopic,
         commitment: finalCommitment,
         githubUrl: githubUrl,
         description: description || `A new cohort for ${finalTopic}`,
+        creatorId: user.uid,
         memberIds: [user.uid],
         createdAt: serverTimestamp(),
       });
+      
+      const userProfileRef = doc(firestore, 'users', user.uid);
+      batch.update(userProfileRef, {
+        createdCohortIds: arrayUnion(newCohortRef.id)
+      });
+      
+      await batch.commit();
+
       toast({ title: "Success!", description: "Your new build cohort has been created." });
       router.push(`/cohorts/${newCohortRef.id}`);
     } catch (error: any) {

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useUser, useFirestore } from '@/firebase';
 import { useToast } from "@/components/ui/use-toast";
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { collection, serverTimestamp, addDoc, query, where, getDocs } from 'firebase/firestore';
+import { collection, serverTimestamp, query, where, getDocs, doc, writeBatch, arrayUnion } from 'firebase/firestore';
 import { topics, commitmentLevels } from '@/lib/constants';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose, DrawerFooter, DrawerDescription } from '@/components/ui/drawer';
@@ -76,15 +77,27 @@ export default function CreateGroupPage() {
         }
 
         // If no suitable group, proceed to create
-        const newGroupRef = await addDoc(collection(firestore, 'studyGroups'), {
+        const batch = writeBatch(firestore);
+        const newGroupRef = doc(collection(firestore, 'studyGroups'));
+
+        batch.set(newGroupRef, {
             name: name,
             name_lowercase: name.toLowerCase(),
             topic: finalTopic,
             commitment: finalCommitment,
             description: description || `A new group for ${finalTopic}`,
+            creatorId: user.uid,
             memberIds: [user.uid],
             createdAt: serverTimestamp(),
         });
+        
+        const userProfileRef = doc(firestore, 'users', user.uid);
+        batch.update(userProfileRef, {
+            createdStudyGroupIds: arrayUnion(newGroupRef.id)
+        });
+
+        await batch.commit();
+
         toast({ title: "Success!", description: "Your new study group has been created." });
         router.push(`/groups/${newGroupRef.id}`);
     } catch (error: any) {

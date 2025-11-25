@@ -1,3 +1,4 @@
+
 import { Timestamp } from "firebase/firestore";
 
 export interface UserProfile {
@@ -20,12 +21,17 @@ export interface UserProfile {
   following?: string[];
   followInfoPrivate?: boolean;
   isSubscribedToNewsletter?: boolean;
+  createdStudyGroupIds?: string[];
+  joinedStudyGroupIds?: string[];
+  createdCohortIds?: string[];
+  joinedCohortIds?: string[];
 }
 
 export interface StudyGroup {
   id: string;
   name: string;
   name_lowercase: string;
+  creatorId: string;
   description?: string;
   memberIds: string[];
   topic: string;
@@ -37,6 +43,7 @@ export interface Cohort {
   id: string;
   name: string;
   name_lowercase: string;
+  creatorId: string;
   description?: string;
   memberIds: string[];
   githubUrl?: string;
