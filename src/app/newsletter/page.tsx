@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,12 @@ export default function NewsletterPage() {
     const firestore = useFirestore();
     const [email, setEmail] = useState('');
     const [isPending, startTransition] = useTransition();
+
+    useEffect(() => {
+        if (user && user.email) {
+            setEmail(user.email);
+        }
+    }, [user]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -41,18 +47,9 @@ export default function NewsletterPage() {
             const subscriberDocRef = doc(firestore, 'newsletter-subscribers', user.uid);
             
             try {
-                // Check if the document already exists, which means user is subscribed
-                const docSnap = await getDoc(subscriberDocRef);
-                if (docSnap.exists()) {
-                    toast({
-                        variant: 'destructive',
-                        title: 'Already Subscribed',
-                        description: 'This account is already subscribed to the newsletter.',
-                    });
-                    return;
-                }
-
-                // If not subscribed, create the document
+                // setDoc is idempotent. If the doc exists, it will be overwritten.
+                // If it doesn't, it will be created. This is safe because our
+                // security rule ensures a user can only write to their own doc.
                 await setDoc(subscriberDocRef, {
                     email: email,
                     subscribedAt: serverTimestamp(),
@@ -63,7 +60,6 @@ export default function NewsletterPage() {
                     title: 'Subscription Successful!',
                     description: "Thanks for subscribing! You're on the list.",
                 });
-                setEmail('');
 
             } catch (error: any) {
                  toast({
