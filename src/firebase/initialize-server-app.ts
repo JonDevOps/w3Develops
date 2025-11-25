@@ -1,3 +1,4 @@
+
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
@@ -29,6 +30,7 @@ export function initializeFirebase() {
 
 export function getSdks(firebaseApp: FirebaseApp) {
   const app = firebaseApp;
+  // Use initializeFirestore to avoid issues with multiple instantiations
   const firestore = initializeFirestore(app, {});
 
   return {

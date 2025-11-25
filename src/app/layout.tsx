@@ -1,9 +1,8 @@
+
 import type { Metadata } from "next";
 import { Inter, Lexend } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import Header from "@/components/layout/header";
-import Footer from "@/components/layout/footer";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -42,11 +41,9 @@ export default function RootLayout({
       >
         <FirebaseClientProvider>
           <div className="flex min-h-screen w-full flex-col">
-            <Header />
             <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted/40 p-4 md:gap-8 md:p-10">
               {children}
             </main>
-            <Footer />
           </div>
           <Toaster />
         </FirebaseClientProvider>
