@@ -16,22 +16,19 @@ export async function subscribeToNewsletter(email: string): Promise<{ success: b
     try {
         const subscribersCollection = adminFirestore.collection('newsletter-subscribers');
         
-        // Check if the email already exists
         const snapshot = await subscribersCollection.where('email', '==', email).limit(1).get();
         if (!snapshot.empty) {
             return { success: false, error: 'This email is already subscribed.' };
         }
 
-        // If not, add the new subscriber
         await subscribersCollection.add({
             email: email,
-            subscribedAt: new Date(), // Using server-side date
+            subscribedAt: new Date(),
         });
 
         return { success: true };
     } catch (error) {
         console.error('Error in subscribeToNewsletter:', error);
-        // In a real app, you'd want to log this error to a monitoring service
         return { success: false, error: 'An internal server error occurred.' };
     }
 }
