@@ -193,7 +193,7 @@ export default function UserProfilePage({ params }: { params: { userId: string }
       const docSnap = await getDoc(userDocRef);
 
       if (docSnap.exists()) {
-        setUserProfile({ id: docSnap.id, ...docSnap.data() });
+        setUserProfile({ ...docSnap.data(), id: docSnap.id });
       } else {
         setUserProfile(null);
       }
