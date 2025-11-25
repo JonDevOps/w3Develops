@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircle, Code, Users, BookOpen, ArrowRight, GitBranch, Trophy, Hammer } from "lucide-react";
+import { CheckCircle, Code, Users, BookOpen, ArrowRight, Hammer, Trophy } from "lucide-react";
 import placeholderImages from './lib/placeholder-images.json';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 
@@ -64,11 +64,12 @@ export default function Home() {
                 src={hero.src}
                 alt="Diverse group of developers collaborating on a project"
                 fill
-                className="object-cover -z-10 brightness-[.4]"
+                className="object-cover"
                 data-ai-hint={hero.hint}
                 priority
             />
-            <div className="max-w-4xl mx-auto">
+            <div className="absolute inset-0 bg-black/60"></div>
+            <div className="relative z-10 max-w-4xl mx-auto">
                 <h1 className="text-4xl font-headline tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                     Learn | Build | Get the Job
                 </h1>
