@@ -10,20 +10,6 @@ export function initializeFirebase() {
     return getSdks(getApp());
   }
 
-  // The FIREBASE_WEBAPP_CONFIG environment variable is set by the build system
-  // and contains the full client-side config as a JSON string.
-  if (process.env.FIREBASE_WEBAPP_CONFIG) {
-    try {
-      const config = JSON.parse(process.env.FIREBASE_WEBAPP_CONFIG);
-      const app = initializeApp(config);
-      return getSdks(app);
-    } catch (e) {
-      console.error("Failed to parse FIREBASE_WEBAPP_CONFIG. Falling back to default config.", e);
-    }
-  }
-
-  // Fallback for client-side rendering and local development,
-  // where NEXT_PUBLIC_ variables are available.
   const app = initializeApp(firebaseConfig);
   return getSdks(app);
 }
