@@ -42,7 +42,7 @@ const features = [
 export default function Home() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
-  const { hero, whyJoin } = placeholderImages;
+  const { whyJoin } = placeholderImages;
 
   useEffect(() => {
     if (!isUserLoading && user) {
@@ -60,12 +60,11 @@ export default function Home() {
         {/* Hero Section */}
         <section className="relative w-full min-h-[70vh] flex items-center justify-center text-center text-white py-20 px-4">
             <Image
-                src={hero.src}
-                alt="Diverse group of developers collaborating"
+                src="/newheader.jpg"
+                alt="Futuristic cityscape background"
                 fill
                 className="object-cover"
                 priority
-                data-ai-hint={hero.hint}
             />
             <div className="absolute inset-0 bg-black/60"></div>
             <div className="relative z-10 max-w-4xl mx-auto">
