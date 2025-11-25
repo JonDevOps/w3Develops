@@ -76,13 +76,21 @@ export default function Header() {
     <header className="bg-card border-b sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <div className="flex items-center gap-4">
-          <Sidebar />
-          <div className="flex items-center gap-2 md:gap-6">
-            {!isMobileSearchOpen && (
-               <Link href={user ? "/account" : "/"} className="flex items-center gap-2 font-semibold text-lg">
-                  <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
-               </Link>
-            )}
+            <div className="flex items-center gap-2">
+                 {!isMobileSearchOpen && (
+                    <Link href={user ? "/account" : "/"} className="flex items-center gap-2 font-semibold text-lg">
+                        <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
+                    </Link>
+                )}
+                 <div className="md:hidden">
+                    {!isMobileSearchOpen && (
+                        <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchOpen(true)}>
+                            <Search className="h-6 w-6" />
+                            <span className="sr-only">Search</span>
+                        </Button>
+                    )}
+                </div>
+            </div>
              {/* Desktop Search */}
             <div className="hidden md:block w-full max-w-sm">
                 <SearchBar 
@@ -90,16 +98,6 @@ export default function Header() {
                   onQueryChange={setSearchQuery}
                 />
             </div>
-             {/* Mobile search icon - shown only on small screens */}
-             <div className="md:hidden">
-             {!isMobileSearchOpen && (
-              <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchOpen(true)}>
-                <Search className="h-6 w-6" />
-                <span className="sr-only">Search</span>
-              </Button>
-             )}
-            </div>
-          </div>
         </div>
 
         {/* Mobile Search - shown only on small screens when search is open */}
@@ -115,11 +113,12 @@ export default function Header() {
         )}
         
         {!isMobileSearchOpen && (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             {isLoading ? (
                 <div className="h-8 w-8 bg-muted rounded-full animate-pulse" />
             ) : user ? (
-                <div className="flex items-center gap-2">
+                <>
+                  <Sidebar />
                   <NotificationBell />
                   <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -147,16 +146,14 @@ export default function Header() {
                       </DropdownMenuItem>
                   </DropdownMenuContent>
                   </DropdownMenu>
-                </div>
+                </>
             ) : (
-                <div className="flex items-center gap-2">
-                <Button asChild size="sm">
-                    <Link href="/login">Sign In</Link>
-                </Button>
-                <Button asChild size="sm" variant="secondary" className="hidden sm:flex">
-                    <Link href="/signup">Sign Up</Link>
-                </Button>
-                </div>
+                <>
+                  <Sidebar />
+                  <Button asChild size="sm">
+                      <Link href="/login">Sign In</Link>
+                  </Button>
+                </>
             )}
           </div>
         )}
