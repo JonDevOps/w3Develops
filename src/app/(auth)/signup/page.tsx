@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -33,6 +33,9 @@ export default function SignupPage() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect') || '/account';
+
   const { toast } = useToast();
 
   const [email, setEmail] = useState('');
@@ -70,9 +73,9 @@ export default function SignupPage() {
   useEffect(() => {
     // Redirect if user is already logged in
     if (!isUserLoading && user) {
-      router.push('/account');
+      router.push(redirectUrl);
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, router, redirectUrl]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,7 +117,7 @@ export default function SignupPage() {
       
       // 3. Create the user profile document
       const userDocRef = doc(firestore, "users", newUser.uid);
-      const userData: Omit<UserProfile, 'id' | 'createdAt' | 'lastLoginAt'> & { createdAt: any, lastLoginAt: any } = {
+      const userData: Omit<UserProfile, 'id' | 'createdAt' | 'lastLoginAt' | 'createdStudyGroupIds' | 'joinedStudyGroupIds' | 'createdCohortIds' | 'joinedCohortIds'> & { createdAt: any, lastLoginAt: any, createdStudyGroupIds?: any, joinedStudyGroupIds?: any, createdCohortIds?: any, joinedCohortIds?: any } = {
         email: email,
         username: username,
         username_lowercase: usernameLower,
@@ -127,6 +130,10 @@ export default function SignupPage() {
         followers: [],
         following: [],
         followInfoPrivate: false,
+        createdStudyGroupIds: [],
+        joinedStudyGroupIds: [],
+        createdCohortIds: [],
+        joinedCohortIds: [],
       };
       await setDoc(userDocRef, userData);
         
@@ -237,7 +244,7 @@ export default function SignupPage() {
         </CardContent>
         <CardFooter className="text-center text-sm">
           Already have an account?&nbsp;
-          <Link href="/login" className="underline">
+          <Link href={`/login?redirect=${encodeURIComponent(redirectUrl)}`} className="underline">
             Login
           </Link>
         </CardFooter>

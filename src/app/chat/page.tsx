@@ -12,7 +12,7 @@ export default function ChatPage() {
 
     useEffect(() => {
         if (!isUserLoading && !user) {
-            router.push('/login');
+            router.push('/login?redirect=/chat');
         }
     }, [user, isUserLoading, router]);
 

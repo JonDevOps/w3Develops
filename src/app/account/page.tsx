@@ -87,6 +87,7 @@ export default function AccountPage() {
   }
 
   if (!user) {
+    // This part should ideally not be reached due to the useEffect above, but it's a good safeguard.
     return <div>Redirecting to login...</div>;
   }
   

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,9 @@ export default function LoginPage() {
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect') || '/account';
+
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,9 +26,9 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!isUserLoading && user) {
-      router.push('/account');
+      router.push(redirectUrl);
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, router, redirectUrl]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,7 +127,7 @@ export default function LoginPage() {
         </CardContent>
         <CardFooter className="text-center text-sm">
           Don&apos;t have an account?&nbsp;
-          <Link href="/signup" className="underline">
+          <Link href={`/signup?redirect=${encodeURIComponent(redirectUrl)}`} className="underline">
             Sign up
           </Link>
         </CardFooter>

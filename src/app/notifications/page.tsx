@@ -1,13 +1,15 @@
 'use client';
 
 import { useCollection, useUser, useFirestore } from '@/firebase';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { collection, query, orderBy, Query } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Notification } from '@/lib/types';
 import Link from 'next/link';
 import { formatTimestamp } from '@/lib/utils';
 import { BellRing, Check } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 
 function NotificationItem({ notification }: { notification: Notification }) {
     return (
@@ -24,33 +26,16 @@ function NotificationItem({ notification }: { notification: Notification }) {
     )
 }
 
-function NotificationsSkeleton() {
-    return (
-        <Card>
-            <CardHeader>
-                <div className="h-8 w-48 bg-muted rounded animate-pulse"></div>
-                <div className="h-4 w-64 bg-muted rounded animate-pulse mt-2"></div>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-2">
-                    {[...Array(3)].map((_, i) => (
-                        <div key={i} className="flex items-center gap-4 p-4 border-b">
-                            <div className="h-2 w-2 rounded-full bg-muted animate-pulse"></div>
-                            <div className="flex-1 space-y-2">
-                                <div className="h-4 bg-muted rounded w-3/4 animate-pulse"></div>
-                                <div className="h-4 bg-muted rounded w-1/2 animate-pulse"></div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </CardContent>
-        </Card>
-    );
-}
-
 export default function NotificationsPage() {
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!isUserLoading && !user) {
+            router.push('/login?redirect=/notifications');
+        }
+    }, [user, isUserLoading, router]);
 
     const notificationsQuery = useMemo(() => {
         if (!user) return null;
@@ -60,10 +45,10 @@ export default function NotificationsPage() {
         ) as Query<Notification>;
     }, [user, firestore]);
 
-    const { data: notifications, isLoading } = useCollection<Notification>(notificationsQuery);
+    const { data: notifications, isLoading: isNotificationsLoading } = useCollection<Notification>(notificationsQuery);
 
-    if (isLoading) {
-        return <NotificationsSkeleton />;
+    if (isUserLoading || isNotificationsLoading || !user) {
+        return <LoadingSkeleton />;
     }
 
     return (

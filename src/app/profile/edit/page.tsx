@@ -2,10 +2,8 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore } from '@/firebase';
-import { useDoc } from '@/firebase/firestore/use-doc';
-import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { doc, DocumentReference } from 'firebase/firestore';
+import { useUser, useFirestore, useDoc } from '@/firebase';
+import { updateDoc, doc, DocumentReference } from 'firebase/firestore';
 import { UserProfile } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -55,7 +53,7 @@ export default function EditProfilePage() {
   
   useEffect(() => {
     if (!isUserLoading && !user) {
-      router.push('/login');
+      router.push('/login?redirect=/profile/edit');
     }
   }, [isUserLoading, user, router]);
 
@@ -92,7 +90,7 @@ export default function EditProfilePage() {
     };
 
     try {
-      await updateDocumentNonBlocking(userDocRef, updatedProfileData);
+      await updateDoc(userDocRef, updatedProfileData);
       toast({ title: 'Profile Updated', description: 'Your profile has been successfully updated.' });
       router.push('/account');
     } catch (error: any) {
@@ -106,12 +104,8 @@ export default function EditProfilePage() {
     }
   };
 
-  if (isUserLoading || isProfileLoading) {
+  if (isUserLoading || isProfileLoading || !user) {
     return <LoadingSkeleton />;
-  }
-  
-  if (!user) {
-    return null;
   }
 
   return (

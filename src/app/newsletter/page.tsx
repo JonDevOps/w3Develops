@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition, useMemo } from 'react';
+import { useTransition, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -10,12 +10,14 @@ import { UserProfile } from '@/lib/types';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 import { CheckCircle, Mail } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function NewsletterPage() {
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
     const [isPending, startTransition] = useTransition();
+    const pathname = usePathname();
 
     const userDocRef = useMemo(() => {
         if (!user) return null;
@@ -97,10 +99,10 @@ export default function NewsletterPage() {
                     ) : (
                         <div className="space-y-4 py-4">
                             <p className="text-muted-foreground">
-                                Please <Link href="/login" className="underline font-semibold hover:text-primary">sign in</Link> to manage your newsletter subscription.
+                                Please <Link href={`/login?redirect=${encodeURIComponent(pathname)}`} className="underline font-semibold hover:text-primary">sign in</Link> to manage your newsletter subscription.
                             </p>
                              <Button asChild>
-                                <Link href="/login">Login</Link>
+                                <Link href={`/login?redirect=${encodeURIComponent(pathname)}`}>Login</Link>
                             </Button>
                         </div>
                     )}

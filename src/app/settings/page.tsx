@@ -14,7 +14,7 @@ export default function SettingsPage() {
 
     useEffect(() => {
         if (!isUserLoading && !user) {
-            router.push('/login');
+            router.push('/login?redirect=/settings');
         }
     }, [user, isUserLoading, router]);
 

@@ -27,7 +27,7 @@ export default function SecurityPage() {
 
   useEffect(() => {
     if (!isUserLoading && !user) {
-      router.push('/login');
+      router.push('/login?redirect=/security');
     }
   }, [user, isUserLoading, router]);
 
