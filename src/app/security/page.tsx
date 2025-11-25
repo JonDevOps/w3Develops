@@ -165,7 +165,7 @@ export default function SecurityPage() {
              <div className="grid gap-2">
                 <Label htmlFor="new-email">New Email</Label>
                 <Input 
-                    id="new-email" 
+                    id="new-email" _
                     type="email"
                     placeholder="new.email@example.com"
                     value={newEmail}
