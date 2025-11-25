@@ -79,7 +79,7 @@ export default function Header() {
           <Sidebar />
           <div className="flex items-center gap-6">
             {!isMobileSearchOpen && (
-               <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
+               <Link href={user ? "/account" : "/"} className="flex items-center gap-2 font-semibold text-lg">
                   <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
                </Link>
             )}
