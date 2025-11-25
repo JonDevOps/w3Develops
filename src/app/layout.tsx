@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   title: "w3Develops",
   description: "A community for developers to learn, build, and connect.",
   icons: {
-    icon: '/logo.png',
+    icon: '/favicon.ico',
   },
 };
 
