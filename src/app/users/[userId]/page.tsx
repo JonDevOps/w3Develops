@@ -2,7 +2,7 @@
 
 import { useCollection, useFirestore, useUser } from '@/firebase';
 import { useState, useEffect, useMemo } from 'react';
-import { doc, getDoc, DocumentReference, collection, query, where, Query, documentId } from 'firebase/firestore';
+import { doc, getDoc, DocumentReference, collection, query, where, Query, documentId, getDocs } from 'firebase/firestore';
 import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -282,3 +282,5 @@ export default function UserProfilePage({ params }: { params: { userId: string }
     </div>
   );
 }
+
+    
