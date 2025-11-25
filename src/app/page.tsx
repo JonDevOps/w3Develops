@@ -16,7 +16,7 @@ import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 export default function Home() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
-  const { hero, tutors } = placeholderImages;
+  const { hero } = placeholderImages;
 
   useEffect(() => {
     if (!isUserLoading && user) {
@@ -92,44 +92,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Featured Tutors Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Featured Tutors & Mentors</h2>
-                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Connect with experienced developers from our community who are ready to help you learn and grow.
-                </p>
-              </div>
-            </div>
-            <div className="mx-auto grid grid-cols-1 gap-8 pt-12 sm:grid-cols-2 lg:grid-cols-4">
-              {tutors.map((tutor) => (
-                <Card key={tutor.id} className="text-center">
-                  <CardContent className="p-6">
-                    <Avatar className="w-24 h-24 mx-auto mb-4 border-2 border-primary">
-                      <AvatarImage src={tutor.image.src} alt={tutor.name} data-ai-hint={tutor.image.hint} />
-                      <AvatarFallback>{tutor.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <h3 className="text-xl font-bold">{tutor.name}</h3>
-                    <p className="text-sm text-muted-foreground">{tutor.expertise}</p>
-                     <Button variant="secondary" className="mt-4" asChild>
-                        <Link href={`/users/${tutor.id}`}>View Profile</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-             <div className="text-center mt-12">
-                <Button asChild size="lg">
-                    <Link href="/tutor">Find a Tutor</Link>
-                </Button>
-             </div>
-          </div>
-        </section>
-
         {/* Why Join Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-background">
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
             <div className="container grid items-center gap-6 px-4 md:px-6 lg:grid-cols-2 lg:gap-10">
                 <div className="space-y-4">
                     <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">A Better Way to Learn and Grow as a Developer</h2>

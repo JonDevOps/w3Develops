@@ -4,51 +4,5 @@
     "width": 1200,
     "height": 800,
     "hint": "collaboration code"
-  },
-  "tutors": [
-    {
-      "id": 1,
-      "name": "Sarah Chen",
-      "expertise": "React & Next.js",
-      "image": {
-        "src": "https://picsum.photos/seed/101/200/200",
-        "width": 200,
-        "height": 200,
-        "hint": "woman programmer"
-      }
-    },
-    {
-      "id": 2,
-      "name": "Michael Rodriguez",
-      "expertise": "Python & Django",
-      "image": {
-        "src": "https://picsum.photos/seed/102/200/200",
-        "width": 200,
-        "height": 200,
-        "hint": "man software developer"
-      }
-    },
-    {
-      "id": 3,
-      "name": "Emily White",
-      "expertise": "UX/UI Design",
-      "image": {
-        "src": "https://picsum.photos/seed/103/200/200",
-        "width": 200,
-        "height": 200,
-        "hint": "female designer"
-      }
-    },
-    {
-      "id": 4,
-      "name": "David Lee",
-      "expertise": "Cybersecurity",
-      "image": {
-        "src": "https://picsum.photos/seed/104/200/200",
-        "width": 200,
-        "height": 200,
-        "hint": "male security expert"
-      }
-    }
-  ]
+  }
 }
