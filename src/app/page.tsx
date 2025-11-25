@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -61,7 +60,7 @@ export default function Home() {
         {/* Hero Section */}
         <section className="relative w-full min-h-[70vh] flex items-center justify-center text-center text-white py-20 px-4">
             <Image
-                src="/hero-background.jpg"
+                src="/newheader.jpg"
                 alt="Futuristic cityscape background"
                 fill
                 className="object-cover"
