@@ -19,6 +19,7 @@ export interface UserProfile {
   followers?: string[];
   following?: string[];
   followInfoPrivate?: boolean;
+  isSubscribedToNewsletter?: boolean;
 }
 
 export interface StudyGroup {

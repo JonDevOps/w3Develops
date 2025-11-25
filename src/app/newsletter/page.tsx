@@ -1,108 +1,104 @@
 'use client';
 
-import { useState, useTransition, useEffect } from 'react';
+import { useState, useTransition } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { Label } from '@/components/ui/label';
-import { useUser, useFirestore } from '@/firebase';
-import { doc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
+import { useUser, useFirestore, useDoc } from '@/firebase';
+import { doc, updateDoc, DocumentReference } from 'firebase/firestore';
+import { UserProfile } from '@/lib/types';
+import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
+import { CheckCircle, Mail } from 'lucide-react';
+import Link from 'next/link';
 
 export default function NewsletterPage() {
     const { toast } = useToast();
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
-    const [email, setEmail] = useState('');
     const [isPending, startTransition] = useTransition();
 
-    useEffect(() => {
-        if (user && user.email) {
-            setEmail(user.email);
-        }
-    }, [user]);
+    const userDocRef = user ? doc(firestore, 'users', user.uid) as DocumentReference<UserProfile> : null;
+    const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const isSubscribed = userProfile?.isSubscribedToNewsletter || false;
 
-        if (!user) {
+    const handleToggleSubscription = async () => {
+        if (!user || !userDocRef) {
             toast({
                 variant: 'destructive',
                 title: 'Authentication Required',
-                description: 'You must be logged in to subscribe to the newsletter.',
+                description: 'You must be logged in to manage your subscription.',
             });
             return;
         }
 
-        if (!email) {
-            toast({
-                variant: 'destructive',
-                title: 'Email Required',
-                description: 'Please enter your email address.',
-            });
-            return;
-        }
+        const newSubscriptionState = !isSubscribed;
 
         startTransition(async () => {
-            const subscriberDocRef = doc(firestore, 'newsletter-subscribers', user.uid);
-            
             try {
-                // setDoc is idempotent. If the doc exists, it will be overwritten.
-                // If it doesn't, it will be created. This is safe because our
-                // security rule ensures a user can only write to their own doc.
-                await setDoc(subscriberDocRef, {
-                    email: email,
-                    subscribedAt: serverTimestamp(),
-                    userId: user.uid,
+                await updateDoc(userDocRef, {
+                    isSubscribedToNewsletter: newSubscriptionState
                 });
 
                 toast({
-                    title: 'Subscription Successful!',
-                    description: "Thanks for subscribing! You're on the list.",
+                    title: 'Success!',
+                    description: newSubscriptionState
+                        ? "You have successfully subscribed to the newsletter."
+                        : "You have unsubscribed from the newsletter.",
                 });
 
             } catch (error: any) {
                  toast({
                     variant: 'destructive',
-                    title: 'Subscription Failed',
+                    title: 'Update Failed',
                     description: error.message || 'An unknown error occurred. Please check your connection and security rules.',
                 });
             }
         });
     };
+    
+    if (isUserLoading || (user && isProfileLoading)) {
+        return <LoadingSkeleton />
+    }
 
     return (
         <div className="max-w-2xl mx-auto">
             <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline text-3xl">Subscribe to our Newsletter</CardTitle>
+                    <CardTitle className="font-headline text-3xl">w3Develops Newsletter</CardTitle>
                     <CardDescription>
                         Get the latest news, articles, and resources from the w3Develops community, sent straight to your inbox.
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
-                        <div className="w-full">
-                           <Label htmlFor="email" className="sr-only">Email</Label>
-                           <Input
-                                id="email"
-                                type="email"
-                                placeholder="you@example.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                disabled={isPending || !user}
-                                required
-                                className="w-full"
-                            />
+                <CardContent className="text-center">
+                    {user && userProfile ? (
+                        <div className="space-y-4">
+                            {isSubscribed ? (
+                                <div className="flex flex-col items-center gap-4 p-6 bg-accent/20 rounded-lg">
+                                    <CheckCircle className="h-12 w-12 text-green-500" />
+                                    <p className="font-semibold text-lg">You are subscribed!</p>
+                                    <p className="text-muted-foreground text-sm">Your email: {userProfile.email}</p>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center gap-4 p-6 bg-secondary rounded-lg">
+                                     <Mail className="h-12 w-12 text-primary" />
+                                     <p className="font-semibold text-lg">You are not subscribed.</p>
+                                      <p className="text-muted-foreground text-sm">Click the button below to join.</p>
+                                </div>
+                            )}
+                            <Button onClick={handleToggleSubscription} disabled={isPending} className="w-full sm:w-auto">
+                                {isPending ? 'Updating...' : isSubscribed ? 'Unsubscribe' : 'Subscribe Now'}
+                            </Button>
                         </div>
-                        <Button type="submit" disabled={isPending || !user} className="w-full sm:w-auto">
-                            {isPending ? 'Subscribing...' : 'Subscribe'}
-                        </Button>
-                    </form>
-                    {!user && (
-                        <p className="text-sm text-center text-muted-foreground mt-4">
-                            Please <a href="/login" className="underline">sign in</a> to subscribe to the newsletter.
-                        </p>
+                    ) : (
+                        <div className="space-y-4 py-4">
+                            <p className="text-muted-foreground">
+                                Please <Link href="/login" className="underline font-semibold hover:text-primary">sign in</Link> to manage your newsletter subscription.
+                            </p>
+                             <Button asChild>
+                                <Link href="/login">Login</Link>
+                            </Button>
+                        </div>
                     )}
                 </CardContent>
             </Card>

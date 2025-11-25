@@ -14,7 +14,7 @@ service cloud.firestore {
       allow create, delete: if isOwner(userId);
       // Allow updates to most fields by the owner
       allow update: if isOwner(userId) && request.resource.data.keys().hasOnly([
-        'bio', 'skills', 'socialLinks', 'followInfoPrivate', 'lastLoginAt', 'lastLogoutAt', 'profilePictureUrl',
+        'bio', 'skills', 'socialLinks', 'followInfoPrivate', 'lastLoginAt', 'lastLogoutAt', 'profilePictureUrl', 'isSubscribedToNewsletter',
         'email', 'username', 'username_lowercase', 'createdAt', 'followers', 'following' // Can't change these
       ]);
     }
@@ -79,11 +79,8 @@ service cloud.firestore {
 
     // Newsletter subscribers rules
     match /newsletter-subscribers/{subscriberId} {
-      // Any authenticated user can create their own subscription document.
-      // The document ID must be their own user ID.
-      allow create: if isOwner(subscriberId) && request.resource.data.userId == subscriberId;
-      // Nobody can read, update, or delete subscriber lists from the client.
-      allow read, update, delete: if false;
+      // No client-side access is allowed. This must be handled by a secure server action.
+      allow read, write: if false;
     }
   }
 }
