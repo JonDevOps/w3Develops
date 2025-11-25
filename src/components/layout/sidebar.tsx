@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { Sheet, SheetContent, SheetTrigger, SheetState } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu, Users, Code, BookOpen, MessageSquare, GraduationCap, Hammer, Trophy, GitBranch, Rss, Briefcase, Podcast, Factory } from "lucide-react";
 import Image from "next/image";

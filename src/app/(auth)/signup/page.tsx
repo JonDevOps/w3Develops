@@ -101,7 +101,10 @@ export default function SignupPage() {
       const usernameLower = username.toLowerCase();
       
       // We already checked, but as a final safeguard before creation
-      if (!isUsernameAvailable) {
+      const q = query(collection(firestore, 'users'), where("username_lowercase", "==", usernameLower));
+      const querySnapshot = await getDocs(q);
+      if(!querySnapshot.empty) {
+        setIsUsernameAvailable(false);
         throw new Error("This username is already in use. Please choose another one.");
       }
 
