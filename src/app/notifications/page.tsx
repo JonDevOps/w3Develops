@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useUser, useFirestore } from '@/firebase';
@@ -48,11 +49,15 @@ export default function NotificationsPage() {
     const { data: notifications, isLoading: isNotificationsLoading } = useCollection<Notification>(notificationsQuery);
 
     if (isUserLoading || isNotificationsLoading || !user) {
-        return <LoadingSkeleton />;
+        return (
+            <div className="p-4 md:p-10">
+                <LoadingSkeleton />
+            </div>
+        );
     }
 
     return (
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto p-4 md:p-10">
             <Card>
                 <CardHeader>
                     <CardTitle>Notifications</CardTitle>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useDoc } from '@/firebase/firestore/use-doc';
@@ -88,21 +89,21 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
   const { data: cohort, isLoading: isCohortLoading, error: cohortError } = useDoc<Cohort>(cohortDocRef);
 
   if (isCohortLoading) {
-    return <div className="text-center py-10">Loading cohort dashboard...</div>;
+    return <div className="text-center py-10 p-4 md:p-10">Loading cohort dashboard...</div>;
   }
   
   if (cohortError) {
-      return <div className="text-center py-10 text-destructive">Error loading cohort data.</div>
+      return <div className="text-center py-10 text-destructive p-4 md:p-10">Error loading cohort data.</div>
   }
 
   if (!cohort) {
-    return <div className="text-center py-10">Cohort not found.</div>;
+    return <div className="text-center py-10 p-4 md:p-10">Cohort not found.</div>;
   }
 
   const isNew = cohort.createdAt && (Date.now() - cohort.createdAt.toMillis()) < ONE_WEEK_IN_MS;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-4 md:p-10">
         <Link href="/cohorts" className="flex items-center text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to All Cohorts

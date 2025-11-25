@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
@@ -188,68 +189,70 @@ function SignupPageContent() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="font-headline text-2xl">Create an Account</CardTitle>
-          <CardDescription>
-            Join our community of developers.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSignUp} className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="adalovelace"
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                disabled={isSubmitting}
-                className={!isUsernameAvailable ? 'border-destructive' : ''}
-              />
-              {isUsernameChecking && <p className="text-xs text-muted-foreground">Checking...</p>}
-              {!isUsernameAvailable && !isUsernameChecking && username.length > 2 && (
-                  <p className="text-xs text-destructive">Username is already taken.</p>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isSubmitting}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>              <Input 
-                id="password" 
-                type="password" 
-                required 
-                minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isSubmitting}
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={isSubmitting || !isUsernameAvailable}>
-              {isSubmitting ? 'Creating Account...' : 'Create Account'}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="text-center text-sm">
-          Already have an account?&nbsp;
-          <Link href={`/login?redirect=${encodeURIComponent(redirectUrl)}`} className="underline">
-            Login
-          </Link>
-        </CardFooter>
-      </Card>
+    <div className="p-4 md:p-10">
+      <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle className="font-headline text-2xl">Create an Account</CardTitle>
+            <CardDescription>
+              Join our community of developers.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSignUp} className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="adalovelace"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  disabled={isSubmitting}
+                  className={!isUsernameAvailable ? 'border-destructive' : ''}
+                />
+                {isUsernameChecking && <p className="text-xs text-muted-foreground">Checking...</p>}
+                {!isUsernameAvailable && !isUsernameChecking && username.length > 2 && (
+                    <p className="text-xs text-destructive">Username is already taken.</p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="password">Password</Label>              <Input 
+                  id="password" 
+                  type="password" 
+                  required 
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={isSubmitting || !isUsernameAvailable}>
+                {isSubmitting ? 'Creating Account...' : 'Create Account'}
+              </Button>
+            </form>
+          </CardContent>
+          <CardFooter className="text-center text-sm">
+            Already have an account?&nbsp;
+            <Link href={`/login?redirect=${encodeURIComponent(redirectUrl)}`} className="underline">
+              Login
+            </Link>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 }

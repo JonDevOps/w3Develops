@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,11 +18,15 @@ export default function ChatPage() {
     }, [user, isUserLoading, router]);
 
     if (isUserLoading || !user) {
-        return <LoadingSkeleton />;
+        return (
+          <div className="p-4 md:p-10">
+            <LoadingSkeleton />
+          </div>
+        );
     }
 
     return (
-        <div className="max-w-md mx-auto">
+        <div className="max-w-md mx-auto p-4 md:p-10">
             <Card>
                 <CardHeader>
                     <CardTitle>Community Chat</CardTitle>

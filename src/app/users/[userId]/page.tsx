@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useFirestore, useUser } from '@/firebase';
@@ -204,17 +205,21 @@ export default function UserProfilePage({ params }: { params: { userId: string }
   }, [userId, firestore]);
   
   if (isProfileLoading) {
-    return <ProfilePageSkeleton />;
+    return (
+        <div className="p-4 md:p-10">
+            <ProfilePageSkeleton />
+        </div>
+    );
   }
 
   if (!userProfile) {
-    return <div className="text-center py-10">User not found.</div>;
+    return <div className="text-center py-10 p-4 md:p-10">User not found.</div>;
   }
   
   const showFollowInfo = isOwner || !userProfile.followInfoPrivate;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-4 md:p-10">
       <Card>
         <CardContent className="p-6 flex flex-col md:flex-row items-center gap-6">
           <Avatar className="h-32 w-32 border-4 border-primary flex-shrink-0">

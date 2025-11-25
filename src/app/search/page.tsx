@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Suspense, useMemo } from 'react';
@@ -267,8 +268,10 @@ function SearchResults() {
 
 export default function SearchPage() {
     return (
-        <Suspense fallback={<SearchResultsSkeleton />}>
-            <SearchResults />
+        <Suspense>
+            <div className="p-4 md:p-10">
+                <SearchResults />
+            </div>
         </Suspense>
     )
 }

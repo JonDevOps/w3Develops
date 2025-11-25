@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -105,11 +106,15 @@ export default function EditProfilePage() {
   };
 
   if (isUserLoading || isProfileLoading || !user) {
-    return <LoadingSkeleton />;
+    return (
+        <div className="p-4 md:p-10">
+            <LoadingSkeleton />
+        </div>
+    );
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto p-4 md:p-10">
       <Card>
         <CardHeader>
           <CardTitle>Edit Your Profile</CardTitle>

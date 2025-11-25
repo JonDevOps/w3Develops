@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useDoc } from '@/firebase/firestore/use-doc';
@@ -87,21 +88,21 @@ export default function GroupDashboardPage({ params }: { params: { groupId: stri
 
 
   if (isGroupLoading) {
-    return <div className="text-center py-10">Loading group dashboard...</div>;
+    return <div className="text-center py-10 p-4 md:p-10">Loading group dashboard...</div>;
   }
   
   if (groupError) {
-      return <div className="text-center py-10 text-destructive">Error loading group data.</div>
+      return <div className="text-center py-10 text-destructive p-4 md:p-10">Error loading group data.</div>
   }
 
   if (!group) {
-    return <div className="text-center py-10">Group not found.</div>;
+    return <div className="text-center py-10 p-4 md:p-10">Group not found.</div>;
   }
 
   const isNew = group.createdAt && (Date.now() - group.createdAt.toMillis()) < ONE_WEEK_IN_MS;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-4 md:p-10">
         <Link href="/groups" className="flex items-center text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to All Groups

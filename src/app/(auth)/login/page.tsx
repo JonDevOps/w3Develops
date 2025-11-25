@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
@@ -84,54 +85,56 @@ function LoginPageContent() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="font-headline text-2xl">Login</CardTitle>
-          <CardDescription>Enter your email below to login to your account.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSignIn} className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isSubmitting}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input 
-                id="password" 
-                type="password" 
-                required 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isSubmitting}
-              />
-              <div className="text-right">
-                <button type="button" onClick={handlePasswordReset} className="text-sm underline">
-                    Forgot password?
-                </button>
+    <div className="p-4 md:p-10">
+      <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle className="font-headline text-2xl">Login</CardTitle>
+            <CardDescription>Enter your email below to login to your account.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSignIn} className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isSubmitting}
+                />
               </div>
-            </div>
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? 'Logging In...' : 'Login'}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="text-center text-sm">
-          Don&apos;t have an account?&nbsp;
-          <Link href={`/signup?redirect=${encodeURIComponent(redirectUrl)}`} className="underline">
-            Sign up
-          </Link>
-        </CardFooter>
-      </Card>
+              <div className="grid gap-2">
+                <Label htmlFor="password">Password</Label>
+                <Input 
+                  id="password" 
+                  type="password" 
+                  required 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isSubmitting}
+                />
+                <div className="text-right">
+                  <button type="button" onClick={handlePasswordReset} className="text-sm underline">
+                      Forgot password?
+                  </button>
+                </div>
+              </div>
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? 'Logging In...' : 'Login'}
+              </Button>
+            </form>
+          </CardContent>
+          <CardFooter className="text-center text-sm">
+            Don&apos;t have an account?&nbsp;
+            <Link href={`/signup?redirect=${encodeURIComponent(redirectUrl)}`} className="underline">
+              Sign up
+            </Link>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 }

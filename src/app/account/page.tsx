@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
@@ -83,16 +84,20 @@ export default function AccountPage() {
 
 
   if (isUserLoading || isProfileLoading || !userProfile) {
-    return <AccountPageSkeleton />;
+    return (
+      <div className="p-4 md:p-10">
+        <AccountPageSkeleton />
+      </div>
+    );
   }
 
   if (!user) {
     // This part should ideally not be reached due to the useEffect above, but it's a good safeguard.
-    return <div>Redirecting to login...</div>;
+    return <div className="p-4 md:p-10">Redirecting to login...</div>;
   }
   
   return (
-    <>
+    <div className="p-4 md:p-10">
       <JoinCohortModal isOpen={isCohortModalOpen} onClose={() => setIsCohortModalOpen(false)} />
       <JoinGroupModal isOpen={isGroupModalOpen} onClose={() => setIsGroupModalOpen(false)} />
       <div className="space-y-8">
@@ -168,6 +173,6 @@ export default function AccountPage() {
           </Card>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect } from 'react';
@@ -55,10 +56,9 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <main className="flex-1">
+    <>
         {/* Hero Section */}
-        <section className="relative w-full min-h-[70vh] flex items-center justify-center text-center text-white py-20 px-4">
+        <section className="relative w-full min-h-screen flex items-center justify-center text-center text-white">
             <Image
                 src="/newheader.jpg"
                 alt="Futuristic cityscape background"
@@ -67,7 +67,7 @@ export default function Home() {
                 priority
             />
             <div className="absolute inset-0 bg-black/60"></div>
-            <div className="relative z-10 max-w-4xl mx-auto">
+            <div className="relative z-10 max-w-4xl mx-auto px-4">
                 <h1 className="text-4xl font-headline tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                     Learn | Build | Get the Job
                 </h1>
@@ -85,6 +85,7 @@ export default function Home() {
             </div>
         </section>
 
+      <div className="p-4 md:p-10">
         {/* What we offer Section */}
         <section className="w-full py-16 md:py-24 lg:py-32 bg-muted/40">
           <div className="container px-4 md:px-6">
@@ -147,7 +148,7 @@ export default function Home() {
                 </div>
             </div>
         </section>
-      </main>
-    </div>
+      </div>
+    </>
   );
 }

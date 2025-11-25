@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -48,7 +49,7 @@ export default function DonatePage() {
     };
 
     return (
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto p-4 md:p-10">
             <Card>
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl">Donate to w3Develops</CardTitle>

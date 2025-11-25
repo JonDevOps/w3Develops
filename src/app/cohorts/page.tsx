@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -99,7 +100,7 @@ export default function CohortsPage() {
   const isLoading = isLoadingNew || isLoadingInProgress;
 
   return (
-    <>
+    <div className="p-4 md:p-10">
       <JoinCohortModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <div className="space-y-8">
         <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -231,6 +232,6 @@ export default function CohortsPage() {
           )}
         </section>
       </div>
-    </>
+    </div>
   );
 }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -119,11 +120,15 @@ export default function SecurityPage() {
 
 
   if (isUserLoading || !user) {
-    return <LoadingSkeleton />;
+    return (
+        <div className="p-4 md:p-10">
+            <LoadingSkeleton />
+        </div>
+    );
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
+    <div className="max-w-2xl mx-auto space-y-8 p-4 md:p-10">
       <Card>
         <CardHeader>
           <CardTitle>Change Password</CardTitle>

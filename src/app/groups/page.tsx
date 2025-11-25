@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -96,7 +97,7 @@ export default function GroupsPage() {
   const isLoading = isLoadingNew || isLoadingInProgress;
 
   return (
-    <>
+    <div className="p-4 md:p-10">
       <JoinGroupModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <div className="space-y-8">
         <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -208,6 +209,6 @@ export default function GroupsPage() {
           )}
         </section>
       </div>
-    </>
+    </div>
   );
 }
