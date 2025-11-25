@@ -1,4 +1,9 @@
 
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@/firebase';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -6,9 +11,22 @@ import Link from "next/link";
 import Image from "next/image";
 import { CheckCircle, Code, Users, BookOpen } from "lucide-react";
 import placeholderImages from './lib/placeholder-images.json';
+import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 
 export default function Home() {
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
   const { hero, tutors } = placeholderImages;
+
+  useEffect(() => {
+    if (!isUserLoading && user) {
+      router.push('/account');
+    }
+  }, [user, isUserLoading, router]);
+
+  if (isUserLoading || user) {
+    return <LoadingSkeleton />;
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
