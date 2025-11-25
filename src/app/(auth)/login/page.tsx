@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 import { sendPasswordResetEmail } from 'firebase/auth';
 
-export default function LoginPage() {
+function LoginPageContent() {
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
   const router = useRouter();
@@ -134,4 +134,12 @@ export default function LoginPage() {
       </Card>
     </div>
   );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoadingSkeleton />}>
+      <LoginPageContent />
+    </Suspense>
+  )
 }

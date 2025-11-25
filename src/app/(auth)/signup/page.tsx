@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +28,8 @@ function useDebounce(value: string, delay: number) {
   return debouncedValue;
 }
 
-export default function SignupPage() {
+
+function SignupPageContent() {
   const auth = useAuth();
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
@@ -251,4 +252,13 @@ export default function SignupPage() {
       </Card>
     </div>
   );
+}
+
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<LoadingSkeleton />}>
+      <SignupPageContent />
+    </Suspense>
+  )
 }
