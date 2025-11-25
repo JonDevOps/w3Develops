@@ -59,6 +59,7 @@ export default function Footer() {
                 <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
                 <Link href="/terms" className="hover:text-foreground">Terms of Use</Link>
                 <Link href="/cookies" className="hover:text-foreground">Cookies</Link>
+                <Link href="/newsletter" className="hover:text-foreground">Newsletter</Link>
                 <Link href="/donate" className="hover:text-foreground">Donate</Link>
                 <Link href="/merch" className="hover:text-foreground">Marketplace</Link>
             </div>
@@ -79,6 +80,7 @@ export default function Footer() {
                 <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
                 <Link href="/terms" className="hover:text-foreground">Terms of Use</Link>
                 <Link href="/cookies" className="hover:text-foreground">Cookies</Link>
+                <Link href="/newsletter" className="hover:text-foreground">Newsletter</Link>
                 <Link href="/donate" className="hover:text-foreground">Donate</Link>
                 <Link href="/merch" className="hover:text-foreground">Marketplace</Link>
             </div>

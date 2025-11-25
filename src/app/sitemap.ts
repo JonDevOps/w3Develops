@@ -23,6 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/merch',
     '/meetups',
     '/news',
+    '/newsletter',
     '/notifications',
     '/pair-programming',
     '/podcast',
