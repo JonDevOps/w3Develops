@@ -77,9 +77,13 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
 
-    // Newsletter subscribers can only be written by the server action. No client access allowed.
+    // Newsletter subscribers rules
     match /newsletter-subscribers/{subscriberId} {
-      allow read, write: if false;
+      // Any authenticated user can create their own subscription document.
+      // The document ID must be their own user ID.
+      allow create: if isOwner(subscriberId) && request.resource.data.userId == subscriberId;
+      // Nobody can read, update, or delete subscriber lists from the client.
+      allow read, update, delete: if false;
     }
   }
 }
