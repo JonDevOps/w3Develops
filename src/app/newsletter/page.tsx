@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -17,7 +17,11 @@ export default function NewsletterPage() {
     const firestore = useFirestore();
     const [isPending, startTransition] = useTransition();
 
-    const userDocRef = user ? doc(firestore, 'users', user.uid) as DocumentReference<UserProfile> : null;
+    const userDocRef = useMemo(() => {
+        if (!user) return null;
+        return doc(firestore, 'users', user.uid) as DocumentReference<UserProfile>;
+    }, [user, firestore]);
+    
     const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
 
     const isSubscribed = userProfile?.isSubscribedToNewsletter || false;
