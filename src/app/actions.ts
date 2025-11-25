@@ -27,8 +27,9 @@ export async function subscribeToNewsletter(email: string): Promise<{ success: b
         });
 
         return { success: true };
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error in subscribeToNewsletter:', error);
-        return { success: false, error: 'An internal server error occurred.' };
+        // Return the actual error message for debugging purposes.
+        return { success: false, error: error.message || 'An internal server error occurred.' };
     }
 }
