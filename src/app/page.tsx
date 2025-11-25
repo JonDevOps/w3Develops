@@ -5,18 +5,45 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/firebase';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircle, Code, Users, BookOpen } from "lucide-react";
+import { CheckCircle, Code, Users, BookOpen, ArrowRight, GitBranch, Trophy, Hammer } from "lucide-react";
 import placeholderImages from './lib/placeholder-images.json';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
+
+const features = [
+  {
+    icon: <Users className="h-10 w-10 text-primary" />,
+    title: "Study Groups",
+    description: "Find your tribe. Learn and grow with developers who share your interests.",
+    link: "/groups"
+  },
+  {
+    icon: <Code className="h-10 w-10 text-primary" />,
+    title: "Group Projects",
+    description: "Gain real-world experience by building applications in a team setting.",
+    link: "/cohorts"
+  },
+  {
+    icon: <Trophy className="h-10 w-10 text-primary" />,
+    title: "Competitions",
+    description: "Test your skills and challenge yourself in community coding competitions.",
+    link: "/competitions"
+  },
+  {
+    icon: <Hammer className="h-10 w-10 text-primary" />,
+    title: "Hackathons",
+    description: "Join hackathons to innovate, build amazing things, and win prizes.",
+    link: "/hackathons"
+  },
+];
+
 
 export default function Home() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
-  const { hero } = placeholderImages;
+  const { hero, whyJoin } = placeholderImages;
 
   useEffect(() => {
     if (!isUserLoading && user) {
@@ -29,100 +56,94 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background">
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative w-full h-[60vh] md:h-[80vh] flex items-center justify-center text-center text-white">
+        <section className="relative w-full min-h-[70vh] flex items-center justify-center text-center text-white py-20 px-4">
             <Image
                 src={hero.src}
-                alt="Collaborative coding session"
+                alt="Diverse group of developers collaborating on a project"
                 fill
-                className="object-cover -z-10 brightness-50"
+                className="object-cover -z-10 brightness-[.4]"
                 data-ai-hint={hero.hint}
                 priority
             />
-            <div className="container px-4 md:px-6">
-                <div className="max-w-3xl mx-auto">
-                    <h1 className="text-4xl font-headline tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-                        Learn, Build, and Connect with Developers
-                    </h1>
-                    <p className="mt-4 text-lg md:text-xl text-primary/90">
-                        w3Develops is a global community dedicated to helping you grow as a developer through collaboration, mentorship, and real-world projects.
-                    </p>
-                    <div className="mt-8 flex justify-center gap-4">
-                        <Button asChild size="lg">
-                            <Link href="/signup">Join the Community</Link>
-                        </Button>
-                        <Button asChild variant="secondary" size="lg">
-                            <Link href="/groups">Explore Groups</Link>
-                        </Button>
-                    </div>
+            <div className="max-w-4xl mx-auto">
+                <h1 className="text-4xl font-headline tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+                    Stop Learning Alone. Start Building with a Community.
+                </h1>
+                <p className="mt-6 text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto">
+                    w3Develops is a global community for developers to team up, build projects, and accelerate their careers—together.
+                </p>
+                <div className="mt-10 flex justify-center gap-4">
+                    <Button asChild size="lg" className="gap-2">
+                        <Link href="/signup">Join For Free <ArrowRight className="h-5 w-5" /></Link>
+                    </Button>
+                    <Button asChild variant="secondary" size="lg">
+                        <Link href="/groups">Explore Groups</Link>
+                    </Button>
                 </div>
             </div>
         </section>
 
-        {/* How it Works Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-background">
+        {/* What we offer Section */}
+        <section className="w-full py-16 md:py-24 lg:py-32 bg-muted/40">
           <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">How It Works</h2>
-                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Three simple steps to start your journey with w3Develops.
-                </p>
-              </div>
+            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
+              <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">What We Offer</div>
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">A World of Collaboration</h2>
+              <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                From casual study sessions to intense hackathons, find the perfect space to grow.
+              </p>
             </div>
-            <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:grid-cols-3 lg:max-w-none">
-              <div className="grid gap-1 text-center p-6 rounded-lg">
-                <Users className="h-10 w-10 mx-auto text-primary" />
-                <h3 className="text-lg font-bold">1. Join a Group</h3>
-                <p className="text-sm text-muted-foreground">Find a study group or a project cohort that matches your interests and skill level.</p>
-              </div>
-              <div className="grid gap-1 text-center p-6 rounded-lg">
-                <Code className="h-10 w-10 mx-auto text-primary" />
-                <h3 className="text-lg font-bold">2. Start Building</h3>
-                <p className="text-sm text-muted-foreground">Collaborate with your peers on real-world projects, learn new technologies, and build your portfolio.</p>
-              </div>
-              <div className="grid gap-1 text-center p-6 rounded-lg">
-                <BookOpen className="h-10 w-10 mx-auto text-primary" />
-                <h3 className="text-lg font-bold">3. Grow Together</h3>
-                <p className="text-sm text-muted-foreground">Get mentorship, share your knowledge, and grow your network within our supportive community.</p>
-              </div>
+            <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 lg:max-w-none lg:grid-cols-4">
+              {features.map((feature) => (
+                <Link href={feature.link} key={feature.title}>
+                  <Card className="h-full hover:shadow-lg hover:-translate-y-2 transition-transform duration-300">
+                    <CardContent className="p-6 flex flex-col items-center text-center gap-4">
+                      {feature.icon}
+                      <h3 className="text-xl font-bold">{feature.title}</h3>
+                      <p className="text-sm text-muted-foreground">{feature.description}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
             </div>
           </div>
         </section>
 
         {/* Why Join Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
-            <div className="container grid items-center gap-6 px-4 md:px-6 lg:grid-cols-2 lg:gap-10">
-                <div className="space-y-4">
-                    <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">A Better Way to Learn and Grow as a Developer</h2>
+        <section className="w-full py-16 md:py-24 lg:py-32">
+            <div className="container grid items-center gap-10 px-4 md:px-6 lg:grid-cols-2 lg:gap-16">
+                <div className="space-y-6">
+                    <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Why Join Us?</div>
+                    <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">Escape Tutorial Hell, Enter Collaborative Reality.</h2>
                     <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                        Say goodbye to tutorial hell. At w3Develops, you learn by doing, with the support of a vibrant community.
+                        Watching videos is one thing. Building real software with a team is another. At w3Develops, you learn by doing, supported by a community that wants you to succeed.
                     </p>
                     <ul className="grid gap-4">
-                        <li className="flex items-start gap-2">
-                            <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
-                            <span><span className="font-semibold">Project-Based Learning:</span> Build real applications and gain practical experience.</span>
+                        <li className="flex items-start gap-3">
+                            <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
+                            <span><span className="font-semibold">Gain Practical Experience:</span> Build a portfolio of real-world projects that employers will notice.</span>
                         </li>
-                         <li className="flex items-start gap-2">
-                            <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
-                            <span><span className="font-semibold">Collaborative Environment:</span> Work in teams, review code, and learn from your peers.</span>
+                         <li className="flex items-start gap-3">
+                            <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
+                            <span><span className="font-semibold">Learn from Peers:</span> Work in teams, review code, and absorb knowledge from fellow developers.</span>
                         </li>
-                         <li className="flex items-start gap-2">
-                            <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
-                            <span><span className="font-semibold">Mentorship Opportunities:</span> Get guidance from experienced developers and accelerate your growth.</span>
+                         <li className="flex items-start gap-3">
+                            <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
+                            <span><span className="font-semibold">Expand Your Network:</span> Connect with mentors and peers who can become lifelong colleagues and friends.</span>
                         </li>
                     </ul>
                 </div>
                 <div className="flex justify-center">
                    <Image
-                      src="https://picsum.photos/seed/2/600/400"
+                      src={whyJoin.src}
                       width={600}
                       height={400}
-                      alt="A developer working on code"
-                      className="rounded-xl object-cover"
-                      data-ai-hint="developer code"
+                      alt="Two developers high-fiving over a successful project"
+                      className="rounded-xl object-cover shadow-2xl"
+                      data-ai-hint={whyJoin.hint}
                     />
                 </div>
             </div>
