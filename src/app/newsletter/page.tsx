@@ -53,17 +53,20 @@ export default function NewsletterPage() {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
-                        <Label htmlFor="email" className="sr-only">Email</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            placeholder="you@example.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            disabled={isPending}
-                            required
-                        />
-                        <Button type="submit" disabled={isPending}>
+                        <div className="w-full">
+                           <Label htmlFor="email" className="sr-only">Email</Label>
+                           <Input
+                                id="email"
+                                type="email"
+                                placeholder="you@example.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                disabled={isPending}
+                                required
+                                className="w-full"
+                            />
+                        </div>
+                        <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
                             {isPending ? 'Subscribing...' : 'Subscribe'}
                         </Button>
                     </form>
