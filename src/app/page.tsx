@@ -69,7 +69,7 @@ export default function Home() {
                     Learn | Build | Team Up
                 </h1>
                 <p className="mt-6 text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
-                    Study or build projects with remote teams for free
+                    Study and build projects with remote teams 100% free
                 </p>
                 <div className="mt-10 flex justify-center gap-4">
                     <Button asChild size="lg" className="gap-2">
@@ -136,8 +136,8 @@ export default function Home() {
                 <div className="flex justify-center">
                    <Image
                       src="/logo.png"
-                      width={600}
-                      height={400}
+                      width="600"
+                      height="400"
                       alt="w3Develops Logo"
                       className="rounded-xl object-cover shadow-2xl"
                     />
