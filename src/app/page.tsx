@@ -8,7 +8,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import { CheckCircle, Code, Users, BookOpen, ArrowRight, Hammer, Trophy } from "lucide-react";
-import placeholderImages from './lib/placeholder-images.json';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 
 const features = [
@@ -42,7 +41,6 @@ const features = [
 export default function Home() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
-  const { whyJoin } = placeholderImages;
 
   useEffect(() => {
     if (!isUserLoading && user) {
