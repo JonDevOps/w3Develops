@@ -1,8 +1,7 @@
-
 'use client';
 
-import { Github, Twitter, Youtube, Facebook, Instagram, Linkedin, Rss } from 'lucide-react';
-import { FaDiscord, FaMedium, FaReddit, FaPodcast } from 'react-icons/fa';
+import { Github, Youtube, Facebook, Instagram, Linkedin, Rss } from 'lucide-react';
+import { FaDiscord, FaMedium, FaReddit, FaPodcast, FaXTwitter } from 'react-icons/fa6';
 import Link from 'next/link';
 
 export default function Footer() {
@@ -11,8 +10,8 @@ export default function Footer() {
       <a href="https://github.com/w3develops/w3develops" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
         <Github />
       </a>
-      <a href="https://twitter.com/w3develops" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
-        <Twitter />
+      <a href="https://x.com/w3develops" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
+        <FaXTwitter size={24} />
       </a>
       <a href="https://www.youtube.com/w3Develops?sub_confirmation=1" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
         <Youtube />
