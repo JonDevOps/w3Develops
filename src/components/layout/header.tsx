@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
@@ -79,7 +78,7 @@ export default function Header() {
         <div className="flex items-center gap-2 md:gap-4">
           <div className={`flex items-center gap-2 ${isMobileSearchOpen ? 'hidden' : 'flex'}`}>
             <Link href={user ? "/account" : "/"} className="flex items-center gap-2 font-semibold text-lg text-white">
-              <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
+              <Image src="/newheader.jpg" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
             </Link>
             <div className="md:hidden">
                 <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchOpen(true)} className="text-white hover:text-white/80">
