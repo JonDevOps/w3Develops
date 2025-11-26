@@ -130,7 +130,7 @@ export default function Header() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild><Link href="/account">Home</Link></DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link href="/account">Dashboard</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link href={`/users/${user.uid}`}>Profile</Link></DropdownMenuItem>
                   <DropdownMenuItem asChild><Link href="/settings">Settings</Link></DropdownMenuItem>
                   <DropdownMenuSeparator />
