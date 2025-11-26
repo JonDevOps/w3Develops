@@ -74,26 +74,24 @@ export default function Header() {
 
   return (
     <header className="bg-card border-b sticky top-0 z-50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-12 md:h-14">
         <div className="flex items-center gap-4">
-          {!isMobileSearchOpen && (
+          <div className={`md:flex items-center ${isMobileSearchOpen ? 'hidden md:flex' : ''}`}>
             <Link href={user ? "/account" : "/"} className="flex items-center gap-2 font-semibold text-lg">
               <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
             </Link>
-          )}
-
-          {/* Desktop Search */}
-          <div className="hidden md:flex md:items-center md:w-full md:max-w-sm">
-            <SearchBar 
+          </div>
+          
+          <div className="hidden md:flex md:items-center">
+             <SearchBar 
               query={searchQuery}
               onQueryChange={setSearchQuery}
             />
           </div>
         </div>
 
-        {/* Mobile Search - shown only on small screens when search is open */}
         {isMobileSearchOpen && (
-          <div className="md:hidden absolute inset-0 bg-background flex items-center px-4">
+          <div className="md:hidden absolute inset-0 bg-background flex items-center px-4 h-12">
             <SearchBar 
               ref={searchInputRef}
               query={searchQuery}
@@ -103,10 +101,10 @@ export default function Header() {
           </div>
         )}
         
-        <div className={`flex items-center gap-2 ${isMobileSearchOpen ? 'hidden' : ''}`}>
+        <div className={`flex items-center gap-2 ${isMobileSearchOpen ? 'hidden' : 'flex'}`}>
           <div className="md:hidden">
             <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchOpen(true)}>
-              <Search className="h-6 w-6" />
+              <Search className="h-5 w-5" />
               <span className="sr-only">Search</span>
             </Button>
           </div>
