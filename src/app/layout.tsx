@@ -66,7 +66,7 @@ export default function RootLayout({
         <FirebaseClientProvider>
           <div className="flex min-h-screen w-full flex-col">
             <Header />
-            <main>
+            <main className="flex-grow">
               {children}
             </main>
             <Footer />
