@@ -137,12 +137,11 @@ export default function Home() {
                 </div>
                 <div className="flex justify-center">
                    <Image
-                      src={whyJoin.src}
+                      src="/landingpagelogo.png"
                       width={600}
                       height={400}
-                      alt="Two developers high-fiving over a successful project"
+                      alt="w3develops logo over a futuristic cityscape"
                       className="rounded-xl object-cover shadow-2xl"
-                      data-ai-hint={whyJoin.hint}
                     />
                 </div>
             </div>
