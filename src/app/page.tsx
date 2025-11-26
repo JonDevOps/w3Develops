@@ -71,7 +71,7 @@ export default function Home() {
                     Learn | Build | Team Up
                 </h1>
                 <p className="mt-6 text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto">
-                    w3Develops is a global community for developers to team up, build projects, and accelerate their careers—together.
+                    Study or build projects with remote teams for free
                 </p>
                 <div className="mt-10 flex justify-center gap-4">
                     <Button asChild size="lg" className="gap-2">
