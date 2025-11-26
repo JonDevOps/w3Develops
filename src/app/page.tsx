@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -69,7 +68,7 @@ export default function Home() {
             <div className="absolute inset-0 bg-black/60"></div>
             <div className="relative z-10 max-w-4xl mx-auto px-4">
                 <h1 className="text-4xl font-headline tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                    Learn | Build | Get the Job
+                    Learn | Build | Team Up
                 </h1>
                 <p className="mt-6 text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto">
                     w3Develops is a global community for developers to team up, build projects, and accelerate their careers—together.
