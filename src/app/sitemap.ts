@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/competitions',
     '/cookies',
     '/donate',
+    '/explore',
     '/groups',
     '/groups/create',
     '/hackathons',
