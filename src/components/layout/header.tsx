@@ -75,18 +75,25 @@ export default function Header() {
   return (
     <header className="bg-card border-b sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-12 md:h-14">
-        <div className="flex items-center gap-4">
-          <div className={`md:flex items-center ${isMobileSearchOpen ? 'hidden md:flex' : ''}`}>
+        <div className="flex items-center gap-2 md:gap-4">
+          <div className={`flex items-center gap-2 ${isMobileSearchOpen ? 'hidden md:flex' : ''}`}>
             <Link href={user ? "/account" : "/"} className="flex items-center gap-2 font-semibold text-lg">
               <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
             </Link>
           </div>
           
-          <div className="hidden md:flex md:items-center">
+          <div className="hidden md:block">
              <SearchBar 
               query={searchQuery}
               onQueryChange={setSearchQuery}
             />
+          </div>
+
+          <div className="md:hidden">
+            <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchOpen(true)}>
+              <Search className="h-5 w-5" />
+              <span className="sr-only">Search</span>
+            </Button>
           </div>
         </div>
 
@@ -102,13 +109,6 @@ export default function Header() {
         )}
         
         <div className={`flex items-center gap-2 ${isMobileSearchOpen ? 'hidden' : 'flex'}`}>
-          <div className="md:hidden">
-            <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchOpen(true)}>
-              <Search className="h-5 w-5" />
-              <span className="sr-only">Search</span>
-            </Button>
-          </div>
-
           {isLoading ? (
             <div className="h-8 w-8 bg-muted rounded-full animate-pulse" />
           ) : user ? (
