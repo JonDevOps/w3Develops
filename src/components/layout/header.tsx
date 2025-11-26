@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
@@ -73,13 +74,19 @@ export default function Header() {
   const avatarFallback = userProfile?.username?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase();
 
   return (
-    <header className="bg-card border-b sticky top-0 z-50">
+    <header className="bg-[#212529] border-b border-border/50 sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-12 md:h-14">
         <div className="flex items-center gap-2 md:gap-4">
-          <div className={`flex items-center gap-2 ${isMobileSearchOpen ? 'hidden md:flex' : ''}`}>
-            <Link href={user ? "/account" : "/"} className="flex items-center gap-2 font-semibold text-lg">
+          <div className={`flex items-center gap-2 ${isMobileSearchOpen ? 'hidden' : 'flex'}`}>
+            <Link href={user ? "/account" : "/"} className="flex items-center gap-2 font-semibold text-lg text-white">
               <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
             </Link>
+            <div className="md:hidden">
+                <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchOpen(true)} className="text-white hover:text-white/80">
+                  <Search className="h-5 w-5" />
+                  <span className="sr-only">Search</span>
+                </Button>
+            </div>
           </div>
           
           <div className="hidden md:block">
@@ -88,17 +95,10 @@ export default function Header() {
               onQueryChange={setSearchQuery}
             />
           </div>
-
-          <div className="md:hidden">
-            <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchOpen(true)}>
-              <Search className="h-5 w-5" />
-              <span className="sr-only">Search</span>
-            </Button>
-          </div>
         </div>
 
         {isMobileSearchOpen && (
-          <div className="md:hidden absolute inset-0 bg-background flex items-center px-4 h-12">
+          <div className="md:hidden absolute inset-0 bg-[#212529] flex items-center px-4 h-12 border-b border-border/50">
             <SearchBar 
               ref={searchInputRef}
               query={searchQuery}
@@ -108,7 +108,7 @@ export default function Header() {
           </div>
         )}
         
-        <div className={`flex items-center gap-2 ${isMobileSearchOpen ? 'hidden' : 'flex'}`}>
+        <div className={`flex items-center gap-2 ${isMobileSearchOpen ? 'hidden md:flex' : 'flex'}`}>
           {isLoading ? (
             <div className="h-8 w-8 bg-muted rounded-full animate-pulse" />
           ) : user ? (
