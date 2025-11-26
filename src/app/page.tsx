@@ -137,10 +137,10 @@ export default function Home() {
                 </div>
                 <div className="flex justify-center">
                    <Image
-                      src="/landingpagelogo.png"
+                      src="/logo.png"
                       width={600}
                       height={400}
-                      alt="w3develops logo over a futuristic cityscape"
+                      alt="w3Develops Logo"
                       className="rounded-xl object-cover shadow-2xl"
                     />
                 </div>
