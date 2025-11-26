@@ -70,7 +70,7 @@ export default function Home() {
                 <h1 className="text-4xl font-headline tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                     Learn | Build | Team Up
                 </h1>
-                <p className="mt-6 text-lg md:text-xl text-primary-foreground/90 max-w-2xl mx-auto">
+                <p className="mt-6 text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
                     Study or build projects with remote teams for free
                 </p>
                 <div className="mt-10 flex justify-center gap-4">
