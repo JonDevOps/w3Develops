@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useUser, useFirestore } from '@/firebase';
-import { arrayUnion, doc, collection, writeBatch, serverTimestamp, DocumentReference } from 'firebase/firestore';
+import { arrayUnion, doc, collection, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -35,10 +35,6 @@ export default function JoinCohortButton({ cohort, onJoinSuccess }: { cohort: Co
     }
     
     const handleJoin = async () => {
-        if (!user || !firestore) {
-            toast({ variant: 'destructive', title: 'Not Logged In', description: 'You must be logged in to join a cohort.' });
-            return;
-        }
         if(isMember) {
             toast({ variant: 'destructive', title: 'Already a Member', description: 'You are already a member of this cohort.' });
             return;
@@ -47,8 +43,12 @@ export default function JoinCohortButton({ cohort, onJoinSuccess }: { cohort: Co
         
         try {
             const cohortRef = doc(firestore, 'cohorts', cohort.id);
+            const userProfileRef = doc(firestore, 'users', user.uid);
             const batch = writeBatch(firestore);
+
             batch.update(cohortRef, { memberIds: arrayUnion(user.uid) });
+            batch.update(userProfileRef, { joinedCohortIds: arrayUnion(cohort.id) });
+
 
             if (cohort.memberIds.length + 1 === 25) {
                 const message = `Your build cohort "${cohort.name}" is now full!`;

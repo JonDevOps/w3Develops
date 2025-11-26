@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useUser, useFirestore } from '@/firebase';
-import { arrayUnion, doc, writeBatch, collection, serverTimestamp, DocumentReference } from 'firebase/firestore';
+import { arrayUnion, doc, writeBatch, collection, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -35,11 +35,6 @@ export default function JoinGroupButton({ group, onJoinSuccess }: { group: Study
     }
     
     const handleJoin = async () => {
-        if (!user || !firestore) {
-            toast({ variant: 'destructive', title: 'Not Logged In', description: 'You must be logged in to join a group.' });
-            return;
-        }
-
         if(isMember) {
             toast({ variant: 'destructive', title: 'Already a Member', description: 'You are already a member of this group.' });
             return;
@@ -49,8 +44,11 @@ export default function JoinGroupButton({ group, onJoinSuccess }: { group: Study
 
         try {
             const groupRef = doc(firestore, 'studyGroups', group.id);
+            const userProfileRef = doc(firestore, 'users', user.uid);
             const batch = writeBatch(firestore);
+            
             batch.update(groupRef, { memberIds: arrayUnion(user.uid) });
+            batch.update(userProfileRef, { joinedStudyGroupIds: arrayUnion(group.id) });
 
             if (group.memberIds.length + 1 === 25) {
                 const message = `Your study group "${group.name}" is now full!`;
