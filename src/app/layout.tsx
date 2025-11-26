@@ -23,10 +23,6 @@ export const metadata: Metadata = {
   title: "w3Develops",
   description: "A community for developers to learn, build, and connect.",
   manifest: '/manifest.json',
-  msapplication: {
-    TileColor: '#ffffff',
-    TileImage: '/ms-icon-144x144.png',
-  },
   themeColor: '#ffffff',
   icons: {
     apple: [
