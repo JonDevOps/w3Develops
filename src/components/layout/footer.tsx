@@ -7,19 +7,19 @@ import Link from 'next/link';
 export default function Footer() {
   const primarySocials = (
     <>
-      <a href="https://github.com/w3develops/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+      <a href="https://github.com/w3develops/w3develops" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
         <Github />
       </a>
-      <a href="https://twitter.com/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+      <a href="https://twitter.com/w3develops" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
         <Twitter />
       </a>
-      <a href="https://www.youtube.com/w3Develops?sub_confirmation=1" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+      <a href="https://www.youtube.com/w3Develops?sub_confirmation=1" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
         <Youtube />
       </a>
-      <a href="https://www.facebook.com/groups/w3develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+      <a href="https://www.facebook.com/groups/w3develops/" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
         <Facebook />
       </a>
-      <a href="https://discord.gg/ckQ52gA" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+      <a href="https://discord.gg/ckQ52gA" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
         <FaDiscord size={24} />
       </a>
     </>
@@ -27,19 +27,19 @@ export default function Footer() {
 
   const secondarySocials = (
     <>
-      <a href="https://www.instagram.com/w3develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+      <a href="https://www.instagram.com/w3develops/" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
         <Instagram />
       </a>
-      <a href="https://medium.com/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+      <a href="https://medium.com/w3develops" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
         <FaMedium size={24} />
       </a>
-      <a href="https://www.linkedin.com/company/w3develops" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+      <a href="https://www.linkedin.com/company/w3develops" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
         <Linkedin />
       </a>
-      <a href="https://www.reddit.com/r/w3Develops/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+      <a href="https://www.reddit.com/r/w3Develops/" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
         <FaReddit size={24} />
       </a>
-      <a href="https://www.youtube.com/watch?v=VLZhlngst2E&list=PLTwiqKOPckq-z5E-LUpMXpcv_GWXE2k4F" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+      <a href="https://www.youtube.com/watch?v=VLZhlngst2E&list=PLTwiqKOPckq-z5E-LUpMXpcv_GWXE2k4F" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
          <FaPodcast size={24} />
       </a>
     </>
@@ -55,13 +55,13 @@ export default function Footer() {
           </div>
           <div className="text-center">
             <p className="text-sm text-muted-foreground">Made with ❤️ for a better web</p>
-            <div className="flex justify-center gap-4 text-sm text-muted-foreground mt-2 flex-wrap">
-                <Link href="/privacy" className="hover:text-primary">Privacy Policy</Link>
-                <Link href="/terms" className="hover:text-primary">Terms of Use</Link>
-                <Link href="/cookies" className="hover:text-primary">Cookies</Link>
-                <Link href="/newsletter" className="hover:text-primary">Newsletter</Link>
-                <Link href="/donate" className="hover:text-primary">Donate</Link>
-                <Link href="/merch" className="hover:text-primary">Marketplace</Link>
+            <div className="flex justify-center gap-4 text-sm mt-2 flex-wrap">
+                <Link href="/privacy" className="text-primary hover:text-primary/80">Privacy Policy</Link>
+                <Link href="/terms" className="text-primary hover:text-primary/80">Terms of Use</Link>
+                <Link href="/cookies" className="text-primary hover:text-primary/80">Cookies</Link>
+                <Link href="/newsletter" className="text-primary hover:text-primary/80">Newsletter</Link>
+                <Link href="/donate" className="text-primary hover:text-primary/80">Donate</Link>
+                <Link href="/merch" className="text-primary hover:text-primary/80">Marketplace</Link>
             </div>
           </div>
           <div className="flex justify-center gap-5">
@@ -76,13 +76,13 @@ export default function Footer() {
           </div>
           <div className="text-center">
             <p className="text-sm text-muted-foreground">Made with ❤️ for a better web</p>
-            <div className="flex justify-center gap-4 text-sm text-muted-foreground mt-2 flex-wrap">
-                <Link href="/privacy" className="hover:text-primary">Privacy Policy</Link>
-                <Link href="/terms" className="hover:text-primary">Terms of Use</Link>
-                <Link href="/cookies" className="hover:text-primary">Cookies</Link>
-                <Link href="/newsletter" className="hover:text-primary">Newsletter</Link>
-                <Link href="/donate" className="hover:text-primary">Donate</Link>
-                <Link href="/merch" className="hover:text-primary">Marketplace</Link>
+            <div className="flex justify-center gap-4 text-sm mt-2 flex-wrap">
+                <Link href="/privacy" className="text-primary hover:text-primary/80">Privacy Policy</Link>
+                <Link href="/terms" className="text-primary hover:text-primary/80">Terms of Use</Link>
+                <Link href="/cookies" className="text-primary hover:text-primary/80">Cookies</Link>
+                <Link href="/newsletter" className="text-primary hover:text-primary/80">Newsletter</Link>
+                <Link href="/donate" className="text-primary hover:text-primary/80">Donate</Link>
+                <Link href="/merch" className="text-primary hover:text-primary/80">Marketplace</Link>
             </div>
           </div>
           <div className="flex justify-end gap-5">
