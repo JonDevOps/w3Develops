@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Users, Code, BookOpen, MessageSquare, GraduationCap, Hammer, Trophy, GitBranch, Rss, Briefcase, Podcast, Factory } from "lucide-react";
+import { Menu, Users, Code, BookOpen, MessageSquare, GraduationCap, Hammer, Trophy, GitBranch, Rss, Briefcase, Podcast, Factory, School } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
 const navLinks = [
+    { href: "/learn", label: "Learn", icon: School },
     { href: "/groups", label: "Study Groups", icon: Users },
     { href: "/cohorts", label: "Group Projects", icon: Code },
     { href: "/solo-projects", label: "Solo Projects", icon: Code },
