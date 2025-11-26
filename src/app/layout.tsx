@@ -22,8 +22,30 @@ const lexend = Lexend({
 export const metadata: Metadata = {
   title: "w3Develops",
   description: "A community for developers to learn, build, and connect.",
+  manifest: '/manifest.json',
+  msapplication: {
+    TileColor: '#ffffff',
+    TileImage: '/ms-icon-144x144.png',
+  },
+  themeColor: '#ffffff',
   icons: {
-    icon: '/favicon.ico',
+    apple: [
+      { url: '/apple-icon-57x57.png', sizes: '57x57' },
+      { url: '/apple-icon-60x60.png', sizes: '60x60' },
+      { url: '/apple-icon-72x72.png', sizes: '72x72' },
+      { url: '/apple-icon-76x76.png', sizes: '76x76' },
+      { url: '/apple-icon-114x114.png', sizes: '114x114' },
+      { url: '/apple-icon-120x120.png', sizes: '120x120' },
+      { url: '/apple-icon-144x144.png', sizes: '144x144' },
+      { url: '/apple-icon-152x152.png', sizes: '152x152' },
+      { url: '/apple-icon-180x180.png', sizes: '180x180' },
+    ],
+    icon: [
+      { url: '/android-icon-192x192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
+      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
+    ],
   },
 };
 
@@ -44,7 +66,7 @@ export default function RootLayout({
         <FirebaseClientProvider>
           <div className="flex min-h-screen w-full flex-col">
             <Header />
-            <main className="flex-1">
+            <main>
               {children}
             </main>
             <Footer />
