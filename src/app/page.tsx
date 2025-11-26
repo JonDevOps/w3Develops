@@ -59,8 +59,8 @@ export default function Home() {
         {/* Hero Section */}
         <section className="relative w-full min-h-screen flex items-center justify-center text-center text-white">
             <Image
-                src="/landingpagelogo.png"
-                alt="w3develops logo over a futuristic cityscape"
+                src="/newheader.jpg"
+                alt="w3develops community"
                 fill
                 className="object-cover"
                 priority
