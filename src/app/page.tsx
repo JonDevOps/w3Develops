@@ -59,15 +59,15 @@ export default function Home() {
         {/* Hero Section */}
         <section className="relative w-full min-h-screen flex items-center justify-center text-center text-white">
             <Image
-                src="/newheader.jpg"
-                alt="Futuristic cityscape background"
+                src="/landingpagelogo.png"
+                alt="w3develops logo over a futuristic cityscape"
                 fill
                 className="object-cover"
                 priority
             />
             <div className="absolute inset-0 bg-black/60"></div>
             <div className="relative z-10 max-w-4xl mx-auto px-4">
-                <h1 className="text-4xl font-headline tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+                <h1 className="text-4xl font-headline tracking-tight sm:text-5xl md:text-6xl lg:text-7xl text-white">
                     Learn | Build | Team Up
                 </h1>
                 <p className="mt-6 text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
