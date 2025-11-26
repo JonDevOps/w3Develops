@@ -74,7 +74,7 @@ export default function Header() {
   const avatarFallback = userProfile?.username?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase();
 
   return (
-    <header className="bg-[#212529] border-b border-border/50 sticky top-0 z-50">
+    <header className="bg-[#212529] border-b border-border/5 sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-12 md:h-14">
         <div className="flex items-center gap-2 md:gap-4">
           <div className={`flex items-center gap-2 ${isMobileSearchOpen ? 'hidden' : 'flex'}`}>
@@ -98,7 +98,7 @@ export default function Header() {
         </div>
 
         {isMobileSearchOpen && (
-          <div className="md:hidden absolute inset-0 bg-[#212529] flex items-center px-4 h-12 border-b border-border/50">
+          <div className="md:hidden absolute inset-0 bg-[#212529] flex items-center px-4 h-12 border-b border-border/5">
             <SearchBar 
               ref={searchInputRef}
               query={searchQuery}

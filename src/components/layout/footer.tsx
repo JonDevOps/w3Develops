@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Github, Twitter, Youtube, Facebook, Instagram, Linkedin, Rss } from 'lucide-react';
@@ -46,7 +47,7 @@ export default function Footer() {
   );
 
   return (
-    <footer className="bg-[#212529] border-t border-border/50 py-6">
+    <footer className="bg-[#212529] border-t border-border/5 py-6">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Mobile Layout */}
         <div className="flex flex-col items-center gap-6 md:hidden">
