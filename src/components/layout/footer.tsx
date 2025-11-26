@@ -7,19 +7,19 @@ import Link from 'next/link';
 export default function Footer() {
   const primarySocials = (
     <>
-      <a href="https://github.com/w3develops/w3develops" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
+      <a href="https://github.com/w3develops/w3develops" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
         <Github />
       </a>
-      <a href="https://twitter.com/w3develops" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
+      <a href="https://twitter.com/w3develops" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
         <Twitter />
       </a>
-      <a href="https://www.youtube.com/w3Develops?sub_confirmation=1" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
+      <a href="https://www.youtube.com/w3Develops?sub_confirmation=1" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
         <Youtube />
       </a>
-      <a href="https://www.facebook.com/groups/w3develops/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
+      <a href="https://www.facebook.com/groups/w3develops/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
         <Facebook />
       </a>
-      <a href="https://discord.gg/ckQ52gA" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
+      <a href="https://discord.gg/ckQ52gA" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
         <FaDiscord size={24} />
       </a>
     </>
@@ -27,19 +27,19 @@ export default function Footer() {
 
   const secondarySocials = (
     <>
-      <a href="https://www.instagram.com/w3develops/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
+      <a href="https://www.instagram.com/w3develops/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
         <Instagram />
       </a>
-      <a href="https://medium.com/w3develops" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
+      <a href="https://medium.com/w3develops" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
         <FaMedium size={24} />
       </a>
-      <a href="https://www.linkedin.com/company/w3develops" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
+      <a href="https://www.linkedin.com/company/w3develops" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
         <Linkedin />
       </a>
-      <a href="https://www.reddit.com/r/w3Develops/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
+      <a href="https://www.reddit.com/r/w3Develops/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
         <FaReddit size={24} />
       </a>
-      <a href="https://www.youtube.com/watch?v=VLZhlngst2E&list=PLTwiqKOPckq-z5E-LUpMXpcv_GWXE2k4F" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white/80">
+      <a href="https://www.youtube.com/watch?v=VLZhlngst2E&list=PLTwiqKOPckq-z5E-LUpMXpcv_GWXE2k4F" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
          <FaPodcast size={24} />
       </a>
     </>
