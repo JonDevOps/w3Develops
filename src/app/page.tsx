@@ -76,7 +76,7 @@ export default function Home() {
                         <Link href="/signup">Join For Free <ArrowRight className="h-5 w-5" /></Link>
                     </Button>
                     <Button asChild variant="secondary" size="lg">
-                        <Link href="/groups">Explore Groups</Link>
+                        <Link href="/explore">Explore</Link>
                     </Button>
                 </div>
             </div>
@@ -136,8 +136,8 @@ export default function Home() {
                 <div className="flex justify-center">
                    <Image
                       src="/logo.png"
-                      width="600"
-                      height="400"
+                      width={400}
+                      height={400}
                       alt="w3Develops Logo"
                       className="rounded-xl object-cover shadow-2xl"
                     />
