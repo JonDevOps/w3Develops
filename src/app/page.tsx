@@ -106,6 +106,11 @@ export default function Home() {
                 </Link>
               ))}
             </div>
+            <div className="mt-12 text-center">
+                <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
+                    <Link href="/explore">More</Link>
+                </Button>
+            </div>
           </div>
         </section>
 
