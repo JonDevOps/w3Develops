@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from 'next/link';
 import {
-    Users, Code, BookOpen, MessageSquare, GraduationCap, Hammer, Trophy, GitBranch, Rss, Briefcase, Podcast, Factory, School, LifeBuoy, Newspaper, HandCoins, Store
+    Users, Code, BookOpen, MessageSquare, GraduationCap, Hammer, Trophy, GitBranch, Rss, Briefcase, Podcast, Factory, School, LifeBuoy, HandCoins, Store
 } from "lucide-react";
 
 const exploreLinks = [
@@ -23,7 +23,6 @@ const exploreLinks = [
     { href: "/mentorship", label: "Mentorship", icon: Users, description: "Find a mentor to guide your career." },
     { href: "/podcast", label: "Podcast", icon: Podcast, description: "Listen to our latest episodes." },
     { href: "/news", label: "News", icon: Rss, description: "The latest from the community." },
-    { href: "/newsletter", label: "Newsletter", icon: Newspaper, description: "Subscribe to our newsletter." },
     { href: "/donate", label: "Donate", icon: HandCoins, description: "Support our community." },
     { href: "/merch", label: "Marketplace", icon: Store, description: "Get official w3Develops gear." },
 ];
