@@ -23,8 +23,6 @@ const exploreLinks = [
     { href: "/mentorship", label: "Mentorship", icon: Users, description: "Find a mentor to guide your career." },
     { href: "/podcast", label: "Podcast", icon: Podcast, description: "Listen to our latest episodes." },
     { href: "/news", label: "News", icon: Rss, description: "The latest from the community." },
-    { href: "/donate", label: "Donate", icon: HandCoins, description: "Support our community." },
-    { href: "/merch", label: "Marketplace", icon: Store, description: "Get official w3Develops gear." },
 ];
 
 export default function ExplorePage() {
