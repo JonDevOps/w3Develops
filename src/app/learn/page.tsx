@@ -13,13 +13,19 @@ import Link from "next/link";
 
 const learningResources = [
     {
-        topic: "Git & GitHub",
-        description: "Version control is an essential skill for modern development. Learn how to track changes and collaborate with others using Git and GitHub.",
+        topic: "Git",
+        description: "Git is the most widely used modern version control system in the world. It’s a distributed SCM (source code management) tool, meaning the entire codebase and history is available on every developer’s computer.",
         links: [
-            { title: "Git Handbook", url: "https://git-scm.com/docs/gittutorial" },
-            { title: "Introduction to GitHub", url: "https://docs.github.com/en/get-started/quickstart/hello-world" },
-            { title: "Learn Git Branching (Interactive)", url: "https://learngitbranching.js.org/" },
-            { title: "freeCodeCamp - Git and GitHub for Beginners", url: "https://www.freecodecamp.org/news/git-and-github-for-beginners/" }
+            { title: "Basic Git Commands", url: "https://confluence.atlassian.com/bitbucketserver/basic-git-commands-776639767.html" },
+            { title: "Atlassian Git Cheatsheet", url: "https://www.atlassian.com/dam/jcr:8132028b-024f-4b6b-953e-e68fcce0c5fa/atlassian-git-cheatsheet.pdf" },
+        ]
+    },
+     {
+        topic: "GitHub",
+        description: "GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.",
+        links: [
+            { title: "GitHub Learning Lab", url: "https://learn.github.com/" },
+            { title: "GitHub Get Started Docs", url: "https://docs.github.com/en/get-started" },
         ]
     },
     {
