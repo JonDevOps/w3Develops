@@ -13,6 +13,13 @@ import Link from "next/link";
 
 const webLearningResources = [
     {
+        topic: "Getting Started",
+        description: "A prerequisite guide to understanding the basics of web development before diving into specific technologies.",
+        links: [
+            { title: "Getting started with the web", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started" },
+        ]
+    },
+    {
         topic: "Git",
         description: "Git is the most widely used modern version control system in the world. It’s a distributed SCM (source code management) tool, meaning the entire codebase and history is available on every developer’s computer.",
         links: [
@@ -32,7 +39,6 @@ const webLearningResources = [
         topic: "HTML",
         description: "HyperText Markup Language (HTML) is the standard language for creating web pages. It's the skeleton of every site.",
         links: [
-            { title: "Getting started with the web (Prerequisite)", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started" },
             { title: "freeCodeCamp - Responsive Web Design", url: "https://www.freecodecamp.org/learn/responsive-web-design-v9/" },
             { title: "MDN - Structuring the web with HTML", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content" },
             { title: "web.dev - Learn HTML", url: "https://web.dev/learn/html" },
