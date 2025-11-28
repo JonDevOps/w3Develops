@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { Copy } from 'lucide-react';
+import { Copy, ExternalLink, Heart } from 'lucide-react';
+import Link from 'next/link';
 
 interface CryptoAddress {
     name: string;
@@ -57,15 +58,34 @@ export default function DonatePage() {
                         Your contributions help us grow our community and continue to provide free learning resources and collaborative opportunities for developers worldwide.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                    <p>
-                        We appreciate your support! You can donate to us using the following cryptocurrency addresses.
-                    </p>
+                <CardContent className="space-y-8">
+                    <div>
+                        <h3 className="text-lg font-semibold mb-4 text-center">Support us on your favorite platform</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <Button asChild size="lg" className="h-auto py-4">
+                                <Link href="https://www.patreon.com/c/w3develops" target="_blank" rel="noopener noreferrer">
+                                    <div className="flex flex-col items-center gap-2">
+                                        <Heart className="w-6 h-6" />
+                                        <span className="font-bold">Support on Patreon</span>
+                                    </div>
+                                </Link>
+                            </Button>
+                            <Button asChild size="lg" className="h-auto py-4">
+                                <Link href="https://opencollective.com/w3develops" target="_blank" rel="noopener noreferrer">
+                                    <div className="flex flex-col items-center gap-2">
+                                        <Heart className="w-6 h-6" />
+                                        <span className="font-bold">Donate via Open Collective</span>
+                                    </div>
+                                </Link>
+                            </Button>
+                        </div>
+                    </div>
                     
-                    <div className="space-y-4">
+                    <div className="space-y-6">
+                        <h3 className="text-lg font-semibold text-center">Or donate via cryptocurrency</h3>
                         {cryptoAddresses.map((crypto) => (
                             <div key={crypto.name}>
-                                <h3 className="text-lg font-semibold mb-2">{crypto.name} {crypto.protocol && `(${crypto.protocol})`}</h3>
+                                <h4 className="text-md font-semibold mb-2">{crypto.name} {crypto.protocol && `(${crypto.protocol})`}</h4>
                                 <div className="flex items-center gap-2">
                                     <Input 
                                         type="text" 
