@@ -22,10 +22,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/learn',
     '/login',
     '/mentorship',
-    '/merch',
     '/meetups',
     '/news',
-    '/newsletter',
     '/notifications',
     '/pair-programming',
     '/podcast',
@@ -38,6 +36,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/solo-projects',
     '/terms',
     '/tutor',
+    '/hackathon'
   ];
 
   return staticRoutes.map((route) => ({
