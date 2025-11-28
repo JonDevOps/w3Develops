@@ -24,7 +24,7 @@ const learningResources = [
         topic: "GitHub",
         description: "GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.",
         links: [
-            { title: "GitHub Learning Lab", url: "https://learn.github.com/" },
+            { title: "GitHub Learning Lab", url: "https://learn.github.com/skills" },
             { title: "GitHub Get Started Docs", url: "https://docs.github.com/en/get-started" },
         ]
     },
