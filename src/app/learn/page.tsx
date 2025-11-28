@@ -17,7 +17,7 @@ const learningResources = [
         description: "Git is the most widely used modern version control system in the world. It’s a distributed SCM (source code management) tool, meaning the entire codebase and history is available on every developer’s computer.",
         links: [
             { title: "Basic Git Commands", url: "https://confluence.atlassian.com/bitbucketserver/basic-git-commands-776639767.html" },
-            { title: "Atlassian Git Cheatsheet", url: "https://www.atlassian.com/dam/jcr:8132028b-024f-4b6b-953e-e68fcce0c5fa/atlassian-git-cheatsheet.pdf" },
+            { title: "Atlassian Git Cheatsheet [PDF Download]", url: "https://www.atlassian.com/dam/jcr:8132028b-024f-4b6b-953e-e68fcce0c5fa/atlassian-git-cheatsheet.pdf" },
         ]
     },
      {
