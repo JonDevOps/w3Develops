@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
@@ -107,6 +108,10 @@ export default function Header() {
           </div>
         )}
         
+        <div className="hidden md:block absolute left-1/2 -translate-x-1/2">
+            <span className="font-bold uppercase text-amber-400">BETA</span>
+        </div>
+
         <div className={`flex items-center gap-2 ${isMobileSearchOpen ? 'hidden md:flex' : 'flex'}`}>
           {isLoading ? (
             <div className="h-8 w-8 bg-muted rounded-full animate-pulse" />
