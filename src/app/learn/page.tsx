@@ -11,7 +11,18 @@ import {
 import { Link2 } from "lucide-react";
 import Link from "next/link";
 
-const webLearningResources = [
+interface LearningLink {
+    title: string;
+    url: string;
+}
+
+interface LearningResource {
+    topic: string;
+    description: string;
+    links: LearningLink[];
+}
+
+const webLearningResources: LearningResource[] = [
     {
         topic: "Getting Started",
         description: "A prerequisite guide to understanding the basics of web development before diving into specific technologies.",
@@ -67,7 +78,7 @@ const webLearningResources = [
     }
 ];
 
-const cybersecurityResources = [
+const cybersecurityResources: LearningResource[] = [
     {
         topic: "Cybersecurity",
         description: "Cybersecurity involves protecting systems, networks, and programs from digital attacks. These attacks are usually aimed at accessing, changing, or destroying sensitive information; extorting money from users; or interrupting normal business processes.",
