@@ -36,7 +36,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/solo-projects',
     '/terms',
     '/tutor',
-    '/hackathon'
+    '/hackathon',
+    '/marketplace'
   ];
 
   return staticRoutes.map((route) => ({
