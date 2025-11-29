@@ -1,5 +1,5 @@
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Lexend } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -23,7 +23,6 @@ export const metadata: Metadata = {
   title: "w3Develops",
   description: "A community for developers to learn, build, and connect.",
   manifest: '/manifest.json',
-  themeColor: '#ffffff',
   icons: {
     apple: [
       { url: '/apple-icon-57x57.png', sizes: '57x57' },
@@ -44,6 +43,10 @@ export const metadata: Metadata = {
     ],
   },
 };
+
+export const viewport: Viewport = {
+  themeColor: '#ffffff',
+}
 
 export default function RootLayout({
   children,
