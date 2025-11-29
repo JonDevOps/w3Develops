@@ -15,7 +15,6 @@ import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 import { UserProfile } from '@/lib/types';
 import { deleteUser, UserCredential, createUserWithEmailAndPassword } from 'firebase/auth';
 
-// Debounce hook
 function useDebounce(value: string, delay: number) {
   const [debouncedValue, setDebouncedValue] = useState(value);
   useEffect(() => {
@@ -53,7 +52,7 @@ function SignupPageContent() {
 
   const checkUsername = useCallback(async (usernameToCheck: string) => {
     if (!usernameToCheck || usernameToCheck.length < 3) {
-      setIsUsernameAvailable(true); // Don't show error for short usernames
+      setIsUsernameAvailable(true);
       return;
     }
     setIsUsernameChecking(true);
@@ -73,7 +72,6 @@ function SignupPageContent() {
 
 
   useEffect(() => {
-    // Redirect if user is already logged in
     if (!isUserLoading && user) {
       router.push(redirectUrl);
     }
@@ -105,7 +103,6 @@ function SignupPageContent() {
     try {
       const usernameLower = username.toLowerCase();
       
-      // We already checked, but as a final safeguard before creation
       const q = query(collection(firestore, 'users'), where("username_lowercase", "==", usernameLower));
       const querySnapshot = await getDocs(q);
       if(!querySnapshot.empty) {
@@ -113,13 +110,11 @@ function SignupPageContent() {
         throw new Error("This username is already in use. Please choose another one.");
       }
 
-      // 2. If username is unique, create user with email and password
       userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const newUser = userCredential.user;
       
-      // 3. Create the user profile document
       const userDocRef = doc(firestore, "users", newUser.uid);
-      const userData: Omit<UserProfile, 'id' | 'createdAt' | 'lastLoginAt' | 'createdStudyGroupIds' | 'joinedStudyGroupIds' | 'createdCohortIds' | 'joinedCohortIds'> & { createdAt: any, lastLoginAt: any, createdStudyGroupIds?: any, joinedStudyGroupIds?: any, createdCohortIds?: any, joinedCohortIds?: any } = {
+      const userData: Omit<UserProfile, 'id' | 'createdAt' | 'lastLoginAt' > & { createdAt: any, lastLoginAt: any } = {
         email: email,
         username: username,
         username_lowercase: usernameLower,
@@ -136,12 +131,11 @@ function SignupPageContent() {
         joinedStudyGroupIds: [],
         createdCohortIds: [],
         joinedCohortIds: [],
+        isSubscribedToNewsletter: false,
       };
       await setDoc(userDocRef, userData);
         
-      // If successful, onAuthStateChanged in the provider will handle the redirect.
     } catch (error: any) {
-      // If any part of the process fails AFTER user creation, attempt to clean up the auth user
       if (userCredential) {
         try {
           await deleteUser(userCredential.user);
@@ -158,7 +152,6 @@ function SignupPageContent() {
       }
 
       let description = "An unknown error occurred during sign up.";
-      // Handle custom error and Firebase auth errors
       if (error.message === "This username is already in use. Please choose another one.") {
         description = error.message;
       } else {
@@ -211,6 +204,7 @@ function SignupPageContent() {
                   onChange={(e) => setUsername(e.target.value)}
                   disabled={isSubmitting}
                   className={!isUsernameAvailable ? 'border-destructive' : ''}
+                  autoComplete="username"
                 />
                 {isUsernameChecking && <p className="text-xs text-muted-foreground">Checking...</p>}
                 {!isUsernameAvailable && !isUsernameChecking && username.length > 2 && (
@@ -227,10 +221,12 @@ function SignupPageContent() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isSubmitting}
+                  autoComplete="email"
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>              <Input 
+                <Label htmlFor="password">Password</Label>
+                <Input 
                   id="password" 
                   type="password" 
                   required 
@@ -238,6 +234,7 @@ function SignupPageContent() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isSubmitting}
+                  autoComplete="new-password"
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isSubmitting || !isUsernameAvailable}>

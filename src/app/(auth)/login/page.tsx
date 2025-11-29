@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
@@ -36,7 +35,6 @@ function LoginPageContent() {
     setIsSubmitting(true);
     try {
         await initiateEmailSignIn(auth, email, password);
-        // onAuthStateChanged in the provider will trigger the useEffect above to redirect.
     } catch(error: any) {
         let description = "An unknown error occurred during sign in.";
         switch(error.code) {
@@ -104,10 +102,16 @@ function LoginPageContent() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isSubmitting}
+                  autoComplete="email"
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
+                 <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Password</Label>
+                    <button type="button" onClick={handlePasswordReset} className="text-sm underline">
+                        Forgot password?
+                    </button>
+                </div>
                 <Input 
                   id="password" 
                   type="password" 
@@ -115,12 +119,8 @@ function LoginPageContent() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isSubmitting}
+                  autoComplete="current-password"
                 />
-                <div className="text-right">
-                  <button type="button" onClick={handlePasswordReset} className="text-sm underline">
-                      Forgot password?
-                  </button>
-                </div>
               </div>
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? 'Logging In...' : 'Login'}

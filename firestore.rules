@@ -8,84 +8,72 @@ service cloud.firestore {
     }
 
     // Helper function for list operations
-    function isAddingToList(request, field) {
-      let list = resource.data[field];
-      let newList = request.resource.data[field];
+    function isAddingToList(list, newList) {
       return newList.size() == list.size() + 1 && newList.hasAll(list);
     }
     
-    // Users can read all profiles, but only write to their own data.
+    function isRemovingFromList(list, newList) {
+      return newList.size() == list.size() - 1 && list.hasAll(newList);
+    }
+
     match /users/{userId} {
       allow read: if true;
-      // Allow creation/deletion (for signup/account deletion)
-      allow create, delete: if isOwner(userId);
-      // Allow updates to most fields by the owner
+      allow create: if isOwner(userId)
+                    && request.resource.data.username == request.resource.data.username
+                    && request.resource.data.email == request.resource.data.email;
+      allow delete: if isOwner(userId);
       allow update: if isOwner(userId) && (
-        // Standard profile updates
+        // Standard profile updates by owner
         (request.resource.data.keys().hasOnly([
-            'bio', 'skills', 'socialLinks', 'followInfoPrivate', 'lastLoginAt', 'lastLogoutAt', 
-            'profilePictureUrl', 'isSubscribedToNewsletter',
-            'email', 'username', 'username_lowercase', 'createdAt', 'followers', 'following',
-            'createdStudyGroupIds', 'joinedStudyGroupIds', 'createdCohortIds', 'joinedCohortIds'
+            'bio', 'skills', 'socialLinks', 'followInfoPrivate', 'profilePictureUrl', 'isSubscribedToNewsletter'
         ])) ||
-        // Transactional updates for joining/creating groups/cohorts
-        (isAddingToList(request, 'createdStudyGroupIds')) ||
-        (isAddingToList(request, 'joinedStudyGroupIds')) ||
-        (isAddingToList(request, 'createdCohortIds')) ||
-        (isAddingToList(request, 'joinedCohortIds'))
+        // Updating last login/logout timestamps
+        (request.resource.data.keys().hasOnly(['lastLoginAt'])) ||
+        (request.resource.data.keys().hasOnly(['lastLogoutAt'])) ||
+        // Joining or creating a group/cohort
+        (isAddingToList(resource.data.createdStudyGroupIds, request.resource.data.createdStudyGroupIds)) ||
+        (isAddingToList(resource.data.joinedStudyGroupIds, request.resource.data.joinedStudyGroupIds)) ||
+        (isAddingToList(resource.data.createdCohortIds, request.resource.data.createdCohortIds)) ||
+        (isAddingToList(resource.data.joinedCohortIds, request.resource.data.joinedCohortIds)) ||
+        // Following or unfollowing a user
+        (isAddingToList(resource.data.following, request.resource.data.following)) ||
+        (isRemovingFromList(resource.data.following, request.resource.data.following)) ||
+        (isAddingToList(resource.data.followers, request.resource.data.followers)) ||
+        (isRemovingFromList(resource.data.followers, request.resource.data.followers))
       );
     }
     
-    // Allow public read on study groups.
     match /studyGroups/{groupId} {
       allow read: if true;
       allow create: if request.auth != null 
-                    && request.resource.data.keys().hasOnly(['name', 'name_lowercase', 'topic', 'commitment', 'description', 'createdAt', 'memberIds', 'creatorId'])
-                    && request.resource.data.name is string
-                    && request.resource.data.name_lowercase is string
                     && request.resource.data.creatorId == request.auth.uid
-                    && request.resource.data.topic is string
-                    && request.resource.data.commitment is string
-                    && request.resource.data.description is string
-                    && request.resource.data.createdAt == request.time
-                    && request.resource.data.memberIds is list
-                    && request.resource.data.memberIds.size() == 1
-                    && request.resource.data.memberIds[0] == request.auth.uid;
-      // Allow a user to join a group (add themselves to memberIds), if the group is not full and is less than 7 days old.
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 75
+                    && request.resource.data.memberIds == [request.auth.uid]
+                    && request.resource.data.createdAt == request.time;
       allow update: if request.auth != null
                     && resource.data.memberIds.size() < 25
                     && request.time - resource.data.createdAt < duration.value(7, 'd')
-                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds'])
-                    && isAddingToList(request, 'memberIds');
+                    && isAddingToList(resource.data.memberIds, request.resource.data.memberIds)
+                    && request.resource.data.memberIds[request.resource.data.memberIds.size() - 1] == request.auth.uid;
     }
 
-    // Allow public read on cohorts.
     match /cohorts/{cohortId} {
       allow read: if true;
       allow create: if request.auth != null 
-                    && request.resource.data.keys().hasOnly(['name', 'name_lowercase', 'topic', 'commitment', 'githubUrl', 'description', 'createdAt', 'memberIds', 'creatorId'])
-                    && request.resource.data.name is string
-                    && request.resource.data.name_lowercase is string
                     && request.resource.data.creatorId == request.auth.uid
-                    && request.resource.data.topic is string
-                    && request.resource.data.commitment is string
-                    && request.resource.data.githubUrl is string
-                    && request.resource.data.description is string
-                    && request.resource.data.createdAt == request.time
-                    && request.resource.data.memberIds is list
-                    && request.resource.data.memberIds.size() == 1
-                    && request.resource.data.memberIds[0] == request.auth.uid;
-      // Allow a user to join a cohort (add themselves to memberIds), if the cohort is not full and is less than 7 days old.
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 75
+                    && request.resource.data.memberIds == [request.auth.uid]
+                    && request.resource.data.createdAt == request.time;
       allow update: if request.auth != null
                     && resource.data.memberIds.size() < 25
                     && request.time - resource.data.createdAt < duration.value(7, 'd')
-                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds'])
-                    && isAddingToList(request, 'memberIds');
+                    && isAddingToList(resource.data.memberIds, request.resource.data.memberIds)
+                    && request.resource.data.memberIds[request.resource.data.memberIds.size() - 1] == request.auth.uid;
     }
     
-    // Notifications subcollection
     match /users/{userId}/notifications/{notificationId} {
-      // A user can only access their own notifications.
       allow read, write: if isOwner(userId);
     }
   }
