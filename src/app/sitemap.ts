@@ -37,7 +37,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/terms',
     '/tutor',
     '/hackathon',
-    '/marketplace'
+    '/marketplace',
+    '/feedback'
   ];
 
   return staticRoutes.map((route) => ({

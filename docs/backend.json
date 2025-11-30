@@ -260,6 +260,35 @@
         }
       },
       "required": ["id", "message", "isRead", "createdAt"]
+    },
+    "Feedback": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Feedback",
+      "type": "object",
+      "description": "Represents user-submitted feedback for the site.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "feedback": {
+          "type": "string",
+          "description": "The main content of the feedback submission."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the feedback was submitted."
+        },
+        "userId": {
+          "type": "string",
+          "description": "The ID of the user who submitted the feedback (if logged in)."
+        },
+        "username": {
+            "type": "string",
+            "description": "The username of the user who submitted the feedback (if logged in)."
+        }
+      },
+      "required": ["id", "feedback", "createdAt"]
     }
   },
   "auth": {
@@ -291,6 +320,12 @@
             "$ref": "#/entities/Notification"
         },
         "description": "Stores notifications for a specific user."
+    },
+    "/feedback/{feedbackId}": {
+      "schema": {
+        "$ref": "#/entities/Feedback"
+      },
+      "description": "Stores user-submitted feedback."
     }
   }
 }
