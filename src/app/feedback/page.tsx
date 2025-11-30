@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { useToast, ToastAction } from '@/components/ui/use-toast';
+import { useToast } from '@/components/ui/use-toast';
+import { ToastAction } from '@/components/ui/toast';
 import { useUser, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import Link from 'next/link';
@@ -53,26 +54,30 @@ export default function FeedbackPage() {
             });
             return;
         }
+        
+        if (!user) {
+             toast({
+                variant: 'destructive',
+                title: 'Authentication Required',
+                description: 'You must be signed in to submit feedback.',
+                action: (
+                    <ToastAction altText="Login" asChild>
+                        <Link href={`/login?redirect=${encodeURIComponent(pathname)}`}>Login</Link>
+                    </ToastAction>
+                ),
+            });
+            return;
+        }
 
         setIsSubmitting(true);
 
         try {
-            const feedbackData: {
-                feedback: string;
-                createdAt: any;
-                userId?: string;
-                userEmail?: string;
-            } = {
+            await addDoc(collection(firestore, 'feedback'), {
                 feedback,
                 createdAt: serverTimestamp(),
-            };
-
-            if (user) {
-                feedbackData.userId = user.uid;
-                feedbackData.userEmail = user.email || 'N/A';
-            }
-
-            await addDoc(collection(firestore, 'feedback'), feedbackData);
+                userId: user.uid,
+                username: user.displayName || user.email,
+            });
 
             toast({
                 title: 'Feedback Submitted!',
@@ -126,7 +131,7 @@ export default function FeedbackPage() {
                                 </p>
                             ) : (
                                  <p className="text-sm text-muted-foreground">
-                                   You are submitting anonymously. <Link href={`/login?redirect=${encodeURIComponent(pathname)}`} className="underline">Sign in</Link> to attach your profile.
+                                   <Link href={`/login?redirect=${encodeURIComponent(pathname)}`} className="underline">Sign in</Link> to submit feedback.
                                 </p>
                             )}
                         </div>
