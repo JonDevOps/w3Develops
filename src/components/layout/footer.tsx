@@ -40,7 +40,7 @@ export default function Footer() {
         <FaReddit size={24} />
       </a>
       <a href="https://www.youtube.com/watch?v=VLZhlngst2E&list=PLTwiqKOPckq-z5E-LUpMXpcv_GWXE2k4F" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
-         <FaPodcast size={24} />
+        <FaPodcast size={24} />
       </a>
     </>
   );
@@ -56,13 +56,13 @@ export default function Footer() {
           <div className="text-center">
             <p className="text-sm text-muted-foreground">Made with ❤️ for a better web</p>
             <div className="flex justify-center gap-4 text-sm mt-2 flex-wrap">
-                <Link href="/privacy" className="text-primary hover:text-primary/80">Privacy Policy</Link>
-                <Link href="/terms" className="text-primary hover:text-primary/80">Terms of Use</Link>
-                <Link href="/cookies" className="text-primary hover:text-primary/80">Cookies</Link>
-                <Link href="/newsletter" className="text-primary hover:text-primary/80">Newsletter</Link>
-                <Link href="/donate" className="text-primary hover:text-primary/80">Donate</Link>
-                <Link href="/marketplace" className="text-primary hover:text-primary/80">Marketplace</Link>
-                <Link href="/feedback" className="text-primary hover:text-primary/80">Feedback</Link>
+              <Link href="/privacy" className="text-primary hover:text-primary/80">Privacy Policy</Link>
+              <Link href="/terms" className="text-primary hover:text-primary/80">Terms of Use</Link>
+              <Link href="/cookies" className="text-primary hover:text-primary/80">Cookies</Link>
+              <Link href="/newsletter" className="text-primary hover:text-primary/80">Newsletter</Link>
+              <Link href="/donate" className="text-primary hover:text-primary/80">Donate</Link>
+              <Link href="/marketplace" className="text-primary hover:text-primary/80">Marketplace</Link>
+              <Link href="/feedback" className="text-primary hover:text-primary/80">Feedback</Link>
             </div>
           </div>
           <div className="flex justify-center gap-5">
@@ -78,13 +78,13 @@ export default function Footer() {
           <div className="text-center">
             <p className="text-sm text-muted-foreground">Made with ❤️ for a better web</p>
             <div className="flex justify-center gap-4 text-sm mt-2 flex-wrap">
-                <Link href="/privacy" className="text-primary hover:text-primary/80">Privacy Policy</Link>
-                <Link href="/terms" className="text-primary hover:text-primary/80">Terms of Use</Link>
-                <Link href="/cookies" className="text-primary hover:text-primary/80">Cookies</Link>
-                <Link href="/newsletter" className="text-primary hover:text-primary/80">Newsletter</Link>
-                <Link href="/donate" className="text-primary hover:text-primary/80">Donate</Link>
-                <Link href="/marketplace" className="text-primary hover:text-primary/80">Marketplace</Link>
-                <Link href="/feedback" className="text-primary hover:text-primary/80">Feedback</Link>
+              <Link href="/privacy" className="text-primary hover:text-primary/80">Privacy Policy</Link>
+              <Link href="/terms" className="text-primary hover:text-primary/80">Terms of Use</Link>
+              <Link href="/cookies" className="text-primary hover:text-primary/80">Cookies</Link>
+              <Link href="/newsletter" className="text-primary hover:text-primary/80">Newsletter</Link>
+              <Link href="/donate" className="text-primary hover:text-primary/80">Donate</Link>
+              <Link href="/marketplace" className="text-primary hover:text-primary/80">Marketplace</Link>
+              <Link href="/feedback" className="text-primary hover:text-primary/80">Feedback</Link>
             </div>
           </div>
           <div className="flex justify-end gap-5">

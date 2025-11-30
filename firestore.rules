@@ -93,8 +93,11 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
 
+    // Feedback collection
     match /feedback/{feedbackId} {
-      allow read: if false; 
+      // Allow creators to read their own feedback (useful for verification)
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      // Allow authenticated users to create feedback
       allow create: if request.auth != null
                   && request.resource.data.userId == request.auth.uid
                   && request.resource.data.feedback is string
