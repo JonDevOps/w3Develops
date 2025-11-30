@@ -84,8 +84,7 @@ service cloud.firestore {
                   && request.resource.data.feedback.size() > 0
                   && request.resource.data.createdAt == request.time
                   && request.resource.data.userId == request.auth.uid
-                  && request.resource.data.username is string
-                  && request.resource.data.keys().hasAll(['feedback', 'createdAt', 'userId', 'username']);
+                  && request.resource.data.username is string;
     }
   }
 }
