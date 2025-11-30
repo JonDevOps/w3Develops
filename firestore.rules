@@ -17,7 +17,7 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow read: if true;
+      allow read: if request.auth != null;
       allow create: if isOwner(userId)
                     && request.resource.data.username == request.resource.data.username
                     && request.resource.data.email == request.resource.data.email;
