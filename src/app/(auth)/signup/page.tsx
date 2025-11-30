@@ -150,7 +150,7 @@ function SignupPageContent() {
       
       const userDocRef = doc(firestore, "users", newUser.uid);
       const userData: Omit<UserProfile, 'id' | 'createdAt' | 'lastLoginAt' > & { createdAt: any, lastLoginAt: any } = {
-        email: email,
+        email: newUser.email!,
         username: username,
         username_lowercase: usernameLower,
         profilePictureUrl: '',
@@ -300,3 +300,5 @@ export default function SignupPage() {
     </Suspense>
   )
 }
+
+    

@@ -1,3 +1,4 @@
+
 rules_version = '2';
 
 service cloud.firestore {
@@ -19,8 +20,8 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if request.auth != null;
       allow create: if isOwner(userId)
-                    && request.resource.data.username == request.resource.data.username
-                    && request.resource.data.email == request.resource.data.email;
+                    && request.resource.data.email == request.auth.token.email
+                    && request.resource.data.username is string;
       allow delete: if isOwner(userId);
       allow update: if isOwner(userId) && (
         // Standard profile updates by owner
@@ -88,3 +89,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
