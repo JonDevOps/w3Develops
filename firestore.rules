@@ -88,5 +88,13 @@ service cloud.firestore {
       // A user can only access their own notifications.
       allow read, write: if isOwner(userId);
     }
+    
+    // Feedback collection
+    match /feedback/{feedbackId} {
+      // Allow authenticated users to create feedback
+      allow create: if request.auth != null;
+      // Allow creators to read their own feedback (useful for verification)
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
   }
 }
