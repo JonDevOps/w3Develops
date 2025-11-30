@@ -18,24 +18,7 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if request.auth != null;
-      allow create: if isOwner(userId)
-                    && request.resource.data.email == request.auth.token.email
-                    && request.resource.data.username == request.resource.data.username
-                    && request.resource.data.username_lowercase == request.resource.data.username.lower()
-                    && request.resource.data.profilePictureUrl == ''
-                    && request.resource.data.bio == ''
-                    && request.resource.data.socialLinks == {}
-                    && request.resource.data.skills.size() == 0
-                    && request.resource.data.createdAt == request.time
-                    && request.resource.data.lastLoginAt == request.time
-                    && request.resource.data.followers.size() == 0
-                    && request.resource.data.following.size() == 0
-                    && request.resource.data.followInfoPrivate == false
-                    && request.resource.data.createdStudyGroupIds.size() == 0
-                    && request.resource.data.joinedStudyGroupIds.size() == 0
-                    && request.resource.data.createdCohortIds.size() == 0
-                    && request.resource.data.joinedCohortIds.size() == 0
-                    && request.resource.data.isSubscribedToNewsletter == false;
+      allow create: if request.auth.uid == userId;
       allow delete: if isOwner(userId);
       allow update: if isOwner(userId) && (
         // Standard profile updates by owner
