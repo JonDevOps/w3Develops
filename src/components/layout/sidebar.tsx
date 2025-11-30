@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -73,7 +72,7 @@ export default function Sidebar() {
                     <span className="sr-only">Toggle Navigation</span>
                 </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[350px] p-0 bg-card">
+            <SheetContent side="left" className="w-[300px] sm:w-[350px] p-0 bg-card">
                 {sidebarContent}
             </SheetContent>
         </Sheet>
