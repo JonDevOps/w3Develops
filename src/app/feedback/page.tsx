@@ -138,7 +138,7 @@ export default function FeedbackPage() {
                                     disabled={isSubmitting} 
                                 />
                                 <p className="text-sm text-muted-foreground">
-                                    You are submitting as {user.displayName || user.email}.
+                                    You are submitting as {user.email}.
                                 </p>
                             </div>
                             <Button type="submit" disabled={isSubmitting}>
