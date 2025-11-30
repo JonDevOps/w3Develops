@@ -17,6 +17,15 @@ import { X, Lock } from 'lucide-react';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
 import { Switch } from '@/components/ui/switch';
 
+// Helper function to ensure a URL is absolute
+const ensureAbsoluteUrl = (url: string) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  return `https://${url}`;
+};
+
 export default function EditProfilePage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
@@ -69,7 +78,6 @@ export default function EditProfilePage() {
     setSkills(skills.filter(skill => skill !== skillToRemove));
   };
 
-
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !userDocRef) {
@@ -83,9 +91,9 @@ export default function EditProfilePage() {
       bio,
       skills,
       socialLinks: {
-        github: github,
-        linkedin: linkedin,
-        twitter: twitter,
+        github: ensureAbsoluteUrl(github),
+        linkedin: ensureAbsoluteUrl(linkedin),
+        twitter: ensureAbsoluteUrl(twitter),
       },
       followInfoPrivate,
     };
@@ -165,15 +173,15 @@ export default function EditProfilePage() {
                 <h3 className="text-lg font-medium">Social Links</h3>
                  <div className="grid gap-2">
                     <Label htmlFor="github">GitHub</Label>
-                    <Input id="github" placeholder="https://github.com/your-username" value={github} onChange={(e) => setGithub(e.target.value)} disabled={isSubmitting} maxLength={150}/>
+                    <Input id="github" placeholder="github.com/your-username" value={github} onChange={(e) => setGithub(e.target.value)} disabled={isSubmitting} maxLength={150}/>
                 </div>
                  <div className="grid gap-2">
                     <Label htmlFor="linkedin">LinkedIn</Label>
-                    <Input id="linkedin" placeholder="https://linkedin.com/in/your-profile" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} disabled={isSubmitting} maxLength={150}/>
+                    <Input id="linkedin" placeholder="linkedin.com/in/your-profile" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} disabled={isSubmitting} maxLength={150}/>
                 </div>
                  <div className="grid gap-2">
                     <Label htmlFor="twitter">Twitter / X</Label>
-                    <Input id="twitter" placeholder="https://twitter.com/your-handle" value={twitter} onChange={(e) => setTwitter(e.target.value)} disabled={isSubmitting} maxLength={150}/>
+                    <Input id="twitter" placeholder="twitter.com/your-handle" value={twitter} onChange={(e) => setTwitter(e.target.value)} disabled={isSubmitting} maxLength={150}/>
                 </div>
             </div>
 

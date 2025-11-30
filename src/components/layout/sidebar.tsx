@@ -38,7 +38,7 @@ export default function Sidebar() {
          <nav className="flex flex-col h-full text-foreground">
              <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
                 <Link href="/" className="flex items-center gap-2 font-semibold">
-                     <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" />
+                     <Image src="/logo.png" alt="w3Develops Logo" width={32} height={32} className="rounded-full" priority />
                      <span className="">w3Develops</span>
                 </Link>
             </div>

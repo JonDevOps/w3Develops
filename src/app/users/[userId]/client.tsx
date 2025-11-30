@@ -20,6 +20,15 @@ import {
 } from "@/components/ui/dialog"
 import FollowButton from '@/components/FollowButton';
 
+// Helper function to ensure a URL is absolute
+const ensureAbsoluteUrl = (url: string) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  return `https://${url}`;
+};
+
 function ProfilePageSkeleton() {
   return (
     <div className="space-y-8 animate-pulse">
@@ -88,6 +97,7 @@ function UserFollowList({ title, userIds }: { title: string, userIds: string[] }
             <DialogContent className="sm:max-w-[425px]">
                  <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
+                    <DialogDescription>A list of users who are {title.toLowerCase()}.</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto">
                     {isLoading && <p>Loading...</p>}
@@ -231,17 +241,17 @@ export default function UserProfilePage({ params }: { params: { userId: string }
             <p className="text-muted-foreground mt-1 max-w-2xl">{userProfile.bio}</p>
             <div className="flex justify-center md:justify-start items-center gap-4 mt-4">
               {userProfile.socialLinks?.github && (
-                <a href={userProfile.socialLinks.github} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+                <a href={ensureAbsoluteUrl(userProfile.socialLinks.github)} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                   <Github className="w-6 h-6" />
                 </a>
               )}
               {userProfile.socialLinks?.linkedin && (
-                <a href={userProfile.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+                <a href={ensureAbsoluteUrl(userProfile.socialLinks.linkedin)} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                   <Linkedin className="w-6 h-6" />
                 </a>
               )}
               {userProfile.socialLinks?.twitter && (
-                <a href={userProfile.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+                <a href={ensureAbsoluteUrl(userProfile.socialLinks.twitter)} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
                   <Twitter className="w-6 h-6" />
                 </a>
               )}
@@ -287,5 +297,3 @@ export default function UserProfilePage({ params }: { params: { userId: string }
     </div>
   );
 }
-
-    
