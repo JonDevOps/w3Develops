@@ -34,7 +34,12 @@ export default function FeedbackPage() {
                 <body>
                     <h1>Feedback Submission Failed</h1>
                     <p>The following error occurred while trying to submit your feedback:</p>
-                    <pre>${JSON.stringify({ code: error.code, message: error.message, name: error.name }, null, 2)}</pre>
+                    <pre>${JSON.stringify({
+                        code: error.code,
+                        message: error.message,
+                        name: error.name,
+                        stack: error.stack
+                    }, null, 2)}</pre>
                 </body>
             </html>
         `;
@@ -55,28 +60,14 @@ export default function FeedbackPage() {
             return;
         }
         
-        if (!user) {
-             toast({
-                variant: 'destructive',
-                title: 'Authentication Required',
-                description: 'You must be signed in to submit feedback.',
-                action: (
-                    <ToastAction altText="Login" asChild>
-                        <Link href={`/login?redirect=${encodeURIComponent(pathname)}`}>Login</Link>
-                    </ToastAction>
-                ),
-            });
-            return;
-        }
-
         setIsSubmitting(true);
 
         try {
             await addDoc(collection(firestore, 'feedback'), {
                 feedback,
                 createdAt: serverTimestamp(),
-                userId: user.uid,
-                username: user.displayName || user.email,
+                userId: user ? user.uid : null,
+                username: user ? (user.displayName || user.email) : 'Anonymous',
             });
 
             toast({
@@ -131,7 +122,7 @@ export default function FeedbackPage() {
                                 </p>
                             ) : (
                                  <p className="text-sm text-muted-foreground">
-                                   <Link href={`/login?redirect=${encodeURIComponent(pathname)}`} className="underline">Sign in</Link> to submit feedback.
+                                   Submitting anonymously. <Link href={`/login?redirect=${encodeURIComponent(pathname)}`} className="underline">Sign in</Link> for your feedback to be associated with your account.
                                 </p>
                             )}
                         </div>
