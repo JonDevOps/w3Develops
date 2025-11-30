@@ -25,16 +25,16 @@ service cloud.firestore {
                     && request.resource.data.profilePictureUrl == ''
                     && request.resource.data.bio == ''
                     && request.resource.data.socialLinks == {}
-                    && request.resource.data.skills == []
+                    && request.resource.data.skills.size() == 0
                     && request.resource.data.createdAt == request.time
                     && request.resource.data.lastLoginAt == request.time
-                    && request.resource.data.followers == []
-                    && request.resource.data.following == []
+                    && request.resource.data.followers.size() == 0
+                    && request.resource.data.following.size() == 0
                     && request.resource.data.followInfoPrivate == false
-                    && request.resource.data.createdStudyGroupIds == []
-                    && request.resource.data.joinedStudyGroupIds == []
-                    && request.resource.data.createdCohortIds == []
-                    && request.resource.data.joinedCohortIds == []
+                    && request.resource.data.createdStudyGroupIds.size() == 0
+                    && request.resource.data.joinedStudyGroupIds.size() == 0
+                    && request.resource.data.createdCohortIds.size() == 0
+                    && request.resource.data.joinedCohortIds.size() == 0
                     && request.resource.data.isSubscribedToNewsletter == false;
       allow delete: if isOwner(userId);
       allow update: if isOwner(userId) && (
