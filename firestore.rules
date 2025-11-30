@@ -78,13 +78,13 @@ service cloud.firestore {
     }
 
     match /feedback/{feedbackId} {
-      allow read: if false; // No one can read feedback directly
+      allow read: if false; 
       allow create: if request.auth != null
+                  && request.resource.data.userId == request.auth.uid
                   && request.resource.data.feedback is string
                   && request.resource.data.feedback.size() > 0
-                  && request.resource.data.createdAt == request.time
-                  && request.resource.data.userId == request.auth.uid
-                  && request.resource.data.username is string;
+                  && request.resource.data.username is string
+                  && request.resource.data.createdAt == request.time;
     }
   }
 }

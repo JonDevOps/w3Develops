@@ -8,9 +8,10 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { ToastAction } from '@/components/ui/toast';
 import { useUser, useFirestore } from '@/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { UserProfile } from '@/lib/types';
 
 export default function FeedbackPage() {
     const { user } = useUser();
@@ -51,6 +52,15 @@ export default function FeedbackPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!user) {
+             toast({
+                variant: 'destructive',
+                title: 'Not Logged In',
+                description: 'You must be signed in to submit feedback.',
+            });
+            return;
+        }
+
         if (!feedback.trim()) {
             toast({
                 variant: 'destructive',
@@ -63,11 +73,21 @@ export default function FeedbackPage() {
         setIsSubmitting(true);
 
         try {
+            // Fetch the user's profile to get their username
+            const userDocRef = doc(firestore, 'users', user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+
+            if (!userDocSnap.exists()) {
+                throw new Error("Could not find your user profile to get username.");
+            }
+            
+            const userProfile = userDocSnap.data() as UserProfile;
+
             await addDoc(collection(firestore, 'feedback'), {
                 feedback,
                 createdAt: serverTimestamp(),
-                userId: user ? user.uid : null,
-                username: user ? (user.displayName || user.email) : 'Anonymous',
+                userId: user.uid,
+                username: userProfile.username, // Use the username from the profile
             });
 
             toast({
@@ -103,33 +123,38 @@ export default function FeedbackPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="grid w-full gap-1.5">
-                            <Label htmlFor="feedback-message">Your Feedback</Label>
-                            <Textarea 
-                                placeholder="Type your message here." 
-                                id="feedback-message"
-                                value={feedback}
-                                onChange={(e) => setFeedback(e.target.value)}
-                                required
-                                minLength={10}
-                                maxLength={2000}
-                                disabled={isSubmitting} 
-                            />
-                            {user ? (
+                    {user ? (
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            <div className="grid w-full gap-1.5">
+                                <Label htmlFor="feedback-message">Your Feedback</Label>
+                                <Textarea 
+                                    placeholder="Type your message here." 
+                                    id="feedback-message"
+                                    value={feedback}
+                                    onChange={(e) => setFeedback(e.target.value)}
+                                    required
+                                    minLength={10}
+                                    maxLength={2000}
+                                    disabled={isSubmitting} 
+                                />
                                 <p className="text-sm text-muted-foreground">
                                     You are submitting as {user.displayName || user.email}.
                                 </p>
-                            ) : (
-                                 <p className="text-sm text-muted-foreground">
-                                   Submitting anonymously. <Link href={`/login?redirect=${encodeURIComponent(pathname)}`} className="underline">Sign in</Link> for your feedback to be associated with your account.
-                                </p>
-                            )}
-                        </div>
-                        <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
-                        </Button>
-                    </form>
+                            </div>
+                            <Button type="submit" disabled={isSubmitting}>
+                                {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
+                            </Button>
+                        </form>
+                    ) : (
+                         <div className="text-center py-8 space-y-4">
+                            <p className="text-muted-foreground">
+                                You must be signed in to submit feedback.
+                            </p>
+                            <Button asChild>
+                                <Link href={`/login?redirect=${encodeURIComponent(pathname)}`}>Sign In</Link>
+                            </Button>
+                         </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
