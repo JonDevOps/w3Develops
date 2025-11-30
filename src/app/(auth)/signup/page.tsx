@@ -28,6 +28,30 @@ function useDebounce(value: string, delay: number) {
   return debouncedValue;
 }
 
+function validatePassword(password: string) {
+    const errors: string[] = [];
+    if (password.length < 6) {
+        errors.push("be at least 6 characters long");
+    }
+    if (!/[A-Z]/.test(password)) {
+        errors.push("contain an uppercase letter");
+    }
+    if (!/[a-z]/.test(password)) {
+        errors.push("contain a lowercase letter");
+    }
+    if (!/[0-9]/.test(password)) {
+        errors.push("contain a number");
+    }
+    if (!/[^A-Za-z0-9]/.test(password)) {
+        errors.push("contain a special character");
+    }
+    
+    if (errors.length > 0) {
+        return `Password must ${errors.join(', ')}.`;
+    }
+    return null;
+}
+
 
 function SignupPageContent() {
   const auth = useAuth();
@@ -93,6 +117,17 @@ function SignupPageContent() {
             variant: "destructive",
             title: "Username taken",
             description: "Please choose another username.",
+        });
+        return;
+    }
+
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+        toast({
+            variant: "destructive",
+            title: "Weak Password",
+            description: passwordError,
+            duration: 7000,
         });
         return;
     }
@@ -236,6 +271,9 @@ function SignupPageContent() {
                   disabled={isSubmitting}
                   autoComplete="new-password"
                 />
+                <p className="text-xs text-muted-foreground">
+                    Must contain an uppercase letter, a lowercase letter, a number, a special character, and be at least 6 characters long.
+                </p>
               </div>
               <Button type="submit" className="w-full" disabled={isSubmitting || !isUsernameAvailable}>
                 {isSubmitting ? 'Creating Account...' : 'Create Account'}
