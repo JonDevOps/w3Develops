@@ -3,65 +3,51 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    
+
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
     }
 
-    // Helper function for list operations
     function isAddingToList(list, newList) {
       return newList.size() == list.size() + 1 && newList.hasAll(list);
     }
-    
+
     function isRemovingFromList(list, newList) {
       return newList.size() == list.size() - 1 && list.hasAll(newList);
     }
 
     match /users/{userId} {
       allow read: if request.auth != null;
-      allow create: if request.auth.uid == userId
+
+      allow create: if isOwner(userId)
                     && request.resource.data.email == request.auth.token.email
                     && request.resource.data.username is string
-                    && request.resource.data.username_lowercase == request.resource.data.username.lower()
-                    && request.resource.data.bio == ''
-                    && request.resource.data.profilePictureUrl == ''
-                    && request.resource.data.skills.size() == 0
-                    && request.resource.data.followers.size() == 0
-                    && request.resource.data.following.size() == 0
-                    && request.resource.data.socialLinks.size() == 0
-                    && request.resource.data.followInfoPrivate == false
-                    && request.resource.data.createdStudyGroupIds.size() == 0
-                    && request.resource.data.joinedStudyGroupIds.size() == 0
-                    && request.resource.data.createdCohortIds.size() == 0
-                    && request.resource.data.joinedCohortIds.size() == 0
-                    && request.resource.data.isSubscribedToNewsletter == false
-                    && request.resource.data.createdAt == request.time
-                    && request.resource.data.lastLoginAt == request.time;
+                    && request.resource.data.username.size() > 0
+                    && request.resource.data.username.size() <= 30
+                    && !exists(/databases/$(database)/documents/users/$(request.resource.data.username_lowercase));
+
       allow delete: if isOwner(userId);
+
       allow update: if isOwner(userId) && (
-        // Standard profile updates by owner
-        (request.resource.data.keys().hasOnly([
-            'bio', 'skills', 'socialLinks', 'followInfoPrivate', 'profilePictureUrl', 'isSubscribedToNewsletter', 'email'
-        ])) ||
-        // Updating last login/logout timestamps
-        (request.resource.data.keys().hasOnly(['lastLoginAt'])) ||
-        (request.resource.data.keys().hasOnly(['lastLogoutAt'])) ||
-        // Joining or creating a group/cohort
+        (
+          request.resource.data.keys().hasOnly([
+            'bio', 'skills', 'socialLinks', 'followInfoPrivate', 'profilePictureUrl', 'isSubscribedToNewsletter', 'lastLoginAt', 'lastLogoutAt'
+          ])
+        ) ||
         (isAddingToList(resource.data.createdStudyGroupIds, request.resource.data.createdStudyGroupIds)) ||
         (isAddingToList(resource.data.joinedStudyGroupIds, request.resource.data.joinedStudyGroupIds)) ||
         (isAddingToList(resource.data.createdCohortIds, request.resource.data.createdCohortIds)) ||
         (isAddingToList(resource.data.joinedCohortIds, request.resource.data.joinedCohortIds)) ||
-        // Following or unfollowing a user
         (isAddingToList(resource.data.following, request.resource.data.following)) ||
         (isRemovingFromList(resource.data.following, request.resource.data.following)) ||
         (isAddingToList(resource.data.followers, request.resource.data.followers)) ||
         (isRemovingFromList(resource.data.followers, request.resource.data.followers))
       );
     }
-    
+
     match /studyGroups/{groupId} {
       allow read: if true;
-      allow create: if request.auth != null 
+      allow create: if request.auth != null
                     && request.resource.data.creatorId == request.auth.uid
                     && request.resource.data.name is string
                     && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 75
@@ -76,7 +62,7 @@ service cloud.firestore {
 
     match /cohorts/{cohortId} {
       allow read: if true;
-      allow create: if request.auth != null 
+      allow create: if request.auth != null
                     && request.resource.data.creatorId == request.auth.uid
                     && request.resource.data.name is string
                     && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 75
@@ -88,22 +74,9 @@ service cloud.firestore {
                     && isAddingToList(resource.data.memberIds, request.resource.data.memberIds)
                     && request.resource.data.memberIds[request.resource.data.memberIds.size() - 1] == request.auth.uid;
     }
-    
+
     match /users/{userId}/notifications/{notificationId} {
       allow read, write: if isOwner(userId);
-    }
-
-    // Feedback collection
-    match /feedback/{feedbackId} {
-      // Allow creators to read their own feedback (useful for verification)
-      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
-      // Allow authenticated users to create feedback
-      allow create: if request.auth != null
-                  && request.resource.data.userId == request.auth.uid
-                  && request.resource.data.feedback is string
-                  && request.resource.data.feedback.size() > 0
-                  && request.resource.data.username is string
-                  && request.resource.data.createdAt == request.time;
     }
   }
 }

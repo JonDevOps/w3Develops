@@ -84,7 +84,7 @@ const cybersecurityResources: LearningResource[] = [
         description: "Cybersecurity involves protecting systems, networks, and programs from digital attacks. These attacks are usually aimed at accessing, changing, or destroying sensitive information; extorting money from users; or interrupting normal business processes.",
         links: []
     }
-];
+]
 
 export default function LearnPage() {
     return (
