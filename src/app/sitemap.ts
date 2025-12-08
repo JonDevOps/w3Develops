@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/cookies',
     '/donate',
     '/explore',
+    '/feedback',
     '/groups',
     '/groups/create',
     '/hackathons',
@@ -37,8 +38,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/terms',
     '/tutor',
     '/hackathon',
-    '/marketplace',
-    '/feedback'
+    '/marketplace'
   ];
 
   return staticRoutes.map((route) => ({

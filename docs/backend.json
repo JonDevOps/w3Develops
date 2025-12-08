@@ -110,6 +110,9 @@
             "type": "array",
             "description": "A list of Cohort IDs this user has joined (but not created).",
             "items": { "type": "string" }
+        },
+        "isSubscribedToNewsletter": {
+            "type": "boolean"
         }
       },
       "required": [
