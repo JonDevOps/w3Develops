@@ -229,18 +229,18 @@ function SignupPageContent() {
   }
 
   return (
-    <div class="p-4 md:p-10">
-      <div class="flex items-center justify-center min-h-[calc(100vh-200px)]">
-        <Card class="w-full max-w-sm">
+    <div className="p-4 md:p-10">
+      <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
+        <Card className="w-full max-w-sm">
           <CardHeader>
-            <CardTitle class="font-headline text-2xl">Create an Account</CardTitle>
+            <CardTitle className="font-headline text-2xl">Create an Account</CardTitle>
             <CardDescription>
               Join our community of developers.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSignUp} class="grid gap-4">
-              <div class="grid gap-2">
+            <form onSubmit={handleSignUp} className="grid gap-4">
+              <div className="grid gap-2">
                 <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
@@ -250,15 +250,15 @@ function SignupPageContent() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   disabled={isSubmitting}
-                  class={!isUsernameAvailable ? 'border-destructive' : ''}
+                  className={!isUsernameAvailable ? 'border-destructive' : ''}
                   autoComplete="username"
                 />
-                {isUsernameChecking && <p class="text-xs text-muted-foreground">Checking...</p>}
+                {isUsernameChecking && <p className="text-xs text-muted-foreground">Checking...</p>}
                 {!isUsernameAvailable && !isUsernameChecking && username.length > 2 && (
-                    <p class="text-xs text-destructive">Username is already taken.</p>
+                    <p className="text-xs text-destructive">Username is already taken.</p>
                 )}
               </div>
-              <div class="grid gap-2">
+              <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
@@ -271,7 +271,7 @@ function SignupPageContent() {
                   autoComplete="email"
                 />
               </div>
-              <div class="grid gap-2">
+              <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
                 <Input 
                   id="password" 
@@ -283,18 +283,18 @@ function SignupPageContent() {
                   disabled={isSubmitting}
                   autoComplete="new-password"
                 />
-                <p class="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                     Must contain an uppercase letter, a lowercase letter, a number, a special character, and be at least 6 characters long.
                 </p>
               </div>
-              <Button type="submit" class="w-full" disabled={isSubmitting || !isUsernameAvailable}>
+              <Button type="submit" className="w-full" disabled={isSubmitting || !isUsernameAvailable}>
                 {isSubmitting ? 'Creating Account...' : 'Create Account'}
               </Button>
             </form>
           </CardContent>
-          <CardFooter class="text-center text-sm">
+          <CardFooter className="text-center text-sm">
             Already have an account?&nbsp;
-            <Link href={`/login?redirect=${encodeURIComponent(redirectUrl)}`} class="underline">
+            <Link href={`/login?redirect=${encodeURIComponent(redirectUrl)}`} className="underline">
               Login
             </Link>
           </CardFooter>
