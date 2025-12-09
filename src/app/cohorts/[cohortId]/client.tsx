@@ -98,7 +98,7 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
     return <div className="text-center py-10 p-4 md:p-10">Cohort not found.</div>;
   }
 
-  const isNew = cohort.createdAt && (Date.now() - cohort.createdAt.toMillis()) < ONE_WEEK_IN_MS;
+  const isNew = cohort.createdAt && (Date.now() - (cohort.createdAt as any).toMillis()) < ONE_WEEK_IN_MS;
 
   return (
     <div className="space-y-8 p-4 md:p-10">
@@ -133,7 +133,7 @@ export default function CohortDashboardPage({ params }: { params: { cohortId: st
            </div>
            <div className="flex items-center text-sm text-muted-foreground">
                 <CalendarDays className="w-4 h-4 mr-2" />
-                Created on {formatTimestamp(cohort.createdAt)}
+                Created on {formatTimestamp(cohort.createdAt as any)}
            </div>
         </CardContent>
       </Card>
