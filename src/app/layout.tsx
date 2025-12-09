@@ -1,6 +1,6 @@
 
 import type { Metadata, Viewport } from "next";
-import { Inter, Lexend } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
@@ -14,7 +14,7 @@ const inter = Inter({
   variable: '--font-sans',
 });
 
-const lexend = Lexend({
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   variable: '--font-headline',
 });
@@ -60,7 +60,7 @@ export default function RootLayout({
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
           inter.variable,
-          lexend.variable
+          spaceGrotesk.variable
         )}
       >
         <FirebaseClientProvider>
