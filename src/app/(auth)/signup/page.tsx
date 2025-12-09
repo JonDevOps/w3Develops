@@ -12,7 +12,7 @@ import { useAuth, useUser, useFirestore } from '@/firebase';
 import { useToast } from "@/components/ui/use-toast";
 import { doc, getDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
-import { User } from '@/types/user';
+import { User } from '@/lib/types';
 import { EmailAuthProvider, linkWithCredential, createUserWithEmailAndPassword, User as FirebaseUser, UserCredential } from 'firebase/auth';
 
 function useDebounce(value: string, delay: number) {
@@ -229,18 +229,18 @@ function SignupPageContent() {
   }
 
   return (
-    <div className="p-4 md:p-10">
-      <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-        <Card className="w-full max-w-sm">
+    <div class="p-4 md:p-10">
+      <div class="flex items-center justify-center min-h-[calc(100vh-200px)]">
+        <Card class="w-full max-w-sm">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">Create an Account</CardTitle>
+            <CardTitle class="font-headline text-2xl">Create an Account</CardTitle>
             <CardDescription>
               Join our community of developers.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSignUp} className="grid gap-4">
-              <div className="grid gap-2">
+            <form onSubmit={handleSignUp} class="grid gap-4">
+              <div class="grid gap-2">
                 <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
@@ -250,15 +250,15 @@ function SignupPageContent() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   disabled={isSubmitting}
-                  className={!isUsernameAvailable ? 'border-destructive' : ''}
+                  class={!isUsernameAvailable ? 'border-destructive' : ''}
                   autoComplete="username"
                 />
-                {isUsernameChecking && <p className="text-xs text-muted-foreground">Checking...</p>}
+                {isUsernameChecking && <p class="text-xs text-muted-foreground">Checking...</p>}
                 {!isUsernameAvailable && !isUsernameChecking && username.length > 2 && (
-                    <p className="text-xs text-destructive">Username is already taken.</p>
+                    <p class="text-xs text-destructive">Username is already taken.</p>
                 )}
               </div>
-              <div className="grid gap-2">
+              <div class="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
@@ -271,7 +271,7 @@ function SignupPageContent() {
                   autoComplete="email"
                 />
               </div>
-              <div className="grid gap-2">
+              <div class="grid gap-2">
                 <Label htmlFor="password">Password</Label>
                 <Input 
                   id="password" 
@@ -283,18 +283,18 @@ function SignupPageContent() {
                   disabled={isSubmitting}
                   autoComplete="new-password"
                 />
-                <p className="text-xs text-muted-foreground">
+                <p class="text-xs text-muted-foreground">
                     Must contain an uppercase letter, a lowercase letter, a number, a special character, and be at least 6 characters long.
                 </p>
               </div>
-              <Button type="submit" className="w-full" disabled={isSubmitting || !isUsernameAvailable}>
+              <Button type="submit" class="w-full" disabled={isSubmitting || !isUsernameAvailable}>
                 {isSubmitting ? 'Creating Account...' : 'Create Account'}
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="text-center text-sm">
+          <CardFooter class="text-center text-sm">
             Already have an account?&nbsp;
-            <Link href={`/login?redirect=${encodeURIComponent(redirectUrl)}`} className="underline">
+            <Link href={`/login?redirect=${encodeURIComponent(redirectUrl)}`} class="underline">
               Login
             </Link>
           </CardFooter>

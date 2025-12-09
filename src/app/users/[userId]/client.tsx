@@ -4,7 +4,7 @@
 import { useCollection, useFirestore, useUser } from '@/firebase';
 import { useState, useEffect, useMemo } from 'react';
 import { doc, getDoc, DocumentReference, collection, query, where, Query, documentId, getDocs } from 'firebase/firestore';
-import { UserProfile, StudyGroup, Cohort } from '@/lib/types';
+import { UserProfile, StudyGroup, Cohort } from '@/types/user';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
