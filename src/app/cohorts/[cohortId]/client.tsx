@@ -5,7 +5,7 @@ import { useDoc } from '@/firebase/firestore/use-doc';
 import { useEffect, useState, useMemo } from 'react';
 import { doc, DocumentReference, collection, query, where, getDocs, Query, documentId } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
-import { Cohort, UserProfile } from '@/types/user';
+import { Cohort, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
