@@ -16,7 +16,7 @@ type WithId<T> = T & { id: string };
  * @template T Type of the document data.
  */
 export interface UseDocResult<T> {
-  data: T | null; // Document data, or null.
+  data: WithId<T> | null; // Document data, or null.
   isLoading: boolean;       // True if loading.
   error: FirestoreError | Error | null; // Error object, or null.
 }
@@ -35,7 +35,7 @@ export interface UseDocResult<T> {
  */
 export function useDoc<T = any>(
   docRef: DocumentReference<DocumentData> | null | undefined
-): UseDocResult<WithId<T>> {
+): UseDocResult<T> {
   const [data, setData] = useState<WithId<T> | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<FirestoreError | Error | null>(null);
