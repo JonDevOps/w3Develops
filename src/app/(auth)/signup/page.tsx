@@ -10,10 +10,10 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useAuth, useUser, useFirestore } from '@/firebase';
 import { useToast } from "@/components/ui/use-toast";
-import { doc, collection, query, where, getDocs, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
-import { UserProfile } from '@/lib/types';
-import { deleteUser, UserCredential, createUserWithEmailAndPassword } from 'firebase/auth';
+import { User } from '@/types/user';
+import { EmailAuthProvider, linkWithCredential, createUserWithEmailAndPassword, User as FirebaseUser, UserCredential } from 'firebase/auth';
 
 function useDebounce(value: string, delay: number) {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -52,7 +52,6 @@ function validatePassword(password: string) {
     return null;
 }
 
-
 function SignupPageContent() {
   const auth = useAuth();
   const firestore = useFirestore();
@@ -81,10 +80,9 @@ function SignupPageContent() {
     }
     setIsUsernameChecking(true);
     const usernameLower = usernameToCheck.toLowerCase();
-    const usersRef = collection(firestore, 'users');
-    const q = query(usersRef, where("username_lowercase", "==", usernameLower));
-    const querySnapshot = await getDocs(q);
-    setIsUsernameAvailable(querySnapshot.empty);
+    const usernameDocRef = doc(firestore, 'usernames', usernameLower);
+    const docSnap = await getDoc(usernameDocRef);
+    setIsUsernameAvailable(!docSnap.exists());
     setIsUsernameChecking(false);
   }, [firestore]);
 
@@ -96,7 +94,8 @@ function SignupPageContent() {
 
 
   useEffect(() => {
-    if (!isUserLoading && user) {
+    // Redirect if user is logged in with a permanent account
+    if (!isUserLoading && user && !user.isAnonymous) {
       router.push(redirectUrl);
     }
   }, [user, isUserLoading, router, redirectUrl]);
@@ -138,27 +137,43 @@ function SignupPageContent() {
     try {
       const usernameLower = username.toLowerCase();
       
-      const q = query(collection(firestore, 'users'), where("username_lowercase", "==", usernameLower));
-      const querySnapshot = await getDocs(q);
-      if(!querySnapshot.empty) {
+      // Final check on the public usernames collection before proceeding
+      const usernameDocRef = doc(firestore, 'usernames', usernameLower);
+      const usernameDoc = await getDoc(usernameDocRef);
+      if (usernameDoc.exists()) {
         setIsUsernameAvailable(false);
         throw new Error("This username is already in use. Please choose another one.");
       }
 
-      userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const newUser = userCredential.user;
-      
-      const userDocRef = doc(firestore, "users", newUser.uid);
-      const userData = {
-        email: newUser.email!,
+      let finalUser: FirebaseUser;
+      const currentUser = auth.currentUser;
+
+      if (currentUser && currentUser.isAnonymous) {
+        // Scenario 1: Upgrade anonymous user
+        const credential = EmailAuthProvider.credential(email, password);
+        userCredential = await linkWithCredential(currentUser, credential);
+        finalUser = userCredential.user;
+      } else {
+        // Scenario 2: Create a new user from scratch
+        userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        finalUser = userCredential.user;
+      }
+
+      // Create user profile documents
+      const batch = writeBatch(firestore);
+
+      const userDocRef = doc(firestore, "users", finalUser.uid);
+      const userData: Partial<User> = {
+        email: finalUser.email!,
         username: username,
         username_lowercase: usernameLower,
+        createdAt: serverTimestamp(),
+        lastLoginAt: serverTimestamp(),
+        // Initialize empty fields
         profilePictureUrl: '',
         bio: '',
         socialLinks: {},
         skills: [],
-        createdAt: serverTimestamp(),
-        lastLoginAt: serverTimestamp(),
         followers: [],
         following: [],
         followInfoPrivate: false,
@@ -168,30 +183,22 @@ function SignupPageContent() {
         joinedCohortIds: [],
         isSubscribedToNewsletter: false,
       };
-      await setDoc(userDocRef, userData);
+      
+      batch.set(userDocRef, userData, { merge: true }); 
+
+      const newUsernameDocRef = doc(firestore, "usernames", usernameLower);
+      batch.set(newUsernameDocRef, { uid: finalUser.uid });
+
+      await batch.commit();
         
     } catch (error: any) {
-      if (userCredential) {
-        try {
-          await deleteUser(userCredential.user);
-        } catch (deleteError: any) {
-            toast({
-              variant: "destructive",
-              title: "Critical Sign Up Error",
-              description: "Your account could not be fully created, and automatic cleanup failed. Please contact support.",
-              duration: 10000,
-            });
-            setIsSubmitting(false);
-            return; 
-        }
-      }
-
       let description = "An unknown error occurred during sign up.";
-      if (error.message === "This username is already in use. Please choose another one.") {
+      if (error.message.includes("username is already in use")) {
         description = error.message;
       } else {
         switch (error.code) {
           case 'auth/email-already-in-use':
+          case 'auth/credential-already-in-use':
             description = "This email address is already in use by another account.";
             break;
           case 'auth/weak-password':
@@ -200,6 +207,11 @@ function SignupPageContent() {
           case 'auth/invalid-email':
             description = "The email address is not valid.";
             break;
+          case 'permission-denied':
+            description = "You do not have permission for this action. This can happen if security rules and client-side queries are misaligned.";
+            break;
+          default:
+            description = `An unexpected error occurred: ${error.message}`;
         }
       }
       toast({
@@ -212,7 +224,7 @@ function SignupPageContent() {
     }
   };
   
-  if (isUserLoading || user) {
+  if (isUserLoading || (user && !user.isAnonymous)) {
     return <LoadingSkeleton />;
   }
 

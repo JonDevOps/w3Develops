@@ -24,6 +24,13 @@ export const metadata: Metadata = {
   description: "A community for developers to learn, build, and connect.",
   manifest: '/manifest.json',
   icons: {
+    icon: [
+      { url: '/favicon.ico', rel: 'icon', type: 'image/x-icon', sizes: 'any' },
+      { url: '/android-icon-192x192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
+      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
+    ],
     apple: [
       { url: '/apple-icon-57x57.png', sizes: '57x57' },
       { url: '/apple-icon-60x60.png', sizes: '60x60' },
@@ -34,12 +41,6 @@ export const metadata: Metadata = {
       { url: '/apple-icon-144x144.png', sizes: '144x144' },
       { url: '/apple-icon-152x152.png', sizes: '152x152' },
       { url: '/apple-icon-180x180.png', sizes: '180x180' },
-    ],
-    icon: [
-      { url: '/android-icon-192x192.png', type: 'image/png', sizes: '192x192' },
-      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
-      { url: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
-      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
     ],
   },
 };

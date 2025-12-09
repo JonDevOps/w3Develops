@@ -79,12 +79,21 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
       auth,
       (firebaseUser) => { // Auth state determined
         if (firebaseUser) {
-            // User is signed in. Update their last login time.
-            const userDocRef = doc(firestore, 'users', firebaseUser.uid);
-            updateDoc(userDocRef, { lastLoginAt: serverTimestamp() }).catch(error => {
-                console.error("Failed to update last login time:", error);
-                // Non-critical error, so we don't block the login flow.
-            });
+            const { metadata } = firebaseUser;
+            // To prevent a race condition on new user creation, we only update the last login time
+            // if the user is not brand new. We determine this by checking if the creation time
+            // is significantly different from the last sign-in time.
+            const isNewUser = metadata.creationTime && metadata.lastSignInTime &&
+                              (new Date(metadata.lastSignInTime).getTime() - new Date(metadata.creationTime).getTime() < 5000);
+
+            if (!isNewUser) {
+                const userDocRef = doc(firestore, 'users', firebaseUser.uid);
+                updateDoc(userDocRef, { lastLoginAt: serverTimestamp() }).catch(error => {
+                    // This might still fail if the user logs in right after deleting their own account data,
+                    // but it's a safe, non-critical operation.
+                    console.error("Failed to update last login time for returning user:", error);
+                });
+            }
         }
         setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });
       },
