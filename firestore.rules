@@ -1,0 +1,93 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function isAddingToList(list, newList) {
+      return newList.size() == list.size() + 1 && newList.hasAll(list);
+    }
+
+    function isRemovingFromList(list, newList) {
+      return newList.size() == list.size() - 1 && list.hasAll(newList);
+    }
+
+    match /users/{userId} {
+      allow read: if request.auth != null;
+
+      allow create: if request.auth.uid == userId;
+
+      allow delete: if isOwner(userId);
+
+      allow update: if isOwner(userId) && (
+        (
+          request.resource.data.keys().hasOnly([
+            'bio', 'skills', 'socialLinks', 'followInfoPrivate', 'profilePictureUrl', 'isSubscribedToNewsletter', 'lastLoginAt', 'lastLogoutAt'
+          ])
+        ) ||
+        (isAddingToList(resource.data.createdStudyGroupIds, request.resource.data.createdStudyGroupIds)) ||
+        (isAddingToList(resource.data.joinedStudyGroupIds, request.resource.data.joinedStudyGroupIds)) ||
+        (isAddingToList(resource.data.createdCohortIds, request.resource.data.createdCohortIds)) ||
+        (isAddingToList(resource.data.joinedCohortIds, request.resource.data.joinedCohortIds)) ||
+        (isAddingToList(resource.data.following, request.resource.data.following)) ||
+        (isRemovingFromList(resource.data.following, request.resource.data.following)) ||
+        (isAddingToList(resource.data.followers, request.resource.data.followers)) ||
+        (isRemovingFromList(resource.data.followers, request.resource.data.followers))
+      );
+    }
+
+    match /usernames/{username} {
+      allow get: if true;
+      allow list: if request.auth != null;
+      allow create: if request.auth.uid == request.resource.data.uid;
+      allow update, delete: if false;
+    }
+
+    match /studyGroups/{groupId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.creatorId == request.auth.uid
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 75
+                    && request.resource.data.memberIds == [request.auth.uid]
+                    && request.resource.data.createdAt == request.time;
+      allow update: if request.auth != null
+                    && resource.data.memberIds.size() < 25
+                    && request.time - resource.data.createdAt < duration.value(7, 'd')
+                    && isAddingToList(resource.data.memberIds, request.resource.data.memberIds)
+                    && request.resource.data.memberIds[request.resource.data.memberIds.size() - 1] == request.auth.uid;
+    }
+
+    match /cohorts/{cohortId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.creatorId == request.auth.uid
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 75
+                    && request.resource.data.memberIds == [request.auth.uid]
+                    && request.resource.data.createdAt == request.time;
+      allow update: if request.auth != null
+                    && resource.data.memberIds.size() < 25
+                    && request.time - resource.data.createdAt < duration.value(7, 'd')
+                    && isAddingToList(resource.data.memberIds, request.resource.data.memberIds)
+                    && request.resource.data.memberIds[request.resource.data.memberIds.size() - 1] == request.auth.uid;
+    }
+
+    match /users/{userId}/notifications/{notificationId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /feedback/{feedbackId} {
+      allow read: if false;
+      allow write: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.feedback is string
+                    && request.resource.data.feedback.size() > 0
+                    && request.resource.data.feedback.size() <= 2000;
+    }
+  }
+}
