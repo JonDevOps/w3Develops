@@ -229,7 +229,7 @@ export default function Home() {
         <section className="w-full py-16 md:py-24 lg:py-32">
           <div className="container px-4 md:px-6 space-y-12">
             <div className="text-center">
-              <h2 className="text-3xl font-headline tracking-tighter sm:text-4xl md:text-5xl">The Global Community for Collaborative Learning & Open Source</h2>
+              <h2 className="text-3xl font-headline tracking-tighter sm:text-4xl md:text-5xl">The Global Developer Community for Collaborative Learning & Open Source</h2>
               <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed mt-4">
                 w3Develops is more than a learning platform—it is a global ecosystem dedicated to helping you evolve from a student into a professional software engineer. We provide the structure, mentorship, and collaborative coding projects you need to bridge the gap between theory and employment.
               </p>
@@ -307,8 +307,8 @@ export default function Home() {
 
         <section className="w-full py-16 md:py-24 lg:py-32">
             <div className="container px-4 md:px-6 text-center space-y-8">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">Find Your Crew in Our Remote Coding Study Groups</h2>
-                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed">Geography is no longer a barrier. Connect with motivated peers from around the world through our dedicated remote coding study groups, providing the accountability you need.</p>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">Join Active Remote Coding Study Groups</h2>
+                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed">Geography is no longer a barrier to your career. Connect with motivated peers from around the world through our dedicated remote coding study groups.</p>
                  <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-1 md:grid-cols-3">
                   <div className="flex flex-col items-center text-center p-4 gap-2">
                     <h3 className="text-xl font-bold">Global Network</h3>
@@ -320,10 +320,10 @@ export default function Home() {
                   </div>
                   <div className="flex flex-col items-center text-center p-4 gap-2">
                     <h3 className="text-xl font-bold">Consistent Support</h3>
-                    <p className="text-muted-foreground">Rely on a structured support system to stay motivated through complex topics.</p>
+                    <p className="text-muted-foreground">Rely on a structured support system to keep you motivated through complex topics.</p>
                   </div>
                 </div>
-                 <Button asChild size="lg" variant="secondary">
+                 <Button asChild size="lg" variant="default">
                     <Link href="/groups">Explore Study Groups</Link>
                 </Button>
             </div>
