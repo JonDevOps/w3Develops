@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircle, Code, Users, BookOpen, ArrowRight, Hammer, Trophy } from "lucide-react";
+import { CheckCircle, Code, Users, BookOpen, ArrowRight, Hammer, Trophy, GitCommit, UsersRound, FileCheck, ShieldCheck, Milestone, SearchCheck } from "lucide-react";
 import { LoadingSkeleton } from '@/components/layout/loading-skeleton';
+import placeholderImages from '@/app/lib/placeholder-images.json';
 
 const features = [
   {
@@ -172,11 +173,11 @@ export default function Home() {
             <div className="container grid items-center gap-10 px-4 md:px-6 lg:grid-cols-2 lg:gap-16">
                  <div className="flex justify-center">
                    <Image
-                      src="https://picsum.photos/seed/bootcamp/600/400"
-                      width={600}
-                      height={400}
+                      src={placeholderImages.whyJoin.src}
+                      width={placeholderImages.whyJoin.width}
+                      height={placeholderImages.whyJoin.height}
                       alt="A developer working on a laptop"
-                      data-ai-hint="developer laptop"
+                      data-ai-hint={placeholderImages.whyJoin.hint}
                       className="rounded-xl object-cover shadow-2xl"
                     />
                 </div>
@@ -235,75 +236,81 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="space-y-8">
-              <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl font-headline text-center">Build Real-World Software with Collaborative Coding Projects</h2>
-              <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed text-center">
-                Most tutorials teach you syntax, but they don't teach you development. Our program bridges that gap. By joining our collaborative coding projects, you gain invaluable experience mirroring a real software workplace. You won't just learn to code; you will:
-              </p>
-              <ul className="mx-auto max-w-3xl grid gap-4 md:grid-cols-3 text-center">
-                <li className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-                  <h3 className="font-semibold">Master Git & GitHub</h3>
-                  <p className="text-sm text-muted-foreground">Learn team workflows and version control.</p>
-                </li>
-                <li className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-                  <h3 className="font-semibold">Participate in Agile</h3>
-                   <p className="text-sm text-muted-foreground">Experience modern development cycles.</p>
-                </li>
-                <li className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-                  <h3 className="font-semibold">Build Your Portfolio</h3>
-                   <p className="text-sm text-muted-foreground">Create scalable apps that impress employers.</p>
-                </li>
-              </ul>
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+                <div className="space-y-4">
+                    <h3 className="text-2xl font-bold tracking-tighter sm:text-3xl font-headline">Build Real-World Software with Collaborative Coding Projects</h3>
+                    <p className="text-muted-foreground md:text-lg/relaxed">
+                        Most tutorials teach syntax, but they don't teach development. Our program bridges that gap. By joining our collaborative coding projects, you gain invaluable experience mirroring a real software workplace. You won't just learn to code; you will:
+                    </p>
+                    <ul className="space-y-4">
+                        <li className="flex items-start gap-4">
+                            <div className="bg-primary/10 p-2 rounded-full"><GitCommit className="h-6 w-6 text-primary"/></div>
+                            <div>
+                                <h4 className="font-semibold">Master Git & GitHub</h4>
+                                <p className="text-sm text-muted-foreground">Learn team workflows and version control in a professional environment.</p>
+                            </div>
+                        </li>
+                        <li className="flex items-start gap-4">
+                            <div className="bg-primary/10 p-2 rounded-full"><UsersRound className="h-6 w-6 text-primary"/></div>
+                             <div>
+                                <h4 className="font-semibold">Participate in Agile</h4>
+                                <p className="text-sm text-muted-foreground">Experience modern development cycles, from sprints to stand-ups.</p>
+                            </div>
+                        </li>
+                         <li className="flex items-start gap-4">
+                            <div className="bg-primary/10 p-2 rounded-full"><FileCheck className="h-6 w-6 text-primary"/></div>
+                            <div>
+                                <h4 className="font-semibold">Build Your Portfolio</h4>
+                                <p className="text-sm text-muted-foreground">Create functional, scalable apps that impress employers.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                     <Image
+                      src={placeholderImages.whyJoin.src}
+                      width={placeholderImages.whyJoin.width}
+                      height={placeholderImages.whyJoin.height}
+                      alt="Team collaborating on a project"
+                      data-ai-hint={placeholderImages.whyJoin.hint}
+                      className="rounded-xl object-cover shadow-2xl"
+                    />
+                </div>
             </div>
           </div>
         </section>
 
         <section className="w-full py-16 md:py-24 lg:py-32 bg-muted/40">
             <div className="container px-4 md:px-6 text-center space-y-8">
-                <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl font-headline">Why Developers Choose w3Develops</h2>
-                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed">Stop coding in isolation. Join a community that prioritizes hands-on experience over passive watching.</p>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">A Superior Free Coding Bootcamp Experience</h2>
+                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed">We believe quality tech education is a human right, not a luxury. w3Develops offers a comprehensive, self-paced curriculum that serves as a powerful alternative to expensive bootcamps.</p>
                 <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-1 md:grid-cols-3">
                   <div className="flex flex-col items-center text-center p-4 gap-2">
-                    <h3 className="text-xl font-bold">Structured Portfolio Development</h3>
-                    <p className="text-muted-foreground">Build a robust body of work that proves your skills to future employers.</p>
+                    <ShieldCheck className="h-10 w-10 text-primary"/>
+                    <h3 className="text-xl font-bold">Zero Financial Barrier</h3>
+                    <p className="text-muted-foreground">Access professional-grade learning resources completely free, forever.</p>
                   </div>
                   <div className="flex flex-col items-center text-center p-4 gap-2">
-                    <h3 className="text-xl font-bold">Active Mentorship</h3>
-                    <p className="text-muted-foreground">Get unstuck quickly with guidance from experienced developers and community mentors.</p>
+                    <Milestone className="h-10 w-10 text-primary"/>
+                    <h3 className="text-xl font-bold">Open Source Contributions</h3>
+                    <p className="text-muted-foreground">Develop in-demand skills by contributing to meaningful open-source software.</p>
                   </div>
                   <div className="flex flex-col items-center text-center p-4 gap-2">
-                    <h3 className="text-xl font-bold">Tangible Problem Solving</h3>
-                    <p className="text-muted-foreground">Move beyond "Hello World" and contribute to projects that solve actual user problems.</p>
+                    <SearchCheck className="h-10 w-10 text-primary"/>
+                    <h3 className="text-xl font-bold">Flexible Pacing</h3>
+                    <p className="text-muted-foreground">Learn on your schedule without sacrificing the intensity required for mastery.</p>
                   </div>
                 </div>
+                <Button asChild size="lg">
+                    <Link href="/signup">Start Learning For Free</Link>
+                </Button>
             </div>
         </section>
 
         <section className="w-full py-16 md:py-24 lg:py-32">
             <div className="container px-4 md:px-6 text-center space-y-8">
-                <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl font-headline">The Ultimate Free Coding Bootcamp Alternative</h2>
-                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed">We believe quality tech education is a human right, not a luxury. w3Develops offers a comprehensive, self-paced curriculum that serves as a powerful alternative to expensive bootcamps.</p>
-                <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-1 md:grid-cols-3">
-                  <div className="flex flex-col items-center text-center p-4 gap-2">
-                    <h3 className="text-xl font-bold">Zero Financial Barrier</h3>
-                    <p className="text-muted-foreground">Access professional-grade learning resources completely free.</p>
-                  </div>
-                  <div className="flex flex-col items-center text-center p-4 gap-2">
-                    <h3 className="text-xl font-bold">Open Source Contributions</h3>
-                    <p className="text-muted-foreground">Develop in-demand skills by contributing to meaningful open-source software.</p>
-                  </div>
-                  <div className="flex flex-col items-center text-center p-4 gap-2">
-                    <h3 className="text-xl font-bold">Flexible Pacing</h3>
-                    <p className="text-muted-foreground">Learn on your schedule without sacrificing the intensity required to master full-stack development.</p>
-                  </div>
-                </div>
-            </div>
-        </section>
-
-        <section className="w-full py-16 md:py-24 lg:py-32 bg-muted/40">
-            <div className="container px-4 md:px-6 text-center space-y-8">
-                <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl font-headline">Join Active Remote Coding Study Groups</h2>
-                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed">Geography is no longer a barrier. Connect with motivated peers from around the world through our dedicated remote coding study groups. Whether you are learning HTML/CSS, JavaScript, Python, or Web3, our groups provide the accountability you need.</p>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">Find Your Crew in Our Remote Coding Study Groups</h2>
+                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed">Geography is no longer a barrier. Connect with motivated peers from around the world through our dedicated remote coding study groups, providing the accountability you need.</p>
                  <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-1 md:grid-cols-3">
                   <div className="flex flex-col items-center text-center p-4 gap-2">
                     <h3 className="text-xl font-bold">Global Network</h3>
@@ -315,9 +322,12 @@ export default function Home() {
                   </div>
                   <div className="flex flex-col items-center text-center p-4 gap-2">
                     <h3 className="text-xl font-bold">Consistent Support</h3>
-                    <p className="text-muted-foreground">Rely on a structured support system to keep you motivated through complex topics.</p>
+                    <p className="text-muted-foreground">Rely on a structured support system to stay motivated through complex topics.</p>
                   </div>
                 </div>
+                 <Button asChild size="lg" variant="secondary">
+                    <Link href="/groups">Explore Study Groups</Link>
+                </Button>
             </div>
         </section>
         {/* END: New Content Sections */}
