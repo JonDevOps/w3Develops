@@ -173,11 +173,10 @@ export default function Home() {
             <div className="container grid items-center gap-10 px-4 md:px-6 lg:grid-cols-2 lg:gap-16">
                  <div className="flex justify-center">
                    <Image
-                      src={placeholderImages.whyJoin.src}
-                      width={placeholderImages.whyJoin.width}
-                      height={placeholderImages.whyJoin.height}
-                      alt="A developer working on a laptop"
-                      data-ai-hint={placeholderImages.whyJoin.hint}
+                      src="/logo.png"
+                      width={400}
+                      height={400}
+                      alt="w3Develops Logo"
                       className="rounded-xl object-cover shadow-2xl"
                     />
                 </div>
@@ -268,11 +267,10 @@ export default function Home() {
                 </div>
                 <div>
                      <Image
-                      src={placeholderImages.whyJoin.src}
-                      width={placeholderImages.whyJoin.width}
-                      height={placeholderImages.whyJoin.height}
-                      alt="Team collaborating on a project"
-                      data-ai-hint={placeholderImages.whyJoin.hint}
+                      src="/logo.png"
+                      width={400}
+                      height={400}
+                      alt="w3Develops Logo"
                       className="rounded-xl object-cover shadow-2xl"
                     />
                 </div>
