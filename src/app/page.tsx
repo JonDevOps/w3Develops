@@ -225,9 +225,103 @@ export default function Home() {
           </div>
         </section>
 
+        {/* START: New Content Sections */}
+        <section className="w-full py-16 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6 space-y-12">
+            <div className="text-center">
+              <h2 className="text-3xl font-headline tracking-tighter sm:text-4xl md:text-5xl">The Global Community for Collaborative Learning & Open Source</h2>
+              <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed mt-4">
+                w3Develops is more than a learning platform—it is a global ecosystem dedicated to helping you evolve from a student into a professional software engineer. We provide the structure, mentorship, and collaborative coding projects you need to bridge the gap between theory and employment.
+              </p>
+            </div>
+
+            <div className="space-y-8">
+              <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl font-headline text-center">Build Real-World Software with Collaborative Coding Projects</h2>
+              <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed text-center">
+                Most tutorials teach you syntax, but they don't teach you development. Our program bridges that gap. By joining our collaborative coding projects, you gain invaluable experience mirroring a real software workplace. You won't just learn to code; you will:
+              </p>
+              <ul className="mx-auto max-w-3xl grid gap-4 md:grid-cols-3 text-center">
+                <li className="flex flex-col items-center gap-2 p-4 border rounded-lg">
+                  <h3 className="font-semibold">Master Git & GitHub</h3>
+                  <p className="text-sm text-muted-foreground">Learn team workflows and version control.</p>
+                </li>
+                <li className="flex flex-col items-center gap-2 p-4 border rounded-lg">
+                  <h3 className="font-semibold">Participate in Agile</h3>
+                   <p className="text-sm text-muted-foreground">Experience modern development cycles.</p>
+                </li>
+                <li className="flex flex-col items-center gap-2 p-4 border rounded-lg">
+                  <h3 className="font-semibold">Build Your Portfolio</h3>
+                   <p className="text-sm text-muted-foreground">Create scalable apps that impress employers.</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full py-16 md:py-24 lg:py-32 bg-muted/40">
+            <div className="container px-4 md:px-6 text-center space-y-8">
+                <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl font-headline">Why Developers Choose w3Develops</h2>
+                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed">Stop coding in isolation. Join a community that prioritizes hands-on experience over passive watching.</p>
+                <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-1 md:grid-cols-3">
+                  <div className="flex flex-col items-center text-center p-4 gap-2">
+                    <h3 className="text-xl font-bold">Structured Portfolio Development</h3>
+                    <p className="text-muted-foreground">Build a robust body of work that proves your skills to future employers.</p>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-4 gap-2">
+                    <h3 className="text-xl font-bold">Active Mentorship</h3>
+                    <p className="text-muted-foreground">Get unstuck quickly with guidance from experienced developers and community mentors.</p>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-4 gap-2">
+                    <h3 className="text-xl font-bold">Tangible Problem Solving</h3>
+                    <p className="text-muted-foreground">Move beyond "Hello World" and contribute to projects that solve actual user problems.</p>
+                  </div>
+                </div>
+            </div>
+        </section>
+
+        <section className="w-full py-16 md:py-24 lg:py-32">
+            <div className="container px-4 md:px-6 text-center space-y-8">
+                <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl font-headline">The Ultimate Free Coding Bootcamp Alternative</h2>
+                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed">We believe quality tech education is a human right, not a luxury. w3Develops offers a comprehensive, self-paced curriculum that serves as a powerful alternative to expensive bootcamps.</p>
+                <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-1 md:grid-cols-3">
+                  <div className="flex flex-col items-center text-center p-4 gap-2">
+                    <h3 className="text-xl font-bold">Zero Financial Barrier</h3>
+                    <p className="text-muted-foreground">Access professional-grade learning resources completely free.</p>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-4 gap-2">
+                    <h3 className="text-xl font-bold">Open Source Contributions</h3>
+                    <p className="text-muted-foreground">Develop in-demand skills by contributing to meaningful open-source software.</p>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-4 gap-2">
+                    <h3 className="text-xl font-bold">Flexible Pacing</h3>
+                    <p className="text-muted-foreground">Learn on your schedule without sacrificing the intensity required to master full-stack development.</p>
+                  </div>
+                </div>
+            </div>
+        </section>
+
+        <section className="w-full py-16 md:py-24 lg:py-32 bg-muted/40">
+            <div className="container px-4 md:px-6 text-center space-y-8">
+                <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl font-headline">Join Active Remote Coding Study Groups</h2>
+                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed">Geography is no longer a barrier. Connect with motivated peers from around the world through our dedicated remote coding study groups. Whether you are learning HTML/CSS, JavaScript, Python, or Web3, our groups provide the accountability you need.</p>
+                 <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-1 md:grid-cols-3">
+                  <div className="flex flex-col items-center text-center p-4 gap-2">
+                    <h3 className="text-xl font-bold">Global Network</h3>
+                    <p className="text-muted-foreground">Discuss challenges and share knowledge with peers from diverse backgrounds.</p>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-4 gap-2">
+                    <h3 className="text-xl font-bold">Peer Programming</h3>
+                    <p className="text-muted-foreground">Enhance your problem-solving skills by working alongside other developers in real-time.</p>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-4 gap-2">
+                    <h3 className="text-xl font-bold">Consistent Support</h3>
+                    <p className="text-muted-foreground">Rely on a structured support system to keep you motivated through complex topics.</p>
+                  </div>
+                </div>
+            </div>
+        </section>
+        {/* END: New Content Sections */}
       </div>
     </>
   );
 }
-
-    
