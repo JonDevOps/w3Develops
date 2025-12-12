@@ -236,12 +236,12 @@ export default function Home() {
             </div>
 
             <div className="grid lg:grid-cols-2 gap-12 items-center">
-                <div className="space-y-4">
+                <div className="space-y-4 text-center lg:text-left">
                     <h3 className="text-2xl font-bold tracking-tighter sm:text-3xl font-headline">Build Real-World Software with Collaborative Coding Projects</h3>
                     <p className="text-muted-foreground md:text-lg/relaxed">
                         Most tutorials teach syntax, but they don't teach development. Our program bridges that gap. By joining our collaborative coding projects, you gain invaluable experience mirroring a real software workplace. You won't just learn to code; you will:
                     </p>
-                    <ul className="space-y-4">
+                    <ul className="space-y-4 inline-block text-left">
                         <li className="flex items-start gap-4">
                             <div className="bg-primary/10 p-2 rounded-full"><GitCommit className="h-6 w-6 text-primary"/></div>
                             <div>
@@ -265,7 +265,7 @@ export default function Home() {
                         </li>
                     </ul>
                 </div>
-                <div>
+                <div className="flex justify-center">
                      <Image
                       src="/logo.png"
                       width={400}
