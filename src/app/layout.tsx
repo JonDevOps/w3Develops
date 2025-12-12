@@ -20,7 +20,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "w3Develops",
+  title: "Collaborative Coding Projects & Remote Coding Study Groups | w3Develops",
   description: "A community for developers to learn, build, and connect.",
   manifest: '/manifest.json',
   icons: {
