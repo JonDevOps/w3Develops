@@ -114,29 +114,19 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Why Join Section */}
+        {/* Global Community Section */}
         <section className="w-full py-16 md:py-24 lg:py-32">
             <div className="container grid items-center gap-10 px-4 md:px-6 lg:grid-cols-2 lg:gap-16">
                 <div className="space-y-6">
-                    <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Why Join Us?</div>
-                    <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">Escape Tutorial Hell, Enter Collaborative Reality.</h2>
+                    <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Global Community</div>
+                    <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">Join a Global Developer Community</h2>
                     <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                        Watching videos is one thing. Building real software with a team is another. At w3Develops, you learn by doing, supported by a community that wants you to succeed.
+                        w3Develops is a global community dedicated to helping you grow as a developer through collaboration, mentorship, and real-world projects. We provide a structured path for aspiring developers to gain practical experience and build a professional portfolio.
                     </p>
-                    <ul className="grid gap-4">
-                        <li className="flex items-start gap-3">
-                            <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
-                            <span><span className="font-semibold">Gain Practical Experience:</span> Build a portfolio of real-world projects that employers will notice.</span>
-                        </li>
-                         <li className="flex items-start gap-3">
-                            <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
-                            <span><span className="font-semibold">Learn from Peers:</span> Work in teams, review code, and absorb knowledge from fellow developers.</span>
-                        </li>
-                         <li className="flex items-start gap-3">
-                            <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-accent" />
-                            <span><span className="font-semibold">Expand Your Network:</span> Connect with mentors and peers who can become lifelong colleagues and friends.</span>
-                        </li>
-                    </ul>
+                    <h3 className="text-2xl font-bold tracking-tighter font-headline">Advance Your Skills with Real-World Projects</h3>
+                     <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                        Our program is designed to bridge the gap between theoretical knowledge and practical application. By participating in our collaborative coding projects, members gain invaluable experience working in a team environment, mirroring the dynamics of a professional software development workplace. This project-based approach ensures that you not only learn to code but also learn how to build functional, real-world applications.
+                    </p>
                 </div>
                 <div className="flex justify-center">
                    <Image
@@ -149,6 +139,92 @@ export default function Home() {
                 </div>
             </div>
         </section>
+
+        {/* Why Choose Section */}
+        <section className="w-full py-16 md:py-24 lg:py-32 bg-muted/40">
+            <div className="container px-4 md:px-6">
+                <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
+                  <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Why Choose w3Develops?</div>
+                  <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">A Better Way to Learn</h2>
+                </div>
+                <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-1 md:grid-cols-3">
+                  <div className="flex flex-col items-center text-center p-4 gap-2">
+                    <CheckCircle className="h-10 w-10 text-accent" />
+                    <h3 className="text-xl font-bold">Hands-On Experience</h3>
+                    <p className="text-muted-foreground">Move beyond tutorials and apply your skills to tangible projects that solve real problems.</p>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-4 gap-2">
+                    <CheckCircle className="h-10 w-10 text-accent" />
+                    <h3 className="text-xl font-bold">Portfolio Development</h3>
+                    <p className="text-muted-foreground">Build a robust portfolio of work that showcases your abilities to potential employers.</p>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-4 gap-2">
+                    <CheckCircle className="h-10 w-10 text-accent" />
+                    <h3 className="text-xl font-bold">Mentorship and Guidance</h3>
+                    <p className="text-muted-foreground">Receive support and guidance from experienced developers and mentors within the community.</p>
+                  </div>
+                </div>
+            </div>
+        </section>
+
+        {/* Bootcamp Alternative Section */}
+         <section className="w-full py-16 md:py-24 lg:py-32">
+            <div className="container grid items-center gap-10 px-4 md:px-6 lg:grid-cols-2 lg:gap-16">
+                 <div className="flex justify-center">
+                   <Image
+                      src="https://picsum.photos/seed/bootcamp/600/400"
+                      width={600}
+                      height={400}
+                      alt="A developer working on a laptop"
+                      data-ai-hint="developer laptop"
+                      className="rounded-xl object-cover shadow-2xl"
+                    />
+                </div>
+                <div className="space-y-6">
+                    <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Free to Learn</div>
+                    <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">A Free Coding Bootcamp Alternative</h2>
+                    <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                        We believe that quality tech education should be accessible to everyone. That is why w3Develops offers a program that serves as an excellent alternative to a traditional free coding bootcamp. Our focus on self-paced learning and community support provides a flexible yet comprehensive educational experience without the financial burden. Members develop in-demand skills while contributing to meaningful open-source projects.
+                    </p>
+                     <Button asChild size="lg">
+                        <Link href="/signup">Start Your Journey Today</Link>
+                    </Button>
+                </div>
+            </div>
+        </section>
+
+        {/* Remote Study Groups Section */}
+        <section className="w-full py-16 md:py-24 lg:py-32 bg-muted/40">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
+              <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Collaborate</div>
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Connect with Remote Coding Study Groups</h2>
+              <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                Geography should not be a barrier to learning and collaboration. At w3Develops, you can connect with motivated individuals from around the world through our dedicated remote coding study groups. These groups provide a platform for members to discuss challenges, share knowledge, and work together on assignments. This collaborative environment fosters a deep understanding of complex topics and helps you stay motivated on your learning journey.
+              </p>
+            </div>
+            <div className="mx-auto max-w-5xl">
+                <ul className="grid gap-6 md:grid-cols-3">
+                    <li className="flex flex-col items-center text-center gap-2 p-4">
+                        <Users className="h-8 w-8 text-primary"/>
+                        <h3 className="text-lg font-bold">Global Network</h3>
+                        <p className="text-sm text-muted-foreground">Connect with peers and professionals from diverse backgrounds and expand your professional network.</p>
+                    </li>
+                    <li className="flex flex-col items-center text-center gap-2 p-4">
+                        <Code className="h-8 w-8 text-primary"/>
+                        <h3 className="text-lg font-bold">Collaborative Learning</h3>
+                        <p className="text-sm text-muted-foreground">Enhance your problem-solving skills by working alongside other developers on collaborative coding projects.</p>
+                    </li>
+                     <li className="flex flex-col items-center text-center gap-2 p-4">
+                        <BookOpen className="h-8 w-8 text-primary"/>
+                        <h3 className="text-lg font-bold">Structured Support</h3>
+                        <p className="text-sm text-muted-foreground">Our remote coding study groups offer a consistent and reliable support system for your development path.</p>
+                    </li>
+                </ul>
+            </div>
+          </div>
+        </section>
+
       </div>
     </>
   );
