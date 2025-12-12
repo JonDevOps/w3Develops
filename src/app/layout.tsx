@@ -20,8 +20,8 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Collaborative Coding Projects & Remote Coding Study Groups | w3Develops",
-  description: "A community for developers to learn, build, and connect.",
+  title: "w3Develops: Free Coding Bootcamp & Collaborative Projects",
+  description: "Elevate your skills at w3Develops. Our platform features a free coding bootcamp, engaging remote coding study groups, and hands-on collaborative coding projects. Start now.",
   manifest: '/manifest.json',
   icons: {
     icon: [
