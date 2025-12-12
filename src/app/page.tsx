@@ -180,7 +180,7 @@ export default function Home() {
                       className="rounded-xl object-cover shadow-2xl"
                     />
                 </div>
-                <div className="space-y-6">
+                <div className="space-y-6 text-center lg:text-left">
                     <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Free to Learn</div>
                     <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">A Free Coding Bootcamp Alternative</h2>
                     <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
