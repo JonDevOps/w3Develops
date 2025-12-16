@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect } from 'react';
@@ -229,7 +230,7 @@ export default function Home() {
         <section className="w-full py-16 md:py-24 lg:py-32">
           <div className="container px-4 md:px-6 space-y-12">
             <div className="text-center">
-              <h2 className="text-3xl font-headline tracking-tighter sm:text-4xl md:text-5xl">The Global Developer Community for Collaborative Learning & Open Source</h2>
+              <h2 className="text-3xl font-headline tracking-tighter sm:text-4xl md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">The Global Developer Community for Collaborative Learning & Open Source</h2>
               <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed mt-4">
                 w3Develops is more than a learning platform—it is a global ecosystem dedicated to helping you evolve from a student into a professional software engineer. We provide the structure, mentorship, and collaborative coding projects you need to bridge the gap between theory and employment.
               </p>
