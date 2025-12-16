@@ -195,7 +195,7 @@ export default function Home() {
         </section>
 
         {/* Remote Study Groups Section */}
-        <section className="w-full py-16 md:py-24 lg:py-32 bg-muted/40">
+        <section className="w-full py-16 md:py-24 lg:py-16 bg-muted/40">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
               <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Collaborate</div>
@@ -227,7 +227,7 @@ export default function Home() {
         </section>
 
         {/* START: New Content Sections */}
-        <section className="w-full py-16 md:py-24 lg:py-32">
+        <section className="w-full py-16 md:py-24 lg:py-16">
           <div className="container px-4 md:px-6 space-y-12">
             <div className="text-center">
               <h2 className="text-5xl font-headline font-bold tracking-tighter sm:text-6xl md:text-7xl text-black">The Global Developer Community for Collaborative Learning & Open Source</h2>
@@ -334,3 +334,5 @@ export default function Home() {
     </>
   );
 }
+
+    
