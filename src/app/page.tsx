@@ -86,7 +86,7 @@ export default function Home() {
 
       <div className="p-4 md:p-10">
         {/* What we offer Section */}
-        <section className="w-full pt-16 md:pt-24 lg:pt-32 pb-8 md:pb-12 lg:pb-16 bg-muted/40">
+        <section className="w-full pt-16 md:pt-24 lg:pt-32 pb-8 md:pb-12">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
               <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">What We Offer</div>
@@ -117,7 +117,7 @@ export default function Home() {
         </section>
 
         {/* Global Community Section */}
-        <section className="w-full pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-24 lg:pb-32">
+        <section className="w-full pt-8 md:pt-12 pb-8 md:pb-12">
             <div className="container grid items-center gap-10 px-4 md:px-6 lg:grid-cols-2 lg:gap-16">
                 <div className="space-y-6">
                     <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Global Community</div>
@@ -143,7 +143,7 @@ export default function Home() {
         </section>
 
         {/* Why Choose Section */}
-        <section className="w-full py-16 md:py-24 lg:py-32 bg-muted/40">
+        <section className="w-full py-16 md:py-24 bg-muted/40">
             <div className="container px-4 md:px-6">
                 <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
                   <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Why Choose w3Develops?</div>
@@ -195,7 +195,7 @@ export default function Home() {
         </section>
 
         {/* Remote Study Groups Section */}
-        <section className="w-full pt-16 md:pt-24 lg:pt-16 pb-8 md:pb-12 lg:pb-16 bg-muted/40">
+        <section className="w-full pt-16 md:pt-24 lg:pt-16 pb-8 md:pb-12">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
               <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Collaborate</div>
@@ -227,7 +227,7 @@ export default function Home() {
         </section>
 
         {/* START: New Content Sections */}
-        <section className="w-full pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-24 lg:pb-32">
+        <section className="w-full pt-8 md:pt-12 pb-16 md:pb-24 lg:pb-32">
           <div className="container px-4 md:px-6 space-y-12">
             <div className="text-center">
               <h2 className="text-5xl font-headline font-bold tracking-tighter sm:text-6xl md:text-7xl text-black">The Global Developer Community for Collaborative Learning &amp; Open Source</h2>
@@ -279,7 +279,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="w-full py-16 md:py-24 lg:py-32 bg-muted/40">
+        <section className="w-full py-16 md:py-24 bg-muted/40">
             <div className="container px-4 md:px-6 text-center space-y-8">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">A Superior Free Coding Bootcamp Experience</h2>
                 <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed">We believe quality tech education is a human right, not a luxury. w3Develops offers a comprehensive, self-paced curriculum that serves as a powerful alternative to expensive bootcamps.</p>
