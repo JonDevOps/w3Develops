@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect } from 'react';
@@ -305,7 +306,7 @@ export default function Home() {
             </div>
         </section>
 
-        <section className="w-full py-16 md:py-24 lg:py-32">
+        <section className="w-full pt-16 md:py-24 lg:py-32">
             <div className="container px-4 md:px-6 text-center space-y-8">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">Join Active Remote Coding Study Groups</h2>
                 <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed">Geography is no longer a barrier to your career. Connect with motivated peers from around the world through our dedicated remote coding study groups.</p>
@@ -332,7 +333,7 @@ export default function Home() {
                         width={400}
                         height={400}
                         alt="w3Develops Logo"
-                        className="rounded-xl object-cover shadow-2xl"
+                        className="rounded-full object-cover shadow-2xl"
                     />
                 </div>
             </div>
@@ -346,3 +347,4 @@ export default function Home() {
     
 
     
+
