@@ -86,7 +86,7 @@ export default function Home() {
 
       <div className="p-4 md:p-10">
         {/* What we offer Section */}
-        <section className="w-full pt-16 md:pt-24 lg:pt-32 pb-8 md:pb-12">
+        <section className="w-full pt-16 md:pt-24 lg:pt-32 pb-4 md:pb-6">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
               <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">What We Offer</div>
@@ -117,7 +117,7 @@ export default function Home() {
         </section>
 
         {/* Global Community Section */}
-        <section className="w-full pt-8 md:pt-6 pb-8 md:pb-12">
+        <section className="w-full pt-4 md:pt-6 pb-4 md:pb-6">
             <div className="container grid items-center gap-10 px-4 md:px-6 lg:grid-cols-2 lg:gap-16">
                 <div className="space-y-6">
                     <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Global Community</div>
@@ -143,7 +143,7 @@ export default function Home() {
         </section>
 
         {/* Why Choose Section */}
-        <section className="w-full pt-8 md:pt-12 pb-8 md:pb-12 bg-muted/40">
+        <section className="w-full pt-8 md:pt-12 pb-4 md:pb-6 bg-muted/40">
             <div className="container px-4 md:px-6">
                 <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
                   <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Why Choose w3Develops?</div>
@@ -170,7 +170,7 @@ export default function Home() {
         </section>
 
         {/* Bootcamp Alternative Section */}
-         <section className="w-full pt-16 md:pt-12 lg:pt-16">
+         <section className="w-full pt-8 md:pt-6 lg:pt-8">
             <div className="container grid items-center gap-10 px-4 md:px-6 lg:grid-cols-2 lg:gap-16">
                  <div className="flex justify-center lg:order-last">
                    <Image
@@ -195,7 +195,7 @@ export default function Home() {
         </section>
 
         {/* Remote Study Groups Section */}
-        <section className="w-full pt-16 md:pt-24 lg:pt-16 pb-8 md:pb-12">
+        <section className="w-full pt-8 md:pt-12 lg:pt-8 pb-4 md:pb-6">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
               <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Collaborate</div>
@@ -327,6 +327,15 @@ export default function Home() {
                  <Button asChild size="lg" variant="default">
                     <Link href="/groups">Explore Study Groups</Link>
                 </Button>
+                <div className="flex justify-center pt-8">
+                    <Image
+                        src="/logo.png"
+                        width={100}
+                        height={100}
+                        alt="w3Develops Flame Logo"
+                        className="rounded-full"
+                    />
+                </div>
             </div>
         </section>
         {/* END: New Content Sections */}
@@ -334,3 +343,5 @@ export default function Home() {
     </>
   );
 }
+
+    
