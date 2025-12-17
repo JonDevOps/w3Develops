@@ -300,8 +300,8 @@ export default function Home() {
                     <p className="text-muted-foreground">Learn on your schedule without sacrificing the intensity required for mastery.</p>
                   </div>
                 </div>
-                <Button asChild size="lg">
-                    <Link href="/signup">Start Learning For Free</Link>
+                <Button asChild size="lg" variant="default">
+                    <Link href="/groups">Explore Study Groups</Link>
                 </Button>
             </div>
         </section>
@@ -324,8 +324,8 @@ export default function Home() {
                     <p className="text-muted-foreground">Rely on a structured support system to keep you motivated through complex topics.</p>
                   </div>
                 </div>
-                 <Button asChild size="lg" variant="default">
-                    <Link href="/groups">Explore Study Groups</Link>
+                 <Button asChild size="lg">
+                    <Link href="/signup">Start Learning For Free</Link>
                 </Button>
                 <div className="flex justify-center pt-8">
                     <Image
@@ -343,5 +343,7 @@ export default function Home() {
     </>
   );
 }
+
+    
 
     
