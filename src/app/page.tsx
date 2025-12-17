@@ -279,7 +279,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="w-full py-16 md:py-24 bg-muted/40">
+        <section className="w-full py-16 md:py-12 bg-muted/40">
             <div className="container px-4 md:px-6 text-center space-y-8">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">A Superior Free Coding Bootcamp Experience</h2>
                 <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed">We believe quality tech education is a human right, not a luxury. w3Develops offers a comprehensive, self-paced curriculum that serves as a powerful alternative to expensive bootcamps.</p>
@@ -306,7 +306,7 @@ export default function Home() {
             </div>
         </section>
 
-        <section className="w-full pt-16 md:py-24 pb-16 md:pb-24">
+        <section className="w-full pt-16 md:pt-12">
             <div className="container px-4 md:px-6 text-center space-y-8">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">Join Active Remote Coding Study Groups</h2>
                 <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed">Geography is no longer a barrier to your career. Connect with motivated peers from around the world through our dedicated remote coding study groups.</p>
