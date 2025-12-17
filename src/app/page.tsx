@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -86,7 +85,7 @@ export default function Home() {
 
       <div className="p-4 md:p-10">
         {/* What we offer Section */}
-        <section className="w-full pt-16 md:pt-24 lg:pt-32 pb-2 md:pb-3">
+        <section className="w-full pt-8 md:pt-12 lg:pt-16 pb-2 md:pb-3">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
               <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">What We Offer</div>
@@ -144,7 +143,7 @@ export default function Home() {
 
         {/* Why Choose Section */}
         <section className="w-full pt-12 md:pt-12 pb-3 bg-muted/40">
-            <div className="container px-4 md:px-6">
+            <div className="container px-4 md:px-6 pt-12">
                 <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
                   <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Why Choose w3Develops?</div>
                   <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">A Better Way to Learn</h2>
@@ -195,7 +194,7 @@ export default function Home() {
         </section>
 
         {/* Remote Study Groups Section */}
-        <section className="w-full pt-16 md:pt-24 lg:pt-32 pb-8 md:pb-6">
+        <section className="w-full pt-16 md:pt-24 lg:pt-32 pb-4 md:pb-3">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
               <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Collaborate</div>
@@ -227,7 +226,7 @@ export default function Home() {
         </section>
 
         {/* START: New Content Sections */}
-        <section className="w-full pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-12">
+        <section className="w-full pt-8 md:pt-12 lg:pt-16 pb-8 md:pb-6">
           <div className="container px-4 md:px-6 space-y-12">
             <div className="text-center">
               <h2 className="text-5xl font-headline font-bold tracking-tighter sm:text-6xl md:text-7xl text-foreground">The Global Developer Community for Collaborative Learning &amp; Open Source</h2>
@@ -300,7 +299,7 @@ export default function Home() {
                     <p className="text-muted-foreground">Learn on your schedule without sacrificing the intensity required for mastery.</p>
                   </div>
                 </div>
-                <Button asChild size="lg" variant="default">
+                <Button asChild size="lg">
                     <Link href="/groups">Explore Study Groups</Link>
                 </Button>
             </div>
