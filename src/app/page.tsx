@@ -86,7 +86,7 @@ export default function Home() {
 
       <div className="p-4 md:p-10">
         {/* What we offer Section */}
-        <section className="w-full pt-4 md:pt-6 lg:pt-8 pb-2 md:pb-3">
+        <section className="w-full pt-2 md:pt-3 lg:pt-4 pb-2 md:pb-3">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
               <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">What We Offer</div>
@@ -143,7 +143,7 @@ export default function Home() {
         </section>
 
         {/* Why Choose Section */}
-        <section className="w-full pt-12 md:pt-16 pb-3 bg-muted/40">
+        <section className="w-full pt-12 md:pt-20 pb-3 bg-muted/40">
             <div className="container px-4 md:px-6 pt-12">
                 <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
                   <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Why Choose w3Develops?</div>
@@ -170,9 +170,9 @@ export default function Home() {
         </section>
 
         {/* Bootcamp Alternative Section */}
-         <section className="w-full pt-4 md:pt-3 lg:pt-4 pb-12">
+         <section className="w-full pt-4 md:pt-8 lg:pt-10 pb-12">
             <div className="container grid items-center gap-10 px-4 md:px-6 lg:grid-cols-2 lg:gap-16">
-                 <div className="flex justify-center lg:order-last">
+                <div className="flex justify-center lg:order-first">
                    <Image
                       src="/logo.png"
                       width={400}
@@ -195,7 +195,7 @@ export default function Home() {
         </section>
 
         {/* Remote Study Groups Section */}
-        <section className="w-full pt-12 md:pt-16 pb-4 md:pb-3">
+        <section className="w-full pt-12 md:pt-24 lg:pt-12 pb-4 md:pb-3">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
               <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Collaborate</div>
@@ -227,7 +227,7 @@ export default function Home() {
         </section>
 
         {/* START: New Content Sections */}
-        <section className="w-full pt-12 md:pt-16 pb-4">
+        <section className="w-full pt-6 md:pt-8 pb-4">
           <div className="container px-4 md:px-6 space-y-12">
             <div className="text-center">
               <h2 className="text-5xl font-headline font-bold tracking-tighter sm:text-6xl md:text-7xl text-foreground">The Global Developer Community for Collaborative Learning &amp; Open Source</h2>
@@ -311,20 +311,20 @@ export default function Home() {
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">Join Active Remote Coding Study Groups</h2>
                 <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed">Geography is no longer a barrier to your career. Connect with motivated peers from around the world through our dedicated remote coding study groups.</p>
                  <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-1 md:grid-cols-3">
-                  <div className="flex flex-col items-center text-center p-4 gap-2">
+                  <div className="flex flex-col items-center text-center gap-2 p-4">
                     <h3 className="text-xl font-bold">Global Network</h3>
                     <p className="text-sm text-muted-foreground">Discuss challenges and share knowledge with peers from diverse backgrounds.</p>
                   </div>
-                  <div className="flex flex-col items-center text-center p-4 gap-2">
+                  <div className="flex flex-col items-center text-center gap-2 p-4">
                     <h3 className="text-xl font-bold">Peer Programming</h3>
                     <p className="text-sm text-muted-foreground">Enhance your problem-solving skills by working alongside other developers in real-time.</p>
                   </div>
-                  <div className="flex flex-col items-center text-center p-4 gap-2">
+                  <div className="flex flex-col items-center text-center gap-2 p-4">
                     <h3 className="text-xl font-bold">Consistent Support</h3>
                     <p className="text-sm text-muted-foreground">Rely on a structured support system to keep you motivated through complex topics.</p>
                   </div>
                 </div>
-                <div className="flex flex-col items-center justify-center pt-8 gap-4">
+                <div className="flex flex-col items-center justify-center pt-8">
                     <Image
                         src="/logo.png"
                         width={200}
@@ -332,9 +332,11 @@ export default function Home() {
                         alt="w3Develops Logo"
                         className="rounded-full object-cover shadow-2xl"
                     />
-                    <Button asChild size="lg">
-                        <Link href="/signup">Sign Up - 100% FREE!</Link>
-                    </Button>
+                    <div className="mt-8">
+                        <Button asChild size="lg">
+                            <Link href="/signup">Sign Up - 100% FREE!</Link>
+                        </Button>
+                    </div>
                 </div>
             </div>
         </section>
