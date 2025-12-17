@@ -325,7 +325,7 @@ export default function Home() {
                   </div>
                 </div>
                  <Button asChild size="lg">
-                    <Link href="/signup">Start Learning For Free</Link>
+                    <Link href="/signup">Sign Up | 100% FREE!</Link>
                 </Button>
                 <div className="flex justify-center pt-8">
                     <Image
