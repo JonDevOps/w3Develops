@@ -117,7 +117,7 @@ export default function Home() {
         </section>
 
         {/* Global Community Section */}
-        <section className="w-full pt-4 md:pt-6 pb-3">
+        <section className="w-full pt-8 md:pt-10 lg:pt-12 pb-3">
             <div className="container grid items-center gap-10 px-4 md:px-6 lg:grid-cols-2 lg:gap-16">
                 <div className="space-y-6">
                     <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Global Community</div>
@@ -343,5 +343,3 @@ export default function Home() {
     </>
   );
 }
-
-    
