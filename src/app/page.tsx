@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -325,7 +324,7 @@ export default function Home() {
                   </div>
                 </div>
                  <Button asChild size="lg">
-                    <Link href="/signup">Sign Up | 100% FREE!</Link>
+                    <Link href="/signup">Sign Up - 100% FREE!</Link>
                 </Button>
                 <div className="flex justify-center pt-8">
                     <Image
