@@ -143,7 +143,7 @@ export default function Home() {
         </section>
 
         {/* Why Choose Section */}
-        <section className="w-full pt-4 md:pt-6 pb-2 md:pb-3 bg-muted/40">
+        <section className="w-full pt-4 md:pt-6 pb-12 md:pb-12 bg-muted/40">
             <div className="container px-4 md:px-6">
                 <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
                   <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Why Choose w3Develops?</div>
@@ -195,7 +195,7 @@ export default function Home() {
         </section>
 
         {/* Remote Study Groups Section */}
-        <section className="w-full pt-8 md:pt-12 lg:pt-16 pb-4 md:pb-6">
+        <section className="w-full pt-16 md:pt-24 lg:pt-32 pb-4 md:pb-6">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
               <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Collaborate</div>
@@ -330,8 +330,8 @@ export default function Home() {
                 <div className="flex justify-center pt-8">
                     <Image
                         src="/logo.png"
-                        width={400}
-                        height={400}
+                        width={200}
+                        height={200}
                         alt="w3Develops Logo"
                         className="rounded-full object-cover shadow-2xl"
                     />
@@ -343,8 +343,3 @@ export default function Home() {
     </>
   );
 }
-
-    
-
-    
-
