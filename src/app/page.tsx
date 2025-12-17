@@ -324,9 +324,6 @@ export default function Home() {
                     <p className="text-muted-foreground">Rely on a structured support system to keep you motivated through complex topics.</p>
                   </div>
                 </div>
-                 <Button asChild size="lg">
-                    <Link href="/signup">Sign Up - 100% FREE!</Link>
-                </Button>
                 <div className="flex justify-center pt-8">
                     <Image
                         src="/logo.png"
@@ -336,6 +333,9 @@ export default function Home() {
                         className="rounded-full object-cover shadow-2xl"
                     />
                 </div>
+                 <Button asChild size="lg">
+                    <Link href="/signup">Sign Up - 100% FREE!</Link>
+                </Button>
             </div>
         </section>
         {/* END: New Content Sections */}
