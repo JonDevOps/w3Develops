@@ -117,7 +117,7 @@ export default function Home() {
         </section>
 
         {/* Global Community Section */}
-        <section className="w-full pt-4 md:pt-6 pb-2 md:pb-3">
+        <section className="w-full pt-4 md:pt-6 pb-6 md:pb-6">
             <div className="container grid items-center gap-10 px-4 md:px-6 lg:grid-cols-2 lg:gap-16">
                 <div className="space-y-6">
                     <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Global Community</div>
@@ -143,7 +143,7 @@ export default function Home() {
         </section>
 
         {/* Why Choose Section */}
-        <section className="w-full pt-4 md:pt-6 pb-12 md:pb-12 bg-muted/40">
+        <section className="w-full pt-4 md:pt-6 pb-6 md:pb-6 bg-muted/40">
             <div className="container px-4 md:px-6">
                 <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
                   <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Why Choose w3Develops?</div>
@@ -188,7 +188,7 @@ export default function Home() {
                         We believe that quality tech education should be accessible to everyone. That is why w3Develops offers a program that serves as an excellent alternative to a traditional free coding bootcamp. Our focus on self-paced learning and community support provides a flexible yet comprehensive educational experience without the financial burden. Members develop in-demand skills while contributing to meaningful open-source projects.
                     </p>
                      <Button asChild size="lg">
-                        <Link href="/signup">Start Your Journey Today</Link>
+                        <Link href="/signup">Start Learning For Free</Link>
                     </Button>
                 </div>
             </div>
@@ -227,10 +227,10 @@ export default function Home() {
         </section>
 
         {/* START: New Content Sections */}
-        <section className="w-full pt-8 md:pt-12 pb-16 md:pb-12">
+        <section className="w-full pt-16 md:pt-24 lg:pt-32 pb-16 md:pb-12">
           <div className="container px-4 md:px-6 space-y-12">
             <div className="text-center">
-              <h2 className="text-5xl font-headline font-bold tracking-tighter sm:text-6xl md:text-7xl text-black">The Global Developer Community for Collaborative Learning &amp; Open Source</h2>
+              <h2 className="text-5xl font-headline font-bold tracking-tighter sm:text-6xl md:text-7xl text-foreground">The Global Developer Community for Collaborative Learning &amp; Open Source</h2>
               <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed mt-4">
                 w3Develops is more than a learning platform—it is a global ecosystem dedicated to helping you evolve from a student into a professional software engineer. We provide the structure, mentorship, and collaborative coding projects you need to bridge the gap between theory and employment.
               </p>
@@ -306,22 +306,22 @@ export default function Home() {
             </div>
         </section>
 
-        <section className="w-full pt-16 md:py-24 lg:py-32">
+        <section className="w-full pt-16 md:py-24 pb-16 md:pb-24">
             <div className="container px-4 md:px-6 text-center space-y-8">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">Join Active Remote Coding Study Groups</h2>
                 <p className="mx-auto max-w-[700px] text-muted-foreground md:text-lg/relaxed">Geography is no longer a barrier to your career. Connect with motivated peers from around the world through our dedicated remote coding study groups.</p>
                  <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-1 md:grid-cols-3">
                   <div className="flex flex-col items-center text-center p-4 gap-2">
                     <h3 className="text-xl font-bold">Global Network</h3>
-                    <p className="text-muted-foreground">Discuss challenges and share knowledge with peers from diverse backgrounds.</p>
+                    <p className="text-sm text-muted-foreground">Discuss challenges and share knowledge with peers from diverse backgrounds.</p>
                   </div>
                   <div className="flex flex-col items-center text-center p-4 gap-2">
                     <h3 className="text-xl font-bold">Peer Programming</h3>
-                    <p className="text-muted-foreground">Enhance your problem-solving skills by working alongside other developers in real-time.</p>
+                    <p className="text-sm text-muted-foreground">Enhance your problem-solving skills by working alongside other developers in real-time.</p>
                   </div>
                   <div className="flex flex-col items-center text-center p-4 gap-2">
                     <h3 className="text-xl font-bold">Consistent Support</h3>
-                    <p className="text-muted-foreground">Rely on a structured support system to keep you motivated through complex topics.</p>
+                    <p className="text-sm text-muted-foreground">Rely on a structured support system to keep you motivated through complex topics.</p>
                   </div>
                 </div>
                 <div className="flex justify-center pt-8">
