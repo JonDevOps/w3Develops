@@ -54,7 +54,7 @@ It's free so resources are sometimes stretched.
 
 ## Bugs and Issues
 
-Have a bug or an issue with this template? [Open a new issue](https://github.com/w3develops/w3develops/issues) here on GitHub.
+Have a bug or an issue with this template? [Open a new issue](https://github.com/w3develops/w3develops/issues) here on GitHub. For security reporting please [read the SECURITY section](https://github.com/w3develops/w3Develops/blob/main/SECURITY.md)
 
 ## About
 
