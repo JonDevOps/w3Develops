@@ -77,7 +77,7 @@ W3Develops was created by and is maintained by **[Jonathan Jackson](https://www.
 * https://www.quora.com/profile/Jonathan-Jackson-142
 * https://www.linkedin.com/in/jondevops
 
-W3Develops is based on the [Bootstrap](http://getbootstrap.com/) framework created by [Mark Otto](https://twitter.com/mdo) and [Jacob Thorton](https://twitter.com/fat).
+W3Develops is global with headquarters in San Francisco, California United States of America.
 
 ## Contributors
 
