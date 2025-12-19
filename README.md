@@ -58,7 +58,7 @@ Have a bug or an issue with this template? [Open a new issue](https://github.com
 
 ## About
 
-W3Develops is an open source community. The template for this website is released under the MIT license, which means you can use it for any purpose, even for commercial projects.
+W3Develops is an open source community. The template for this website is released under the BSD 3 license, which means you can use it for free use, modification, and distribution of code with minimal restrictions, often referred to as "new BSD" or "revised BSD." It requires attribution, meaning you must acknowledge the original source of the code.
 
 * https://w3develops.org
 * https://youtube.com/w3develops
