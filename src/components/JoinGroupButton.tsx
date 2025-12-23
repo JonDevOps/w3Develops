@@ -45,8 +45,8 @@ export default function JoinGroupButton({ group, onJoinSuccess }: { group: Study
         if (!isNew) {
             toast({
                 variant: "destructive",
-                title: "Join Failed",
-                description: "Can't join a group that's in progress. Join a \"New\" group or create one",
+                title: "Unable to Join",
+                description: "Unable to join groups \"In Progress\". Join a 'New' group or create one.",
                 duration: 6000,
             });
             return;
