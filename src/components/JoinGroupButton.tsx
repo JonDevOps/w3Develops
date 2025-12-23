@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { PlusCircle } from 'lucide-react';
 import { StudyGroup } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+import { ONE_WEEK_IN_MS } from '@/lib/constants';
 
 export default function JoinGroupButton({ group, onJoinSuccess }: { group: StudyGroup, onJoinSuccess?: (id: string) => void }) {
     const { user } = useUser();
@@ -21,6 +22,7 @@ export default function JoinGroupButton({ group, onJoinSuccess }: { group: Study
 
     const isMember = group.memberIds.includes(user.uid);
     const isFull = group.memberIds.length >= 25;
+    const isNew = group.createdAt && (Date.now() - group.createdAt.toMillis()) < ONE_WEEK_IN_MS;
 
     if (isMember) {
         return (
@@ -37,6 +39,16 @@ export default function JoinGroupButton({ group, onJoinSuccess }: { group: Study
     const handleJoin = async () => {
         if(isMember) {
             toast({ variant: 'destructive', title: 'Already a Member', description: 'You are already a member of this group.' });
+            return;
+        }
+
+        if (!isNew) {
+            toast({
+                variant: "destructive",
+                title: "Join Failed",
+                description: "Can't join a group that's in progress. Join a \"New\" group or create one",
+                duration: 6000,
+            });
             return;
         }
 

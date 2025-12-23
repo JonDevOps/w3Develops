@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useUser, useFirestore } from '@/firebase';
 import { arrayUnion, doc, collection, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/components/ui/use-toast';
@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { PlusCircle } from 'lucide-react';
 import { Cohort } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+import { ONE_WEEK_IN_MS } from '@/lib/constants';
 
 export default function JoinCohortButton({ cohort, onJoinSuccess }: { cohort: Cohort, onJoinSuccess?: (id: string) => void }) {
     const { user } = useUser();
@@ -21,6 +22,7 @@ export default function JoinCohortButton({ cohort, onJoinSuccess }: { cohort: Co
 
     const isMember = cohort.memberIds.includes(user.uid);
     const isFull = cohort.memberIds.length >= 25;
+    const isNew = cohort.createdAt && (Date.now() - cohort.createdAt.toMillis()) < ONE_WEEK_IN_MS;
 
     if (isMember) {
         return (
@@ -39,6 +41,17 @@ export default function JoinCohortButton({ cohort, onJoinSuccess }: { cohort: Co
             toast({ variant: 'destructive', title: 'Already a Member', description: 'You are already a member of this cohort.' });
             return;
         }
+
+        if (!isNew) {
+            toast({
+                variant: "destructive",
+                title: "Join Failed",
+                description: "Can't join a group that's in progress. Join a \"New\" group or create one",
+                duration: 6000,
+            });
+            return;
+        }
+
         setIsJoining(true);
         
         try {
