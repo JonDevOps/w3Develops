@@ -36,6 +36,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/settings',
     '/signup',
     '/solo-projects',
+    '/support',
     '/terms',
     '/tutor',
     '/hackathon',

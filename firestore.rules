@@ -89,5 +89,16 @@ service cloud.firestore {
                     && request.resource.data.feedback.size() > 0
                     && request.resource.data.feedback.size() <= 2000;
     }
+
+    match /supportRequests/{supportRequestId} {
+      allow read: if false; // Should only be readable by admins, which is handled server-side
+      allow create: if request.auth != null
+                     && request.resource.data.userId == request.auth.uid
+                     && request.resource.data.subject is string
+                     && request.resource.data.subject.size() > 0 && request.resource.data.subject.size() <= 100
+                     && request.resource.data.description is string
+                     && request.resource.data.description.size() > 0 && request.resource.data.description.size() <= 2000
+                     && request.resource.data.status == 'open';
+    }
   }
 }
