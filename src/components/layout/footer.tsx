@@ -1,7 +1,7 @@
 'use client';
 
 import { Github, Youtube, Facebook, Instagram, Linkedin, Rss } from 'lucide-react';
-import { FaDiscord, FaMedium, FaReddit, FaPodcast, FaXTwitter } from 'react-icons/fa6';
+import { FaDiscord, FaMedium, FaReddit, FaPodcast, FaXTwitter, FaMastodon, FaBluesky } from 'react-icons/fa6';
 import Link from 'next/link';
 
 export default function Footer() {
@@ -22,11 +22,17 @@ export default function Footer() {
       <a href="https://discord.gg/ckQ52gA" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
         <FaDiscord size={24} />
       </a>
+      <a href="https://mastodon.social/@w3develops" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
+        <FaMastodon size={24} />
+      </a>
     </>
   );
 
   const secondarySocials = (
     <>
+      <a href="https://bsky.app/profile/w3develops.bsky.social" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
+        <FaBluesky size={24} />
+      </a>
       <a href="https://www.instagram.com/w3develops/" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary">
         <Instagram />
       </a>
