@@ -11,7 +11,7 @@
 # All files except markdown are owned by dev team
 # -------------------------------------------------
 
-* @freecodecamp/dev-team
+* @w3develops/dev-team
 *.md
 
 # -------------------------------------------------
