@@ -3,7 +3,7 @@ edit this
 Read here for more info on what a changelog is https://keepachangelog.com/en/1.0.0/
 
 
-freecodecamps example changelog
+w3Develops example changelog
 notice it has bug fixes, features, and reverts when necessary.
 
 ## [3.2.1](https://github.com/freeCodeCamp/curriculum/compare/v3.2.0...v3.2.1) (2018-09-25)
