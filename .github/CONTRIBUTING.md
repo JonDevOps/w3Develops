@@ -5,7 +5,7 @@ Hello 👋!
 
 w3Develops.org is possible, thanks to thousands of kind volunteers like you. We are grateful for your contributions and we are excited to welcome you aboard.
 
-We strictly enforce our ["Code of Conduct"](https://www.w3develops.org/code-of-conduct). Take a moment to read it. It's only 196 words long.
+We strictly enforce our ["Code of Conduct"](https://github.com/w3develops/w3Develops/blob/main/.github/CODE_OF_CONDUCT.md). Take a moment to read it. It's only 196 words long.
 
 Happy contributing 🎉!
 
