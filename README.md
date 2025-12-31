@@ -23,7 +23,6 @@
     <img alt="Sponsors on Open Collective" src="https://opencollective.com/w3develops-94/sponsors/badge.svg">
   </a>
 </p>
-[![GitHub license](https://img.shields.io/badge/license-bsd3-blue.svg)](https://github.com/w3develops/w3Develops/blob/main/.github/LICENSE)
 
 # Welcome to W3Develops' open source codebase
 ## What is W3Develops?
