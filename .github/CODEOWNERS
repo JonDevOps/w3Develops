@@ -11,14 +11,14 @@
 # All files except markdown are owned by dev team
 # -------------------------------------------------
 
-* @w3develops/dev-team
+* @w3develops/w3develops-x
 *.md
 
 # -------------------------------------------------
 # All files in the root are owned by dev team
 # -------------------------------------------------
 
-/* @w3develops/dev-team
+/* @w3develops/w3develops-x
 
 # -------------------------------------------------
 # All markdown files in the root are owned
