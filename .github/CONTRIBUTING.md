@@ -1,4 +1,3 @@
-[//]: (copy freecodecamps most current contributing guidlines, also make a page for the w3develops pages mentioned below.)
 # Contribution Guidelines
 
 Hello 👋!
