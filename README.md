@@ -15,10 +15,7 @@
   </a>
   <a href="https://www.patreon.com/w3develops">
 	<img alt="Contribute with w3Develops on Patreon" src="https://img.shields.io/badge/Patreon-contribute-yellow.svg">
-  </a>
-   <a href="https://github.com/sindresorhus/awesome">
-    <img alt="Awesome" src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg">
-  </a>
+  </a>  
   <a href="#backers">
     <img alt="Backers on Open Collective" src="https://opencollective.com/w3develops-94/backers/badge.svg">
   </a>
@@ -26,13 +23,7 @@
     <img alt="Sponsors on Open Collective" src="https://opencollective.com/w3develops-94/sponsors/badge.svg">
   </a>
 </p>
-
-<!-- seperate shields, i need to update the one and the one below -->
-
-[![GitHub license](https://img.shields.io/badge/license-bsd3-blue.svg)](https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-agency/master/LICENSE)
-[![npm version](https://img.shields.io/npm/v/startbootstrap-agency.svg)](https://www.npmjs.com/package/startbootstrap-agency)
-
-
+[![GitHub license](https://img.shields.io/badge/license-bsd3-blue.svg)](https://github.com/w3develops/w3Develops/blob/main/.github/LICENSE)
 
 # Welcome to W3Develops' open source codebase
 ## What is W3Develops?
