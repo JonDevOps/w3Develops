@@ -97,7 +97,7 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 
 ## Copyright and License
 
-Logo Copyright 2017-2026 w3Develops, Inc
+Logo Copyright 2017-2026 w3Develops, Inc.
 Code released under the BSD-3 license.
 
-Pull requests welcome! Please keep in mind simplicity & teaching over correctness.
+Pull requests welcome!
