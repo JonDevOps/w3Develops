@@ -5,7 +5,8 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
 import { Toaster } from "@/components/ui/toaster";
-import { AppLayout } from "@/components/layout/AppLayout";
+import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
 
 
 const inter = Inter({ 
@@ -63,9 +64,11 @@ export default function RootLayout({
         )}
       >
         <FirebaseClientProvider>
-            <AppLayout>
+            <Header />
+            <main className="flex-grow">
               {children}
-            </AppLayout>
+            </main>
+            <Footer />
           <Toaster />
         </FirebaseClientProvider>
       </body>
