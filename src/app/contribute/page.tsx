@@ -61,9 +61,6 @@ export default function ContributeIntroPage() {
                             height={400}
                             className="rounded-full object-cover"
                         />
-                         <div className="absolute top-4 right-10 text-2xl font-mono text-white">
-                            &#123; } &#125;
-                        </div>
                     </div>
                 </div>
             </div>
