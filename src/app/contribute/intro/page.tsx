@@ -3,8 +3,35 @@
 
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Heart } from 'lucide-react';
+import { ArrowRight, Heart, Pencil, Languages, Search, Braces } from 'lucide-react';
 import Link from 'next/link';
+
+const contributionOptions = [
+    {
+        icon: <Pencil className="h-6 w-6 text-yellow-400" />,
+        title: 'Help Others',
+        description: 'Help by answering coding questions on our community forum.',
+        link: '#'
+    },
+    {
+        icon: <Search className="h-6 w-6 text-yellow-400" />,
+        title: 'Feedback',
+        description: 'Give feedback on coding projects built by campers.',
+        link: '#'
+    },
+    {
+        icon: <Languages className="h-6 w-6 text-yellow-400" />,
+        title: 'Translations',
+        description: "Help us translate w3Develops.org's resources.",
+        link: '#'
+    },
+    {
+        icon: <Braces className="h-6 w-6 text-yellow-400" />,
+        title: 'Write Code',
+        description: 'Contribute with code to our open-source codebases.',
+        link: '#'
+    }
+]
 
 export default function ContributeIntroPage() {
     return (
@@ -43,8 +70,22 @@ export default function ContributeIntroPage() {
             </div>
 
             <div className="mt-24 md:mt-32">
-                <h2 className="text-3xl font-bold font-sans">Get Involved:</h2>
-                {/* Placeholder for future "Get Involved" content */}
+                <h2 className="text-3xl font-bold font-sans mb-8">Get Involved:</h2>
+                <div className="grid md:grid-cols-2 gap-8">
+                   {contributionOptions.map((option) => (
+                       <div key={option.title} className="bg-[#2a2a40] p-6 rounded-md border border-gray-700">
+                           <div className="flex items-center gap-4 mb-4">
+                               <div className="bg-[#1b1b32] p-2 rounded-md">
+                                {option.icon}
+                               </div>
+                               <h3 className="text-2xl font-bold text-white">{option.title}</h3>
+                           </div>
+                           <Link href={option.link} className="text-gray-300 hover:text-yellow-400 underline">
+                            {option.description}
+                           </Link>
+                       </div>
+                   ))}
+                </div>
             </div>
         </div>
     )
