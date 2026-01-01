@@ -66,6 +66,28 @@ export const webLearningResources: LearningResource[] = [
     }
 ];
 
+export const aiMachineLearningResources: LearningResource[] = [
+    {
+        topic: "AI & Machine Learning",
+        description: "Explore the world of Artificial Intelligence and Machine Learning with these curated resources, covering everything from beginner concepts to advanced applications.",
+        links: [
+            { title: "Kaggle Learn", url: "https://www.kaggle.com/learn" },
+            { title: "OpenML Education", url: "https://www.openml.org/" },
+            { title: "Google Prompt Engineering Guide [PDF]", url: "https://www.gptaiflow.com/assets/files/2025-01-18-pdf-1-TechAI-Goolge-whitepaper_Prompt%20Engineering_v4-af36dcc7a49bb7269a58b1c9b89a8ae1.pdf" },
+            { title: "GitHub - Machine Learning for Beginners", url: "https://github.com/collections/machine-learning" },
+            { title: "Google for Developers - Machine Learning", url: "https://developers.google.com/machine-learning" },
+            { title: "TensorFlow - Learn ML", url: "https://www.tensorflow.org/resources/learn-ml" },
+            { title: "MIT - 7 Free Courses to Grasp Machine Learning", url: "https://openlearning.mit.edu/news/7-free-online-mit-courses-grasp-machine-learning" },
+            { title: "Kaggle - 27 Free ML Resources", url: "https://www.kaggle.com/discussions/general/196686" },
+            { title: "Reddit - 5 Best GitHub Repositories to Learn ML", url: "https://www.reddit.com/r/learnmachinelearning/comments/y43u5t/5_best_github_repositories_to_learn_machine/" },
+            { title: "GitHub - ML From Scratch", url: "https://github.com/eriklindernoren/ML-From-Scratch" },
+            { title: "Azure Machine Learning", url: "https://azure.microsoft.com/en-us/products/machine-learning" },
+            { title: "Reddit - List of free educational ML resources", url: "https://www.reddit.com/r/learnmachinelearning/comments/1e1amzf/list_of_free_educational_ml_resources_i_used_to/" },
+            { title: "AWS Skill Builder", url: "https://skillbuilder.aws/" },
+        ]
+    }
+];
+
 export const cybersecurityResources: LearningResource[] = [
     {
         topic: "Cybersecurity",
