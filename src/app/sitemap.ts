@@ -12,6 +12,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/cohorts/create',
     '/competitions',
     '/cookies',
+    '/contribute',
+    '/contribute/intro',
     '/donate',
     '/explore',
     '/feedback',
