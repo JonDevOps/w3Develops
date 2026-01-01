@@ -55,8 +55,8 @@ export default function ContributeIntroPage() {
                  <div className="flex justify-center">
                     <div className="relative w-80 h-80 md:w-96 md:h-96">
                         <Image
-                            src="https://www.freecodecamp.org/news/content/images/2021/08/fcc-banner.png"
-                            alt="freeCodeCamp banner illustration"
+                            src="/logo.png"
+                            alt="w3Develops Logo"
                             width={400}
                             height={400}
                             className="rounded-full object-cover"
