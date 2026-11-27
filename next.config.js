@@ -67,7 +67,6 @@ const nextConfig = {
             '</home.md>; rel="alternate"; type="text/markdown"',
             '</docs>; rel="service-doc"',
             '</llms.txt>; rel="describedby"; type="text/plain"',
-            '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
           ].join(', '),
         },
       ],

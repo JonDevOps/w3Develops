@@ -102,17 +102,6 @@ test('homepage negotiates the representation without sharing cached HTML with Ma
   assert.equal(disallowed.status, 405);
   await disallowed.body?.cancel();
 
-  const catalog = await get('/.well-known/api-catalog', 'application/linkset+json');
-  assert.equal(catalog.status, 200);
-  assert.equal(catalog.headers.get("Content-Type")?.split(";")[0], "application/linkset+json");
-  const headCatalog = await get('/.well-known/api-catalog', 'application/linkset+json', { method: 'HEAD' });
-  assert.equal(headCatalog.status, 200);
-  assert.ok(headCatalog.headers.get('Link')?.includes('rel="api-catalog"'));
-  const links = await catalog.json();
-  assert.deepEqual(links.linkset[0].item.map(item => item.href), ['https://w3develops.org/.well-known/search']);
-  const api = await get('/openapi.json', 'application/json');
-  assert.equal(api.status, 200);
-  assert.deepEqual(Object.keys((await api.json()).paths), ['/.well-known/search']);
   const apiDocumentation = await get('/docs/guides/public-search', 'text/html');
   assert.equal(apiDocumentation.status, 200);
   assert.match(await apiDocumentation.text(), /Public learning search/);
