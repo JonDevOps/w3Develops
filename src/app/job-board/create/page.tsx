@@ -73,7 +73,7 @@ export default function CreateJobPage() {
     addDoc(jobsCollection, jobData)
         .then((newDocRef) => {
             toast({ title: "Success!", description: "Your job posting has been created." });
-            notifySearchEngines(`/job-board/${newDocRef.id}`);
+            notifySearchEngines(`/job-board/${newDocRef.id}`, user);
             router.push(`/job-board/${newDocRef.id}`);
         })
         .catch(async (error) => {
