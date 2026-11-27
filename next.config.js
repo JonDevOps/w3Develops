@@ -59,6 +59,18 @@ const nextConfig = {
         { key: 'Content-Security-Policy-Report-Only', value: CONTENT_SECURITY_POLICY },
       ],
     }, {
+      source: '/',
+      headers: [
+        {
+          key: 'Link',
+          value: [
+            '</home.md>; rel="alternate"; type="text/markdown"',
+            '</docs>; rel="service-doc"',
+            '</llms.txt>; rel="describedby"; type="text/plain"',
+          ].join(', '),
+        },
+      ],
+    }, {
       // Tor Browser offers the site's onion address (issue #345), served by
       // a Tor onion service that proxies to this site
       source: '/:path*',
@@ -67,6 +79,7 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      { source: '/security.txt', destination: '/.well-known/security.txt', permanent: true },
       { source: '/forum', destination: 'https://discord.gg/ckQ52gA', permanent: false },
       { source: '/forum/:path*', destination: 'https://discord.gg/ckQ52gA', permanent: false },
     ];
