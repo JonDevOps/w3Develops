@@ -55,7 +55,7 @@ test('homepage negotiates the representation without sharing cached HTML with Ma
     assert.equal(response.headers.get('Content-Signal'), contentSignal);
     const body = await response.text();
     if (method === 'HEAD') assert.equal(body, '');
-    else assert.match(body, /^# w3Develops\b/);
+    else assert.match(body, /^# w3Develops\b/m);
   };
   await html('/', 'text/html,application/xhtml+xml,*/*;q=0.8');
   await markdown('/', 'text/markdown');
@@ -77,4 +77,39 @@ test('homepage negotiates the representation without sharing cached HTML with Ma
   const robots = await get('/robots.txt', 'text/plain');
   assert.equal(robots.status, 200);
   assert.match(await robots.text(), new RegExp('^Content-Signal: ' + contentSignal + '$', 'm'));
+
+  const homepageHtml = await get('/', 'text/html');
+  assert.ok((await homepageHtml.text()).includes('name="agent:endpoint" content="https://w3develops.org/.well-known/search?q={query}"'));
+  const homepageMarkdown = await get('/', 'text/markdown');
+  const frontMatter = await homepageMarkdown.text();
+  assert.ok(frontMatter.startsWith('---\nagent:\n'));
+  assert.ok(frontMatter.includes('endpoint: "https://w3develops.org/.well-known/search?q={query}"'));
+
+  const search = await get('/.well-known/search?q=javascript+study+groups', 'text/markdown');
+  assert.equal(search.status, 200);
+  assert.match(search.headers.get('Content-Type'), markdownType);
+  assert.equal(search.headers.get('Content-Signal'), contentSignal);
+  assert.ok((await search.text()).includes('https://w3develops.org/docs/guides/study-groups'));
+  const noMatch = await get('/.well-known/search?q=nosuchpublictopicxvzq', 'text/markdown');
+  assert.match(await noMatch.text(), /No matching public pages/);
+  for (const invalid of ['/.well-known/search', '/.well-known/search?q=hello&q=world', '/.well-known/search?q=' + 'a'.repeat(161)]) {
+    const badSearch = await get(invalid, 'text/markdown');
+    assert.equal(badSearch.status, 400);
+    await badSearch.body?.cancel();
+  }
+  const disallowed = await get('/.well-known/search?q=about', 'text/markdown', { method: 'POST' });
+  assert.equal(disallowed.status, 405);
+  await disallowed.body?.cancel();
+
+  const catalog = await get('/.well-known/api-catalog', 'application/linkset+json');
+  assert.equal(catalog.status, 200);
+  assert.equal(catalog.headers.get("Content-Type")?.split(";")[0], "application/linkset+json");
+  const links = await catalog.json();
+  assert.deepEqual(links.linkset[0].item.map(item => item.href), ['https://w3develops.org/.well-known/search']);
+  const api = await get('/openapi.json', 'application/json');
+  assert.equal(api.status, 200);
+  assert.deepEqual(Object.keys((await api.json()).paths), ['/.well-known/search']);
+  const apiDocumentation = await get('/docs/guides/public-search', 'text/html');
+  assert.equal(apiDocumentation.status, 200);
+  assert.match(await apiDocumentation.text(), /Public learning search/);
 });
