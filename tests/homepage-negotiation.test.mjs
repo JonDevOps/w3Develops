@@ -90,6 +90,7 @@ test('homepage negotiates the representation without sharing cached HTML with Ma
   assert.equal(search.status, 200);
   assert.match(search.headers.get('Content-Type'), markdownType);
   assert.equal(search.headers.get('Content-Signal'), contentSignal);
+  assert.equal(search.headers.get('Accept-Query'), 'q');
   assert.ok((await search.text()).includes('https://w3develops.org/docs/guides/study-groups'));
   const noMatch = await get('/.well-known/search?q=nosuchpublictopicxvzq', 'text/markdown');
   assert.match(await noMatch.text(), /No matching public pages/);

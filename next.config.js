@@ -68,15 +68,22 @@ const nextConfig = {
             '</docs>; rel="service-doc"',
             '</llms.txt>; rel="describedby"; type="text/plain"',
             '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
+            '</.well-known/ard.json>; rel="ard"; type="application/json"',
           ].join(', '),
         },
       ],
+    }, {
+      source: '/.well-known/:catalog(ard|ai-catalog).json',
+      headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
     }, {
       // Tor Browser offers the site's onion address (issue #345), served by
       // a Tor onion service that proxies to this site
       source: '/:path*',
       headers: [{ key: 'Onion-Location', value: `http://${ONION_HOST}/:path*` }],
     }];
+  },
+  async rewrites() {
+    return [{ source: '/.well-known/ai-catalog.json', destination: '/.well-known/ard.json' }];
   },
   async redirects() {
     return [

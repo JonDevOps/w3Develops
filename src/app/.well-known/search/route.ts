@@ -11,6 +11,7 @@ function markdown(s: string, status = 200) {
       'X-Content-Type-Options': 'nosniff',
       'X-Robots-Tag': 'noindex',
       'Content-Signal': 'search=yes, ai-input=no, ai-train=no',
+      ...(status === 200 ? { 'Accept-Query': 'q' } : {}),
       'Cache-Control': status === 200 ? 'public, max-age=300, s-maxage=3600' : 'no-store',
     },
   });
@@ -25,7 +26,7 @@ export function GET(request: Request) {
   }
   const results = searchPublicDocs(query);
   return markdown([
-    '# w3Develops public search',
+    '# Search results',
     '',
     results.length ? 'Public links and short descriptions. Results do not certify group or event availability.' : 'No matching public pages were found. Try fewer or different keywords.',
     '',
