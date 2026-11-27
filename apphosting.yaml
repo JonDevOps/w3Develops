@@ -11,6 +11,13 @@ runConfig:
 # priority over this file. Keep JEV_API_KEY in the console too, or remove it
 # there, so the two don't disagree.
 #
+env:
+  # Google OAuth subject (numeric service account ID) of onMemberPostWritten.
+  - variable: FEED_REVALIDATION_SERVICE_ACCOUNT_SUBJECT
+    value: "112493801283000435205"
+    availability:
+      - RUNTIME
+
 # Secrets from Google Cloud Secret Manager.
 # App Hosting will automatically fetch these values and provide them as environment variables.
 secrets:

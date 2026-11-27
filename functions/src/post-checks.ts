@@ -150,12 +150,33 @@ async function cleanUpImages(postId: string, before: DocumentData | undefined, a
 
 const isPublic = (post: DocumentData | undefined) => post?.status === 'visible' && post?.audience === 'public';
 
-/** Asks the site to rebuild its cached /feed page (src/app/api/revalidate/feed/route.ts) */
+/** Asks the site to invalidate its public feed using the function's Google identity. */
 async function refreshFeedPage(postId: string) {
   if (inEmulator) return;
+  const endpoint = `${SITE_URL}/api/revalidate/feed`;
+  const identityUrl = new URL(
+    'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity',
+  );
+  identityUrl.searchParams.set('audience', endpoint);
+
   try {
-    const response = await fetch(`${SITE_URL}/api/revalidate/feed`, { method: 'POST' });
-    if (!response.ok && response.status !== 429) logger.warn('Feed refresh answered', { status: response.status, postId });
+    const identity = await fetch(identityUrl, {
+      headers: { 'Metadata-Flavor': 'Google' },
+      signal: AbortSignal.timeout(5_000),
+    });
+    if (!identity.ok) throw new Error(`Google identity endpoint returned ${identity.status}`);
+    const token = (await identity.text()).trim();
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      redirect: 'error',
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (response.ok) {
+      logger.info('Feed cache refreshed', { postId });
+    } else if (response.status !== 429) {
+      logger.warn('Feed refresh answered', { status: response.status, postId });
+    }
   } catch (error) {
     logger.warn('Could not refresh the feed page', { postId, error: String(error) });
   }
