@@ -26,6 +26,7 @@ jobs:
       - run: npm run build
         working-directory: functions
       - run: npm run build
+      - run: node --test tests/homepage-negotiation.test.mjs
       # The rules tests run in the Firestore emulator, which needs the Firebase CLI
       - run: npm install -g firebase-tools
       - run: npm run test:rules
