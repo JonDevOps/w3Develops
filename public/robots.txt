@@ -2,6 +2,7 @@
 #
 # Allow crawling of all content
 User-agent: *
+Content-Signal: search=yes, ai-input=no, ai-train=no
 Disallow:
 
 Sitemap: https://w3develops.org/sitemap.xml
