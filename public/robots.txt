@@ -6,3 +6,4 @@ Content-Signal: search=yes, ai-input=no, ai-train=no
 Disallow:
 
 Sitemap: https://w3develops.org/sitemap.xml
+Agentmap: https://w3develops.org/.well-known/ard.json

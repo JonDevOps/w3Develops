@@ -114,7 +114,7 @@ export default function CreateMeetupPage() {
       await batch.commit();
 
       toast({ title: "Success!", description: "Your new meetup has been created." });
-      notifySearchEngines(`/meetups/${newMeetupRef.id}`);
+      notifySearchEngines(`/meetups/${newMeetupRef.id}`, user);
       router.push(`/meetups/${newMeetupRef.id}`);
     } catch (error) {
         toast({ variant: "destructive", title: "Could Not Create Meetup", description: getErrorMessage(error, "An unexpected error occurred.") });

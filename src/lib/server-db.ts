@@ -32,9 +32,13 @@ export interface ServerQuery {
 
 const onGoogleCloud = () => !!process.env.FIREBASE_CONFIG;
 
+export function getServerFirebaseApp() {
+  return getAdminApps().find(app => app.name === '[DEFAULT]') ??
+    initializeAdminApp({ projectId: firebaseConfig.projectId });
+}
+
 function adminDb() {
-  if (getAdminApps().length === 0) initializeAdminApp({ projectId: firebaseConfig.projectId });
-  return getAdminFirestore();
+  return getAdminFirestore(getServerFirebaseApp());
 }
 
 // Admin Timestamps become the browser SDK's Timestamps, which the rest of

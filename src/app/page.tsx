@@ -1,5 +1,6 @@
 
 import type { Metadata } from 'next';
+import { PUBLIC_SEARCH_DOC, PUBLIC_SEARCH_INSTRUCTIONS, PUBLIC_SEARCH_URL } from '@/lib/public-search';
 import SignedInRedirect from '@/components/SignedInRedirect';
 import { HOME_DESCRIPTION, HOME_TITLE, sharePreview } from '@/lib/site-pages';
 import { Button } from "@/components/ui/button";
@@ -38,7 +39,16 @@ const features = [
 
 
 // Uses the site's default title and description from the root layout
-export const metadata: Metadata = { alternates: { canonical: '/' }, ...sharePreview(HOME_TITLE, HOME_DESCRIPTION, '/') };
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+  ...sharePreview(HOME_TITLE, HOME_DESCRIPTION, '/'),
+  other: {
+    'agent:endpoint': PUBLIC_SEARCH_URL + '?q={query}',
+    'agent:method': 'GET',
+    'agent:documentation': PUBLIC_SEARCH_DOC,
+    'agent:instructions': PUBLIC_SEARCH_INSTRUCTIONS,
+  },
+};
 
 // Rendered on the server so search engines and AI crawlers can read it.
 // Members who are signed in are sent to their account page.

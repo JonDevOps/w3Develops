@@ -152,7 +152,7 @@ export default function GroupForm({ kind, groupId }: { kind: GroupKind; groupId?
       if (isEditing) {
         await updateDoc(doc(firestore, config.collection, groupId), fields);
         toast({ title: 'Saved', description: `Your ${config.noun} has been updated.` });
-        notifySearchEngines(`${config.path}/${groupId}`);
+        notifySearchEngines(`${config.path}/${groupId}`, user);
         router.push(`${config.path}/${groupId}`);
       } else {
         const ref = await addDoc(collection(firestore, config.collection), {
@@ -162,7 +162,7 @@ export default function GroupForm({ kind, groupId }: { kind: GroupKind; groupId?
           createdAt: serverTimestamp(),
         });
         toast({ title: 'Success!', description: `Your ${config.title.toLowerCase()} has been created.` });
-        notifySearchEngines(`${config.path}/${ref.id}`);
+        notifySearchEngines(`${config.path}/${ref.id}`, user);
         router.push(`${config.path}/${ref.id}`);
       }
     } catch {
