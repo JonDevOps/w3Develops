@@ -1,17 +1,38 @@
 {
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "w3Develops",
+    "identifier": "https://w3develops.org/",
+    "documentationUrl": "https://w3develops.org/docs"
+  },
   "entries": [
     {
-      "@context": "https://agenticresourcediscovery.org/context/v1",
       "identifier": "urn:air:w3develops.org:skills:find-w3develops-learning",
       "displayName": "Find learning opportunities on w3Develops",
       "type": "application/agent-skills+md",
       "url": "https://w3develops.org/.well-known/agent-skills/find-w3develops-learning/SKILL.md",
       "description": "Find public w3Develops study groups, projects, and getting-started links for someone who wants to learn or build with other developers.",
-      "capabilities": ["find-public-learning-links"],
+      "capabilities": [
+        "find-public-learning-links"
+      ],
       "representativeQueries": [
         "Where can I find study groups on w3Develops?",
         "How do I browse group projects to build with other developers?",
         "Where can I get started or look for a book club on w3Develops?"
+      ]
+    },
+    {
+      "identifier": "urn:air:w3develops.org:server:public-learning",
+      "displayName": "w3Develops Public Learning MCP",
+      "type": "application/mcp-server-card+json",
+      "url": "https://w3develops.org/mcp/server-card",
+      "description": "Search curated public w3Develops learning links and descriptions.",
+      "capabilities": [
+        "find_public_learning_resources"
+      ],
+      "representativeQueries": [
+        "Where can I find JavaScript study groups on w3Develops?",
+        "How can I discover public guides for team coding projects?"
       ]
     }
   ]

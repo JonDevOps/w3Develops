@@ -40,7 +40,7 @@ test('public agent skills index identifies a real skill with a matching digest',
   }
 });
 
-test('the ARD manifest advertises the same public static skill and no unimplemented service', async () => {
+test('the ARD and AI Catalog paths advertise the public skill and learning MCP', async () => {
   const index = JSON.parse(await artifact('index.json', /^application\/json\b/i));
   const wellKnown = new URL('../', localRoot);
   let manifestBytes;
@@ -50,6 +50,13 @@ test('the ARD manifest advertises the same public static skill and no unimplemen
     assert.equal(manifestResponse.status, 200);
     assert.match(manifestResponse.headers.get('Content-Type'), /^application\/json\b/i);
     manifestBytes = Buffer.from(await manifestResponse.arrayBuffer());
+    const catalogResponse = await fetch(new URL('/.well-known/ai-catalog.json', testOrigin));
+    assert.equal(catalogResponse.status, 200);
+    assert.equal(catalogResponse.headers.get('Access-Control-Allow-Origin'), '*');
+    assert.deepEqual(Buffer.from(await catalogResponse.arrayBuffer()), manifestBytes);
+    const cardResponse = await fetch(new URL('/mcp/server-card', testOrigin));
+    assert.equal(cardResponse.status, 200);
+    assert.match(cardResponse.headers.get('Content-Type'), /^application\/mcp-server-card\+json\b/i);
     const robotsResponse = await fetch(new URL('/robots.txt', testOrigin));
     assert.equal(robotsResponse.status, 200);
     robots = await robotsResponse.text();
@@ -57,9 +64,15 @@ test('the ARD manifest advertises the same public static skill and no unimplemen
     manifestBytes = await readFile(new URL('ard.json', wellKnown));
     robots = await readFile(new URL('../robots.txt', wellKnown), 'utf8');
   }
-  const { entries } = JSON.parse(manifestBytes);
-  assert.equal(entries.length, index.skills.length);
-  for (const [i, entry] of entries.entries()) {
+  const { specVersion, host, entries } = JSON.parse(manifestBytes);
+  assert.equal(specVersion, '1.0');
+  assert.equal(host.identifier, 'https://w3develops.org/');
+  const mcp = entries.find(entry => entry.type === 'application/mcp-server-card+json');
+  assert.equal(mcp?.url, 'https://w3develops.org/mcp/server-card');
+  const skills = entries.filter(entry => entry.type === 'application/agent-skills+md');
+  assert.equal(skills.length, index.skills.length);
+  assert.equal(entries.length, skills.length + 1);
+  for (const [i, entry] of skills.entries()) {
     const skill = index.skills[i];
     assert.equal(entry.identifier, 'urn:air:w3develops.org:skills:' + skill.name);
     assert.equal(entry.type, 'application/agent-skills+md');
