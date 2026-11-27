@@ -17,6 +17,7 @@ export function GET() {
     headers: {
       'Content-Type': 'application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"',
       'X-Content-Type-Options': 'nosniff',
+      Link: '<' + SITE_URL + '/.well-known/api-catalog>; rel="api-catalog"',
     },
   });
 }

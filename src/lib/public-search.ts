@@ -2,6 +2,7 @@ import { SITE_PAGES, SITE_URL } from './site-pages';
 
 export const PUBLIC_SEARCH_PATH = '/.well-known/search';
 export const PUBLIC_SEARCH_URL = SITE_URL + PUBLIC_SEARCH_PATH;
+export const PUBLIC_SEARCH_DOC = SITE_URL + '/docs/guides/public-search';
 export const SEARCH_QUERY_MAX = 160;
 export const SEARCH_RESULT_MAX = 8;
 export const PUBLIC_SEARCH_INSTRUCTIONS =

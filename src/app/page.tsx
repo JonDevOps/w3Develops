@@ -1,6 +1,6 @@
 
 import type { Metadata } from 'next';
-import { PUBLIC_SEARCH_INSTRUCTIONS, PUBLIC_SEARCH_URL } from '@/lib/public-search';
+import { PUBLIC_SEARCH_DOC, PUBLIC_SEARCH_INSTRUCTIONS, PUBLIC_SEARCH_URL } from '@/lib/public-search';
 import SignedInRedirect from '@/components/SignedInRedirect';
 import { HOME_DESCRIPTION, HOME_TITLE, sharePreview } from '@/lib/site-pages';
 import { Button } from "@/components/ui/button";
@@ -45,6 +45,7 @@ export const metadata: Metadata = {
   other: {
     'agent:endpoint': PUBLIC_SEARCH_URL + '?q={query}',
     'agent:method': 'GET',
+    'agent:documentation': PUBLIC_SEARCH_DOC,
     'agent:instructions': PUBLIC_SEARCH_INSTRUCTIONS,
   },
 };

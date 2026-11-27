@@ -1,5 +1,5 @@
 import { HOME_DESCRIPTION, SITE_PAGES, SITE_URL } from '@/lib/site-pages';
-import { PUBLIC_SEARCH_INSTRUCTIONS, PUBLIC_SEARCH_URL } from '@/lib/public-search';
+import { PUBLIC_SEARCH_DOC, PUBLIC_SEARCH_INSTRUCTIONS, PUBLIC_SEARCH_URL } from '@/lib/public-search';
 
 const HOME_FEATURES = ['/studygroups', '/groupprojects', '/competitions', '/hackathons'] as const;
 
@@ -11,6 +11,7 @@ export function GET() {
     'agent:',
     '  endpoint: ' + JSON.stringify(PUBLIC_SEARCH_URL + '?q={query}'),
     '  method: GET',
+    '  documentation: ' + JSON.stringify(PUBLIC_SEARCH_DOC),
     '  instructions: ' + JSON.stringify(PUBLIC_SEARCH_INSTRUCTIONS),
     '---',
     '',

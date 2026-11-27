@@ -10,9 +10,10 @@ const contentSignal = 'search=yes, ai-input=no, ai-train=no';
 
 test('homepage negotiates the representation without sharing cached HTML with Markdown', { timeout: 25_000 }, async t => {
   const externalUrl = process.env.HOMEPAGE_TEST_URL;
-  const base = externalUrl || 'http://127.0.0.1:3199';
+  const port = process.env.HOMEPAGE_TEST_PORT || '3199';
+  const base = externalUrl || ('http://127.0.0.1:' + port);
   if (!externalUrl) {
-    const server = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'start', '-H', '127.0.0.1', '-p', '3199'], { stdio: 'inherit' });
+    const server = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'start', '-H', '127.0.0.1', '-p', port], { stdio: 'inherit' });
     t.after(async () => {
       if (server.exitCode === null && server.signalCode === null) {
         const exited = once(server, 'exit');
@@ -104,6 +105,9 @@ test('homepage negotiates the representation without sharing cached HTML with Ma
   const catalog = await get('/.well-known/api-catalog', 'application/linkset+json');
   assert.equal(catalog.status, 200);
   assert.equal(catalog.headers.get("Content-Type")?.split(";")[0], "application/linkset+json");
+  const headCatalog = await get('/.well-known/api-catalog', 'application/linkset+json', { method: 'HEAD' });
+  assert.equal(headCatalog.status, 200);
+  assert.ok(headCatalog.headers.get('Link')?.includes('rel="api-catalog"'));
   const links = await catalog.json();
   assert.deepEqual(links.linkset[0].item.map(item => item.href), ['https://w3develops.org/.well-known/search']);
   const api = await get('/openapi.json', 'application/json');
