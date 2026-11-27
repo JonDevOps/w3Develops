@@ -11,6 +11,7 @@ const SUMMARY =
 const DETAILS = [
   `Joining is free at ${SITE_URL}/signup. w3Develops is run by volunteers and supported by donations; there are no ads, and member data is never sold.`,
   'Most activity happens in groups: study groups for learning a topic together, group projects for building a real application as a team, and book clubs for reading together. Members post regular check-ins on their progress to stay accountable.',
+  `To find one, browse the [public study groups](${SITE_URL}/studygroups) by topic and open the group page. A listing does not imply that a group is accepting members. Look for a new group or one explicitly open to join anytime, and check capacity. Joining is a signed-in action. See the [study group guide](${SITE_URL}/docs/guides/study-groups) for the exact steps.`,
 ];
 
 const ABOUT = [

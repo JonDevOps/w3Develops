@@ -19,6 +19,8 @@ export function GET() {
       return `- [${title}](${SITE_URL}${path}): ${description}`;
     }),
     '',
+    `[How to find and join a study group](${SITE_URL}/docs/guides/study-groups)`,
+    '',
     `[Find a mentor](${SITE_URL}/mentorship) · [Read the community guides](${SITE_URL}/docs)`,
     '',
   ].join('\n');

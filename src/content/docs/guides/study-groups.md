@@ -6,7 +6,8 @@ A study group is a small group learning the same thing, like JavaScript or syste
 
 ## Join or start one
 
-- **Join:** open [Study Groups](https://w3develops.org/studygroups), pick one, and select **Join**.
+- **Find a group:** open [Study Groups](/studygroups) or [Book Clubs](/book-clubs) and search by name or topic. Start with the **New** section. An in-progress group only accepts new members if it is marked **Open to join anytime**. A full group cannot accept new members.
+- **Join:** [sign in](/login) or [create a free account](/signup), then return to the group page and select **Join Group** or **Join Club**, if available. If you signed up with email and password, verify your address first. If none are open, browse other topics or start one.
 - **Start:** select **Create**, give it a name, a topic and a short description, and set a meeting time if you have one.
 
 ## Inside a group
