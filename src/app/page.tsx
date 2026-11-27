@@ -2,6 +2,7 @@
 import type { Metadata } from 'next';
 import { PUBLIC_SEARCH_DOC, PUBLIC_SEARCH_INSTRUCTIONS, PUBLIC_SEARCH_URL } from '@/lib/public-search';
 import SignedInRedirect from '@/components/SignedInRedirect';
+import PublicLearningWebMcp from '@/components/PublicLearningWebMcp';
 import { HOME_DESCRIPTION, HOME_TITLE, sharePreview } from '@/lib/site-pages';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -55,6 +56,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <SignedInRedirect to="/account">
+        <PublicLearningWebMcp />
         {/* Hero Section */}
         <section className="relative w-full min-h-screen flex items-center justify-center text-center text-white">
             <Image
