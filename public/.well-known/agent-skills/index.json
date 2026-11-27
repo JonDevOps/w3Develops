@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "find-w3develops-learning",
+      "type": "skill-md",
+      "description": "Find public w3Develops study groups, projects, and getting-started links for someone who wants to learn or build with other developers.",
+      "url": "find-w3develops-learning/SKILL.md",
+      "digest": "sha256:feb426080cec5e2489bf56a504d077a1e9cc4829355e493f3f16f4b1c6eb3ff1"
+    }
+  ]
+}

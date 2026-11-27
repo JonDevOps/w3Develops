@@ -1,0 +1,18 @@
+{
+  "entries": [
+    {
+      "@context": "https://agenticresourcediscovery.org/context/v1",
+      "identifier": "urn:air:w3develops.org:skills:find-w3develops-learning",
+      "displayName": "Find learning opportunities on w3Develops",
+      "type": "application/agent-skills+md",
+      "url": "https://w3develops.org/.well-known/agent-skills/find-w3develops-learning/SKILL.md",
+      "description": "Find public w3Develops study groups, projects, and getting-started links for someone who wants to learn or build with other developers.",
+      "capabilities": ["find-public-learning-links"],
+      "representativeQueries": [
+        "Where can I find study groups on w3Develops?",
+        "How do I browse group projects to build with other developers?",
+        "Where can I get started or look for a book club on w3Develops?"
+      ]
+    }
+  ]
+}
