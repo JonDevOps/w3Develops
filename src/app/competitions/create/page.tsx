@@ -84,7 +84,7 @@ export default function CreateCompetitionPage() {
     addDoc(competitionsCollection, competitionData)
         .then((newDocRef) => {
             toast({ title: "Success!", description: "Your new competition has been created." });
-            notifySearchEngines(`/competitions/${newDocRef.id}`);
+            notifySearchEngines(`/competitions/${newDocRef.id}`, user);
             router.push(`/competitions/${newDocRef.id}`);
         })
         .catch(async (error) => {
