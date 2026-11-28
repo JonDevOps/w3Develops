@@ -76,6 +76,14 @@ const nextConfig = {
       source: '/.well-known/:catalog(ard|ai-catalog).json',
       headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
     }, {
+      source: '/developer/access',
+      headers: [
+        { key: 'Cache-Control', value: 'private, no-store' },
+        { key: 'Referrer-Policy', value: 'no-referrer' },
+        { key: 'X-Frame-Options', value: 'DENY' },
+        { key: 'Content-Security-Policy', value: "frame-ancestors 'none'" },
+      ],
+    }, {
       // Tor Browser offers the site's onion address (issue #345), served by
       // a Tor onion service that proxies to this site
       source: '/:path*',

@@ -30,3 +30,4 @@ jobs:
       # The rules tests run in the Firestore emulator, which needs the Firebase CLI
       - run: npm install -g firebase-tools
       - run: npm run test:rules
+      - run: npm run test:developer-api
