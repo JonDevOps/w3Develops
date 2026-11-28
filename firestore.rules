@@ -3,6 +3,16 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Developer OAuth state is accessible only through the server's Admin SDK.
+    match /developerApiGrants/{id} { allow read, write: if false; }
+    match /developerApiRequests/{id} { allow read, write: if false; }
+    match /developerApiCodes/{id} { allow read, write: if false; }
+    match /developerApiTokens/{id} { allow read, write: if false; }
+    match /developerApiInteractions/{id} { allow read, write: if false; }
+    match /developerApiEvents/{id} { allow read, write: if false; }
+    match /developerApiLimits/{id} { allow read, write: if false; }
+    match /developerApiGroups/{id} { allow read, write: if false; }
+
 
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;

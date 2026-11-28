@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test:rules": "firebase emulators:exec --only firestore,storage --project demo-w3develops-rules \"node --test tests/rules/*.test.mjs\""
+    "test:rules": "firebase emulators:exec --only firestore,storage --project demo-w3develops-rules \"node --test tests/rules/*.test.mjs\"",
+    "test:developer-api": "firebase emulators:exec --only auth,firestore --project studio-5652324508-ae238 \"node --test tests/developer-api.test.mjs\""
   },
   "engines": {
     "node": "24.x"
@@ -16,6 +17,7 @@
     "@dnd-kit/core": "^6.1.0",
     "@dnd-kit/sortable": "^8.0.0",
     "@modelcontextprotocol/server": "2.4.0",
+    "@node-oauth/oauth2-server": "5.3.1",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-avatar": "^1.0.4",
     "@radix-ui/react-checkbox": "^1.0.4",
